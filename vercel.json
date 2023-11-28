@@ -1,6 +1,6 @@
 {
     "version": 2,
-    "name": "tenthHomeWork",
+    "name": "eleventhHomeWork",
     "builds": [
        { "src": "src/index.ts", "use": "@vercel/node" }
     ],

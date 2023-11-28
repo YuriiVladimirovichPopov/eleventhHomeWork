@@ -1,5 +1,5 @@
 {
-  "name": "project_back_end_10_week",
+  "name": "project_back_end_11_week",
   "version": "1.0.0",
   "repository": "https://github.com/YuriiVladimirovichPopov/tenthHomeWork.git",
   "author": "YuriiVladimirovichPopov <papanchik87@yahoo.com>",
@@ -11,7 +11,7 @@
     "jest": "jest -i",
     "test": "jest -i --runInBand --detectOpenHandles --forceExit --passWithNoTests",
     "test:coverage": "jest --runInBand --coverage",
-    "serveo": "ssh -R 80:localhost:3033 serveo.net",
+    "serveo": "ssh -R 80:localhost:3034 serveo.net",
     "format": "prettier --write \"src/**/*.ts\""
   },
   "dependencies": {
