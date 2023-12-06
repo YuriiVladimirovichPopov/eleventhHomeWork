@@ -1,8 +1,8 @@
 import { Request, Response, Router } from "express";
 import { businessService } from "../application/business-service";
-import { sendStatus } from "./send-status";
+import { sendStatus } from "./helpers/send-status";
 
-export const emailsRouter = Router({})
+export const emailsRouter = Router({});
 
 //emailsRouter.post('/send', async(req: Request, res: Response) => {
 //
