@@ -9,7 +9,7 @@ import { authService } from "../application/auth-service";
 import { randomUUID } from "crypto";
 import bcrypt from "bcrypt";
 
-export const usersRepository = {
+class UsersRepository {
   _userMapper(user: UsersMongoDbType): UserViewModel {
     return {
       id: user._id.toString(),
@@ -19,8 +19,8 @@ export const usersRepository = {
       emailConfirmation: user.emailConfirmation,
       recoveryCode: randomUUID(),
     };
-  },
-
+  }
+// may be come through to userQueryRepository
   async findAllUsers(
     pagination: UserPagination,
   ): Promise<PaginatedUser<UserViewModel[]>> {
@@ -58,8 +58,8 @@ export const usersRepository = {
       items: result.map((b) => this._userMapper(b)),
     };
     return res;
-  },
-
+  }
+// may be come through to userQueryRepository
   async findUserById(id: string): Promise<UserViewModel | null> {
     const userById = await UserModel.findOne(
       { _id: new ObjectId(id) },
@@ -76,26 +76,26 @@ export const usersRepository = {
       return null;
     }
     return this._userMapper(userById);
-  },
+  }
 
   async findByLoginOrEmail(loginOrEmail: string) {
     const user = await UserModel.findOne({
       $or: [{ email: loginOrEmail }, { login: loginOrEmail }],
     });
     return user;
-  },
+  }
 
   async findUserByEmail(email: string): Promise<UsersMongoDbType | null> {
     const user = await UserModel.findOne({ email: email });
     return user;
-  },
+  }
 
   async findUserByConfirmationCode(emailConfirmationCode: string) {
     const user = await UserModel.findOne({
       "emailConfirmation.confirmationCode": emailConfirmationCode,
     });
     return user;
-  },
+  }
 
   async createUser(newUser: UsersMongoDbType): Promise<UserCreateViewModel> {
     await UserModel.insertMany(newUser);
@@ -105,7 +105,7 @@ export const usersRepository = {
       email: newUser.email,
       createdAt: newUser.createdAt,
     };
-  },
+  }
 
   async deleteUser(id: string): Promise<boolean> {
     if (!ObjectId.isValid(id)) {
@@ -115,7 +115,7 @@ export const usersRepository = {
     const foundUserById = await UserModel.deleteOne({ _id: new ObjectId(id) });
 
     return foundUserById.deletedCount === 1;
-  },
+  }
 
   async deleteAllUsers(): Promise<boolean> {
     try {
@@ -124,7 +124,7 @@ export const usersRepository = {
     } catch (error) {
       return false;
     }
-  },
+  }
 
   async resetPasswordWithRecoveryCode(
     _id: ObjectId,
@@ -148,10 +148,21 @@ export const usersRepository = {
     );
 
     return { success: true };
-  },
+  }
 
   async findUserByRecoryCode(recoveryCode: string): Promise<UsersMongoDbType | null> {
     const user = await UserModel.findOne({ recoveryCode })
     return user
   }
-};
+
+  async sendRecoveryMessage(user: UsersMongoDbType): Promise<UsersMongoDbType> {
+    const recoveryCode = Math.floor(100000 + Math.random() * 900000).toString();
+    const updatedUser: UsersMongoDbType | null = await UserModel.findByIdAndUpdate(
+      { _id: user._id },
+      { $set: { recoveryCode } },
+    ); 
+    return updatedUser!
+  }
+}
+
+export const usersRepository = new UsersRepository()

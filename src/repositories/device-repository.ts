@@ -1,7 +1,8 @@
 import { DeviceMongoDbType } from "../types";
 import { DeviceModel } from "../domain/schemas/device.schema";
 
-export const deviceRepository = {
+class DeviceRepository {
+  // may be come through to deviceQueryRepository
   async findDeviceByUser(deviceId: string): Promise<DeviceMongoDbType | null> {
     try {
       const device = await DeviceModel.findOne({ deviceId });
@@ -10,8 +11,8 @@ export const deviceRepository = {
       console.error("Error finding device by ID:", error);
       return null;
     }
-  },
-
+  }
+  // may be come through to deviceQueryRepository
   async getAllDevicesByUser(userId: string): Promise<DeviceMongoDbType[]> {
     try {
       const devices = await DeviceModel.find(
@@ -23,7 +24,7 @@ export const deviceRepository = {
       console.error("Error getting devices by userId:", error);
       return [];
     }
-  },
+  }
 
   async deleteDeviceById(deviceId: string): Promise<boolean> {
     try {
@@ -37,7 +38,7 @@ export const deviceRepository = {
       console.log("Error deleting device by ID:", error);
       return false;
     }
-  },
+  }
 
   async deleteAllDevicesExceptCurrent(
     userId: string,
@@ -49,7 +50,7 @@ export const deviceRepository = {
     } catch (error) {
       throw new Error("Failed to refresh tokens");
     }
-  },
+  }
   
   async deleteAllDevices(): Promise<boolean> {
     try {
@@ -58,5 +59,7 @@ export const deviceRepository = {
     } catch (error) {
       return false;
     }
-  },
+  }
 }
+
+export const deviceRepository = new DeviceRepository()

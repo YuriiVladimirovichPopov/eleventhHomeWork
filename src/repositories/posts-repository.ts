@@ -6,8 +6,10 @@ import { CommentViewModel } from "../models/comments/commentViewModel";
 import { CommentModel } from "../domain/schemas/comments.schema";
 import { PostModel } from "../domain/schemas/posts.schema";
 import { queryBlogsRepository } from "../query repozitory/queryBlogsRepository";
+import { likeStatus } from "../models/likes/likeInputModel";
 
-export const postsRepository = {
+
+class PostsRepository {
   _postMapper(post: PostsMongoDbType): PostsViewModel {
     return {
       id: post._id.toString(),
@@ -18,7 +20,7 @@ export const postsRepository = {
       blogName: post.blogName || null,
       createdAt: post.createdAt,
     };
-  },
+  }
 
   async createdPostForSpecificBlog(
     model: PostsInputModel,
@@ -38,7 +40,7 @@ export const postsRepository = {
     };
     await PostModel.insertMany(createPostForBlog);
     return this._postMapper(createPostForBlog);
-  },
+  }
 
   async createCommentforPostId(
     postId: string,
@@ -51,6 +53,11 @@ export const postsRepository = {
       content,
       commentatorInfo,
       createdAt: new Date().toISOString(),
+      likeInfo: {
+        likesCount: 0,
+        disLikesCount: 0,
+        myStatus: likeStatus.None
+      }
     };
 
     await CommentModel.insertMany({ ...createCommentForPost });
@@ -59,8 +66,9 @@ export const postsRepository = {
       content: createCommentForPost.content,
       commentatorInfo: createCommentForPost.commentatorInfo,
       createdAt: createCommentForPost.createdAt,
+      likeInfo: createCommentForPost.likeInfo
     };
-  },
+  }
 
   async updatePost(
     id: string,
@@ -71,13 +79,13 @@ export const postsRepository = {
       { $set: { ...data } },
     );
     return foundPostById.matchedCount === 1;
-  },
+  }
 
   async deletePost(id: string): Promise<PostsViewModel | boolean> {
     const foundPostById = await PostModel.deleteOne({ _id: new ObjectId(id) });
 
     return foundPostById.deletedCount === 1;
-  },
+  }
 
   async deleteAllPosts(): Promise<boolean> {
     try {
@@ -86,5 +94,7 @@ export const postsRepository = {
     } catch (error) {
       return false;
     }
-  },
+  }
 };
+
+export const postsRepository = new PostsRepository()

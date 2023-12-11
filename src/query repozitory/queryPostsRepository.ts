@@ -9,7 +9,8 @@ import { CommentModel } from "../domain/schemas/comments.schema";
 import { PostModel } from "../domain/schemas/posts.schema";
 
 const filter: mongoose.FilterQuery<PostsMongoDbType> = {};
-export const queryPostRepository = {
+
+class QueryPostRepository {
   _postMapper(post: PostsMongoDbType): PostsViewModel {
     return {
       id: post._id.toString(),
@@ -20,7 +21,7 @@ export const queryPostRepository = {
       blogName: post.blogName,
       createdAt: post.createdAt,
     };
-  },
+  }
 
   async findAllPostsByBlogId(
     blogId: string,
@@ -28,14 +29,14 @@ export const queryPostRepository = {
   ): Promise<PaginatedPost<PostsViewModel>> {
     const filter = { blogId };
     return this._findPostsByFilter(filter, pagination);
-  },
+  }
 
   async findAllPosts(
     pagination: PaginatedType,
   ): Promise<PaginatedPost<PostsViewModel>> {
     const filter = {};
     return this._findPostsByFilter(filter, pagination);
-  },
+  }
 
   async _findPostsByFilter(
     filter: {},
@@ -58,7 +59,7 @@ export const queryPostRepository = {
       totalCount: totalCount,
       items: result.map((res) => this._postMapper(res)),
     };
-  },
+  }
 
   async findPostById(id: string): Promise<PostsViewModel | null> {
     if (!ObjectId.isValid(id)) {
@@ -70,7 +71,7 @@ export const queryPostRepository = {
       return null;
     }
     return this._postMapper(findPost);
-  },
+  }
 
   async findAllCommentsforPostId(
     pagination: PaginatedType,
@@ -95,5 +96,7 @@ export const queryPostRepository = {
       totalCount: totalCount,
       items: result,
     };
-  },
+  }
 };
+
+export const queryPostRepository = new QueryPostRepository()

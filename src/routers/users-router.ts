@@ -7,7 +7,7 @@ import {
 import { RequestWithParams } from "../types";
 import { getByIdParam } from "../models/getById";
 import { getUsersPagination } from "./helpers/pagination";
-import { QueryUserRepository } from "../query repozitory/queryUserRepository";
+import { queryUserRepository } from "../query repozitory/queryUserRepository";
 import { UserViewModel } from "../models/users/userViewModel";
 import { PaginatedUser } from "../models/users/paginatedQueryUser";
 import { authService } from "../application/auth-service";
@@ -18,7 +18,7 @@ export const usersRouter = Router({});
 usersRouter.get("/", async (req: Request, res: Response) => {
   const pagination = getUsersPagination(req.query);
   const allUsers: PaginatedUser<UserViewModel[]> =
-    await QueryUserRepository.findAllUsers(pagination);
+    await queryUserRepository.findAllUsers(pagination);
 
   return res.status(sendStatus.OK_200).send(allUsers);
 });
@@ -45,7 +45,7 @@ usersRouter.delete(
   "/:id",
   authorizationValidation,
   async (req: RequestWithParams<getByIdParam>, res: Response) => {
-    const foundUser = await QueryUserRepository.deleteUserById(req.params.id);
+    const foundUser = await queryUserRepository.deleteUserById(req.params.id);
     if (!foundUser) {
       return res.sendStatus(sendStatus.NOT_FOUND_404);
     }

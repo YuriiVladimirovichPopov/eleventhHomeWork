@@ -1,6 +1,6 @@
 import request from "supertest";
 import { app } from "../settings";
-import { sendStatus } from "../routers/send-status";
+import { sendStatus } from "../routers/helpers/send-status";
 import { body } from "express-validator";
 import { MongoClient } from "mongodb";
 

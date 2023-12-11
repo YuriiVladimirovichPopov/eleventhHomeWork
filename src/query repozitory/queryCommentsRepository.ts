@@ -5,7 +5,8 @@ import { PaginatedComment } from "../models/comments/paginatedQueryComment";
 import { CommentsMongoDbType } from "../types";
 import { CommentViewModel } from "../models/comments/commentViewModel";
 
-export const commentsQueryRepository = {
+
+class CommentsQueryRepository {
   async getAllCommentsForPost(
     postId: string,
     pagination: PaginatedType,
@@ -22,6 +23,7 @@ export const commentsQueryRepository = {
         content: el.content,
         commentatorInfo: el.commentatorInfo,
         createdAt: el.createdAt,
+        likeInfo: el.likeInfo
       }),
     );
     const totalCount: number = await CommentModel.countDocuments({ postId });
@@ -36,7 +38,7 @@ export const commentsQueryRepository = {
       items: mappedComments,
     };
     return response;
-  },
+  }
 
   async findCommentById(id: string): Promise<CommentViewModel | null> {
     const comment: CommentsMongoDbType | null = await CommentModel.findOne({
@@ -48,6 +50,9 @@ export const commentsQueryRepository = {
       commentatorInfo: comment.commentatorInfo,
       content: comment.content,
       createdAt: comment.createdAt,
+      likeInfo: comment.likeInfo
     };
-  },
+  }
 };
+
+export const commentsQueryRepository = new CommentsQueryRepository()

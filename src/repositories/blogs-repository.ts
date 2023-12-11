@@ -4,7 +4,7 @@ import { BlogsMongoDbType } from "../types";
 import { BlogViewModel } from "../models/blogs/blogsViewModel";
 import { BlogModel } from "../domain/schemas/blogs.schema";
 
-export const blogsRepository = {
+class BlogsRepository {
   _blogMapper(blog: BlogsMongoDbType): BlogViewModel {
     return {
       id: blog._id.toString(),
@@ -14,12 +14,12 @@ export const blogsRepository = {
       createdAt: blog.createdAt,
       isMembership: blog.isMembership,
     };
-  },
+  }
 
   async createBlog(newBlog: BlogsMongoDbType): Promise<BlogViewModel> {
     await BlogModel.insertMany([newBlog]);
     return this._blogMapper(newBlog);
-  },
+  }
 
   async updateBlog(id: string, data: BlogInputModel): Promise<boolean> {
     if (!ObjectId.isValid(id)) {
@@ -31,7 +31,7 @@ export const blogsRepository = {
       { $set: { ...data } },
     );
     return foundBlogById.matchedCount === 1;
-  },
+  }
 
   async deleteBlog(id: string): Promise<boolean> {
     if (!ObjectId.isValid(id)) {
@@ -41,7 +41,7 @@ export const blogsRepository = {
     const foundBlogById = await BlogModel.deleteOne({ _id });
 
     return foundBlogById.deletedCount === 1;
-  },
+  }
 
   async deleteAllBlogs(): Promise<boolean> {
     try {
@@ -50,5 +50,7 @@ export const blogsRepository = {
     } catch (error) {
       return false;
     }
-  },
+  }
 };
+
+export const blogsRepository = new BlogsRepository()

@@ -20,14 +20,12 @@ import {
 } from "../middlewares/validations/emailConf.validation";
 import { emailManager } from "../managers/email-manager";
 import { randomUUID } from "crypto";
-import { add } from "date-fns";
 import { error } from "console";
 import { ObjectId } from "mongodb";
 import { createUserValidation } from "../middlewares/validations/users.validation";
 import { customRateLimit } from "../middlewares/rateLimit-middleware";
 import { deviceRepository } from "../repositories/device-repository";
 import { DeviceModel } from "../domain/schemas/device.schema";
-import { UserModel } from "../domain/schemas/users.schema";
 import { emailAdapter } from "../adapters/email-adapter";
 import { forCreateNewPasswordValidation } from "../middlewares/validations/auth.recoveryPass.validation";
 
@@ -58,7 +56,7 @@ authRouter.post(
         deviceId,
         userId,
       };
-      await DeviceModel.insertMany(newDevice);   //унести в сервис
+      await authService.addNewDevice(newDevice);   //унести в сервис, вроде получилось!!!
       res
         .cookie("refreshToken", refreshToken, { httpOnly: true, secure: true })
         .status(sendStatus.OK_200)
@@ -82,7 +80,7 @@ authRouter.post(
       return res.sendStatus(sendStatus.NO_CONTENT_204);
     }
     
-    const updatedUser = await authService.sendRecoveryMessage(user)
+    const updatedUser = await usersRepository.sendRecoveryMessage(user)
 
     try {
       emailAdapter.sendEmailWithRecoveryCode(user.email, updatedUser.recoveryCode!);
@@ -162,21 +160,21 @@ authRouter.post(
           ],
         });
     }
-    if (user.emailConfirmation.isConfirmed) {
+    if (user.emailConfirmation!.isConfirmed) {
       return res
         .status(sendStatus.BAD_REQUEST_400)
         .send({
           errorsMessages: [{ message: "Email is confirmed", field: "code" }],
         });
     }
-    if (user.emailConfirmation.expirationDate < currentDate) {
+    if (user.emailConfirmation!.expirationDate < currentDate) {
       return res
         .status(sendStatus.BAD_REQUEST_400)
         .send({
           errorsMessages: [{ message: "The code is exparied", field: "code" }],
         });
     }
-    if (user.emailConfirmation.confirmationCode !== req.body.code) {
+    if (user.emailConfirmation!.confirmationCode !== req.body.code) {
       return res
         .status(sendStatus.BAD_REQUEST_400)
         .send({ errorsMessages: [{ message: "Invalid code", field: "code" }] });
@@ -218,7 +216,7 @@ authRouter.post(
       return res.sendStatus(sendStatus.BAD_REQUEST_400);
     }
 
-    if (user.emailConfirmation.isConfirmed) {
+    if (user.emailConfirmation.isConfirmed) {   
       return res
         .status(sendStatus.BAD_REQUEST_400)
         .send({ message: "isConfirmed" });
@@ -230,7 +228,7 @@ authRouter.post(
     try {
       await emailManager.sendEmail(
         updatedUser!.email,
-        updatedUser!.emailConfirmation.confirmationCode,
+        updatedUser!.emailConfirmation.confirmationCode,   
       );
     } catch {
       error("email is already confirmed", error);
@@ -264,7 +262,9 @@ authRouter.post("/refresh-token", async (req: Request, res: Response) => {
       refreshToken,
     );
     if (validToken)
-      return res.status(sendStatus.UNAUTHORIZED_401).send({ message: "Token" });
+      return res
+        .status(sendStatus.UNAUTHORIZED_401)
+        .send({ message: "Token" });
 
     const device = await authService.findValidDevice(isValid.deviceId);  
     if (!device)

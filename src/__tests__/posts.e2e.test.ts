@@ -1,6 +1,6 @@
 import request from "supertest";
 import { app } from "../settings";
-import { sendStatus } from "../routers/send-status";
+import { sendStatus } from "../routers/helpers/send-status";
 import { PostsViewModel } from "../models/posts/postsViewModel";
 import { PostsInputModel } from "../models/posts/postsInputModel";
 import { RouterPaths } from "../routerPaths";

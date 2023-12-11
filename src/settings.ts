@@ -6,7 +6,6 @@ import { testingRouter } from "./routers/testing-router";
 import { usersRouter } from "./routers/users-router";
 import { authRouter } from "./routers/auth-router";
 import { commentsRouter } from "./routers/comment-router";
-import { emailsRouter } from "./routers/email-router";
 import cookieParser from "cookie-parser";
 import { securityRouter } from "./routers/security-router";
 
@@ -37,7 +36,5 @@ app.use("/auth", authRouter);
 app.use("/security", securityRouter);
 
 app.use("/comments", commentsRouter);
-
-app.use("/emails", emailsRouter);
 
 app.use("/testing", testingRouter);

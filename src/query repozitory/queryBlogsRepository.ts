@@ -5,7 +5,7 @@ import { PaginatedType } from "../routers/helpers/pagination";
 import { PaginatedBlog } from "../models/blogs/paginatedQueryBlog";
 import { BlogModel } from "../domain/schemas/blogs.schema";
 
-export const queryBlogsRepository = {
+class QueryBlogsRepository {
   _blogMapper(blog: BlogsMongoDbType): BlogViewModel {
     return {
       id: blog._id.toString(),
@@ -15,7 +15,7 @@ export const queryBlogsRepository = {
       createdAt: blog.createdAt,
       isMembership: blog.isMembership,
     };
-  },
+  }
 
   async findAllBlogs(
     pagination: PaginatedType,
@@ -44,7 +44,7 @@ export const queryBlogsRepository = {
       items: result.map((b) => this._blogMapper(b)),
     };
     return res;
-  },
+  }
 
   async findBlogById(id: string): Promise<BlogViewModel | null> {
     const blogById = await BlogModel.findOne({ _id: new ObjectId(id) });
@@ -54,3 +54,5 @@ export const queryBlogsRepository = {
     return this._blogMapper(blogById);
   }
 }
+
+export const queryBlogsRepository = new QueryBlogsRepository()
