@@ -1,7 +1,6 @@
 import request from "supertest";
 import { app } from "../settings";
-import { authorizationValidation } from "../middlewares/input-validation-middleware";
-import { sendStatus } from "../routers/send-status";
+import { sendStatus } from "../routers/helpers/send-status";
 import { UserViewModel } from "../models/users/userViewModel";
 import { UserInputModel } from "../models/users/userInputModel";
 import { createUser } from "../__tests__/user-test-helpers";
@@ -9,7 +8,6 @@ import { UserModel } from "../domain/schemas/users.schema";
 import { RouterPaths } from "../routerPaths";
 import { MongoClient } from "mongodb";
 import mongoose from "mongoose";
-import { client } from "../db/db";
 
 const getRequest = () => {
   return request(app);
@@ -134,4 +132,6 @@ describe("tests for /users", () => {
       .auth("admin", "qwerty")
       .expect(sendStatus.NO_CONTENT_204);
   });
+
+  
 });

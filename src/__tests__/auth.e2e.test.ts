@@ -1,15 +1,11 @@
 import request from "supertest";
 import { app } from "../settings";
-import { sendStatus } from "../routers/send-status";
+import { sendStatus } from "../routers/helpers/send-status";
 import { createUser } from "./user-test-helpers";
-import { UserInputModel } from "../models/users/userInputModel";
 import { RouterPaths } from "../routerPaths";
-import { client } from "../db/db";
 import { Db, ObjectId } from "mongodb";
-import express, { response } from "express";
 import { emailAdapter } from "../adapters/email-adapter";
 import { randomUUID } from "crypto";
-import { access } from "fs";
 import mongoose from "mongoose";
 import dotenv from "dotenv";
 dotenv.config();
