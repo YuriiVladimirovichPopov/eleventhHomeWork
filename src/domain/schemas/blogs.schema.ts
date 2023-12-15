@@ -2,20 +2,29 @@ import mongoose from "mongoose";
 import { BlogsMongoDbType } from "../../types";
 import { ObjectId } from "mongodb";
 
-
 export const nameValid = {
   minLength: 1,
-  maxLength: 15
-}
+  maxLength: 15,
+};
 export const descriptionValid = {
   minLength: 1,
-  maxLength: 500
-}
+  maxLength: 500,
+};
 
 export const BlogSchema = new mongoose.Schema<BlogsMongoDbType>({
-  _id: { type: ObjectId, required: true },
-  name: { type: String, required: true, minLength: nameValid.minLength, maxLength: nameValid.maxLength }, 
-  description: { type: String, required: true, minLength: descriptionValid.minLength, maxLength: descriptionValid.maxLength},
+  // _id: { type: ObjectId, required: true },
+  name: {
+    type: String,
+    required: true,
+    minLength: nameValid.minLength,
+    maxLength: nameValid.maxLength,
+  },
+  description: {
+    type: String,
+    required: true,
+    minLength: descriptionValid.minLength,
+    maxLength: descriptionValid.maxLength,
+  },
   websiteUrl: { type: String, required: true },
   createdAt: { type: String, required: true },
   isMembership: { type: Boolean, required: true },
