@@ -3,7 +3,7 @@ import { DeviceMongoDbType } from "../../types";
 import { ObjectId } from "mongodb";
 
 export const DeviceSchema = new mongoose.Schema<DeviceMongoDbType>({
-  _id: { type: ObjectId, required: true },
+  //_id: { type: ObjectId, required: true },
   ip: { type: String, required: true },
   title: { type: String, required: true },
   lastActiveDate: { type: String, required: true },

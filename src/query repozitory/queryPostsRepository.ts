@@ -97,6 +97,6 @@ class QueryPostRepository {
       items: result,
     };
   }
-};
+}
 
-export const queryPostRepository = new QueryPostRepository()
+export const queryPostRepository = new QueryPostRepository();

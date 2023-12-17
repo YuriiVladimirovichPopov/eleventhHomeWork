@@ -1,5 +1,7 @@
+// не нравится any на deletePostById
+
 import { Request, Response, Router } from "express";
-import { sendStatus } from "./helpers/send-status";
+import { httpStatuses } from "./helpers/send-status";
 import {
   authorizationValidation,
   inputValidationErrors,
@@ -8,13 +10,13 @@ import {
   createPostValidation,
   updatePostValidation,
 } from "../middlewares/validations/posts.validation";
-import { RequestWithBody, RequestWithParams } from "../types";
+import { RequestWithBody, RequestWithParams, PostsMongoDbType } from '../types';
 import { PostsInputModel } from "../models/posts/postsInputModel";
 import { getByIdParam } from "../models/getById";
 import { PostsViewModel } from "../models/posts/postsViewModel";
 import { postsService } from "../application/post-service";
 import { queryPostRepository } from "../query repozitory/queryPostsRepository";
-import { getPaginationFromQuery } from "./helpers/pagination";
+import { PaginatedType, getPaginationFromQuery } from "./helpers/pagination";
 import { PaginatedPost } from "../models/posts/paginatedQueryPost";
 import { CommentViewModel } from "../models/comments/commentViewModel";
 import { PaginatedComment } from "../models/comments/paginatedQueryComment";
@@ -26,35 +28,28 @@ import { queryBlogsRepository } from "../query repozitory/queryBlogsRepository";
 
 export const postsRouter = Router({});
 
-postsRouter.get(
-  "/:postId/comments",
-  async (req: Request, res: Response<PaginatedComment<CommentViewModel>>) => {
+class PostController {
+  async getCommentsByPostId (req: Request, res: Response<PaginatedComment<CommentViewModel>>) {  // TODO: расширить тип джанериком
     const foundedPostId = await queryPostRepository.findPostById(
       req.params.postId,
     );
     if (!foundedPostId) {
-      return res.sendStatus(sendStatus.NOT_FOUND_404);
+      return res.sendStatus(httpStatuses.NOT_FOUND_404);
     }
 
-    const pagination = getPaginationFromQuery(req.query);
+    const pagination = getPaginationFromQuery(req.query as unknown as PaginatedType);
     const allCommentsForPostId: PaginatedComment<CommentViewModel> =
       await commentsQueryRepository.getAllCommentsForPost(
         req.params.postId,
         pagination,
       );
-    return res.status(sendStatus.OK_200).send(allCommentsForPostId);
-  },
-);
-
-postsRouter.post(
-  "/:postId/comments",
-  authMiddleware,
-  createPostValidationForComment,
-  async (req: Request, res: Response) => {
+    return res.status(httpStatuses.OK_200).send(allCommentsForPostId);
+  }
+  async createCommentsByPostId (req: Request, res: Response) {
     const postWithId: PostsViewModel | null =
       await queryPostRepository.findPostById(req.params.postId);
     if (!postWithId) {
-      return res.sendStatus(sendStatus.NOT_FOUND_404);
+      return res.sendStatus(httpStatuses.NOT_FOUND_404);
     }
 
     const comment: CommentViewModel | null =
@@ -62,36 +57,27 @@ postsRouter.post(
         postWithId.id,
         req.body.content,
         {
-          userId: req.user!._id.toString(),
+          userId: req.user!.id.toString(),
           userLogin: req.user!.login,
         },
       );
-    return res.status(sendStatus.CREATED_201).send(comment);
-  },
-);
-
-postsRouter.get(
-  "/",
-  async (req: Request, res: Response<PaginatedPost<PostsViewModel>>) => {
-    const pagination = getPaginationFromQuery(req.query);
+    return res.status(httpStatuses.CREATED_201).send(comment);
+  }
+  async getAllPosts (req: Request, res: Response<PaginatedPost<PostsViewModel>>) {
+    const pagination = getPaginationFromQuery(req.query as unknown as PaginatedType);
     const allPosts: PaginatedPost<PostsViewModel> =
       await queryPostRepository.findAllPosts(pagination);
     if (!allPosts) {
-      return res.status(sendStatus.NOT_FOUND_404);
+      return res.status(httpStatuses.NOT_FOUND_404);
     }
-    res.status(sendStatus.OK_200).send(allPosts);
-  },
-);
-
-postsRouter.post(
-  "/",
-  authorizationValidation,
-  createPostValidation,
-  async (
+    res.status(httpStatuses.OK_200).send(allPosts);
+  }
+  async createPostByBlogId (
     req: RequestWithBody<PostsInputModel>,
-    res: Response<PostsViewModel>,
-  ) => {
-    const findBlogById = await queryBlogsRepository.findBlogById(req.body.blogId);
+    res: Response<PostsViewModel>) {
+    const findBlogById = await queryBlogsRepository.findBlogById(
+      req.body.blogId,
+    );
 
     if (findBlogById) {
       const { title, shortDescription, content, blogId } = req.body;
@@ -103,52 +89,82 @@ postsRouter.post(
       });
 
       if (!newPost) {
-        return res.sendStatus(sendStatus.BAD_REQUEST_400);
+        return res.sendStatus(httpStatuses.BAD_REQUEST_400);
       }
-      return res.status(sendStatus.CREATED_201).send(newPost);
+      return res.status(httpStatuses.CREATED_201).send(newPost);
     }
-  },
+  }
+  async getPostById (req: RequestWithParams<getByIdParam>, res: Response) {
+    const foundPost = await postsService.findPostById(req.params.id);
+    if (!foundPost) {
+      res.sendStatus(httpStatuses.NOT_FOUND_404);
+    } else {
+      res.status(httpStatuses.OK_200).send(foundPost);
+    }
+  }
+  async updatePostById (
+    req: Request<getByIdParam, PostsInputModel>,
+    res: Response<PostsViewModel>) {
+    const updatePost = await postsService.updatePost(req.params.id, req.body);
+
+    if (!updatePost) {
+      return res.sendStatus(httpStatuses.NOT_FOUND_404);
+    } else {
+      res.sendStatus(httpStatuses.NO_CONTENT_204);
+    }
+  }
+  async deletePostById (
+    req: RequestWithParams<getByIdParam>, 
+    res: Response) {  
+      const foundPost = await postsService.deletePost(req.params.id);
+        if (!foundPost) {
+          return res.sendStatus(httpStatuses.NOT_FOUND_404);
+        }
+          return res.sendStatus(httpStatuses.NO_CONTENT_204);
+  }
+}
+
+const postController = new PostController()
+
+postsRouter.get(
+  "/:postId/comments",
+  postController.getCommentsByPostId.bind(postController)
+);
+
+postsRouter.post(
+  "/:postId/comments",
+  authMiddleware,
+  createPostValidationForComment,
+  postController.createCommentsByPostId.bind(postController)
+);
+
+postsRouter.get(
+  "/",
+  postController.getAllPosts.bind(postController)
+);
+
+postsRouter.post(
+  "/",
+  authorizationValidation,
+  createPostValidation,
+  postController.createPostByBlogId.bind(postController)
 );
 
 postsRouter.get(
   "/:id",
-  async (req: RequestWithParams<getByIdParam>, res: Response) => {
-    const foundPost = await postsService.findPostById(req.params.id);
-    if (!foundPost) {
-      res.sendStatus(sendStatus.NOT_FOUND_404);
-    } else {
-      res.status(sendStatus.OK_200).send(foundPost);
-    }
-  },
+  postController.getPostById.bind(postController)
 );
 
 postsRouter.put(
   "/:id",
   authorizationValidation,
   updatePostValidation,
-  async (
-    req: Request<getByIdParam, PostsInputModel>,
-    res: Response<PostsViewModel>,
-  ) => {
-    const updatePost = await postsService.updatePost(req.params.id, req.body);
-
-    if (!updatePost) {
-      return res.sendStatus(sendStatus.NOT_FOUND_404);
-    } else {
-      res.sendStatus(sendStatus.NO_CONTENT_204);
-    }
-  },
+  postController.updatePostById.bind(postController)
 );
 
 postsRouter.delete(
   "/:id",
   authorizationValidation,
   inputValidationErrors,
-  async (req: RequestWithParams<getByIdParam>, res: Response): Promise<any> => {
-    const foundPost = await postsService.deletePost(req.params.id);
-    if (!foundPost) {
-      return res.sendStatus(sendStatus.NOT_FOUND_404);
-    }
-    return res.sendStatus(sendStatus.NO_CONTENT_204);
-  },
+  postController.deletePostById.bind(postController)
 );

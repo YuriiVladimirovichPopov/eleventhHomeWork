@@ -8,6 +8,5 @@ export type CommentViewModel = {
     userLogin: string;
   };
   createdAt: string;
-  likeInfo: likeInfoViewModel
-
+  likeInfo: likeInfoViewModel;
 };

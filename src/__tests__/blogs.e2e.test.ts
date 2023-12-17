@@ -1,6 +1,6 @@
 import request from "supertest";
 import { app } from "../settings";
-import { sendStatus } from "../routers/helpers/send-status";
+import { httpStatuses } from "../routers/helpers/send-status";
 import { BlogViewModel } from "../models/blogs/blogsViewModel";
 import { BlogInputModel } from "../models/blogs/blogsInputModel";
 import { createBlog } from "./blog-test-helpers";
@@ -31,26 +31,26 @@ describe("tests for /posts", () => {
   });
 
   it("should return 200 and blog", async () => {
-    await getRequest().get(RouterPaths.blogs).expect(sendStatus.OK_200);
+    await getRequest().get(RouterPaths.blogs).expect(httpStatuses.OK_200);
   });
 
   it("should return 404 for not existing blog", async () => {
     await getRequest()
       .get(`${RouterPaths.blogs}/999999999999999999999999`)
-      .expect(sendStatus.NOT_FOUND_404);
+      .expect(httpStatuses.NOT_FOUND_404);
   });
 
   it("shouldn't create a new blog without auth", async () => {
     await getRequest()
       .post(RouterPaths.blogs)
       .send({})
-      .expect(sendStatus.UNAUTHORIZED_401);
+      .expect(httpStatuses.UNAUTHORIZED_401);
 
     await getRequest()
       .post(RouterPaths.blogs)
       .auth("login", "password")
       .send({})
-      .expect(sendStatus.UNAUTHORIZED_401);
+      .expect(httpStatuses.UNAUTHORIZED_401);
   });
 
   it("shouldn't create a new blog with incorrect input data", async () => {
@@ -65,9 +65,9 @@ describe("tests for /posts", () => {
     await getRequest()
       .post(RouterPaths.blogs)
       .send(data)
-      .expect(sendStatus.UNAUTHORIZED_401);
+      .expect(httpStatuses.UNAUTHORIZED_401);
 
-    await getRequest().get(RouterPaths.blogs).expect(sendStatus.OK_200);
+    await getRequest().get(RouterPaths.blogs).expect(httpStatuses.OK_200);
   });
 
   let createdBlog1: BlogViewModel;
@@ -83,7 +83,7 @@ describe("tests for /posts", () => {
 
     const createResponse = await createBlog(inputModel);
 
-    expect(createResponse.status).toBe(sendStatus.CREATED_201);
+    expect(createResponse.status).toBe(httpStatuses.CREATED_201);
 
     const createdBlog: BlogViewModel = createResponse.body;
     expect(createdBlog).toEqual({
@@ -102,7 +102,7 @@ describe("tests for /posts", () => {
       `${RouterPaths.blogs}/${createdBlog.id}`,
     );
 
-    expect(getByIdRes.status).toBe(sendStatus.OK_200);
+    expect(getByIdRes.status).toBe(httpStatuses.OK_200);
     expect(getByIdRes.body).toEqual(createdBlog);
 
     createdBlog1 = createdBlog;
@@ -126,7 +126,7 @@ describe("tests for /posts", () => {
 
     await getRequest()
       .get(`${RouterPaths.blogs}/${blog1.id}/posts`)
-      .expect(sendStatus.OK_200, {
+      .expect(httpStatuses.OK_200, {
         pagesCount: 0,
         page: 1,
         pageSize: 10,
@@ -157,7 +157,7 @@ describe("tests for /posts", () => {
       .auth("admin", "qwerty")
       .send({});
 
-    expect(updateRes1.status).toBe(sendStatus.BAD_REQUEST_400);
+    expect(updateRes1.status).toBe(httpStatuses.BAD_REQUEST_400);
     expect(updateRes1.body).toStrictEqual(errors);
 
     const updateRes2 = await getRequest()
@@ -165,7 +165,7 @@ describe("tests for /posts", () => {
       .auth("admin", "qwerty")
       .send(emptyData);
 
-    expect(updateRes2.status).toBe(sendStatus.BAD_REQUEST_400);
+    expect(updateRes2.status).toBe(httpStatuses.BAD_REQUEST_400);
     expect(updateRes2.body).toStrictEqual(errors);
   });
 
@@ -182,7 +182,7 @@ describe("tests for /posts", () => {
       .put(`${RouterPaths.blogs}/${-234}`)
       .auth("admin", "qwerty")
       .send(data)
-      .expect(sendStatus.NOT_FOUND_404);
+      .expect(httpStatuses.NOT_FOUND_404);
   });
 
   it("should update a new blog with correct input data", async () => {
@@ -198,13 +198,13 @@ describe("tests for /posts", () => {
       .put(`${RouterPaths.blogs}/${blog1.id}`)
       .auth("admin", "qwerty")
       .send(inputModel)
-      .expect(sendStatus.NO_CONTENT_204);
+      .expect(httpStatuses.NO_CONTENT_204);
 
     const updatedBlog = await getRequest().get(
       `${RouterPaths.blogs}/${blog1.id}`,
     );
 
-    expect(updatedBlog.status).toBe(sendStatus.OK_200);
+    expect(updatedBlog.status).toBe(httpStatuses.OK_200);
     expect(updatedBlog.body).not.toBe(blog1);
     expect(updatedBlog.body).toEqual({
       id: blog1.id,
@@ -222,29 +222,27 @@ describe("tests for /posts", () => {
     await getRequest()
       .delete(`${RouterPaths.blogs}/${blog1.id}`)
       .auth("admin", "qwerty")
-      .expect(sendStatus.NO_CONTENT_204);
+      .expect(httpStatuses.NO_CONTENT_204);
 
     await getRequest()
       .get(`${RouterPaths.blogs}/${blog1.id}`)
-      .expect(sendStatus.NOT_FOUND_404);
+      .expect(httpStatuses.NOT_FOUND_404);
 
     await getRequest()
       .delete(`${RouterPaths.blogs}/${blog2.id}`)
       .auth("admin", "qwerty")
-      .expect(sendStatus.NO_CONTENT_204);
+      .expect(httpStatuses.NO_CONTENT_204);
 
     await getRequest()
       .get(`${RouterPaths.blogs}/${blog2.id}`)
-      .expect(sendStatus.NOT_FOUND_404);
+      .expect(httpStatuses.NOT_FOUND_404);
 
-    await getRequest()
-      .get(RouterPaths.blogs)
-      .expect(sendStatus.OK_200, {
-        pagesCount: 0,
-        page: 1,
-        pageSize: 10,
-        totalCount: 0,
-        items: [],
-      });
+    await getRequest().get(RouterPaths.blogs).expect(httpStatuses.OK_200, {
+      pagesCount: 0,
+      page: 1,
+      pageSize: 10,
+      totalCount: 0,
+      items: [],
+    });
   });
 });

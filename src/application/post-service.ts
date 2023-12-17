@@ -44,6 +44,6 @@ class PostsService {
   async deleteAllPosts(): Promise<boolean> {
     return await postsRepository.deleteAllPosts();
   }
-};
+}
 
 export const postsService = new PostsService();

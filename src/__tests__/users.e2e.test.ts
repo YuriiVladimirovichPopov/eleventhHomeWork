@@ -1,6 +1,6 @@
 import request from "supertest";
 import { app } from "../settings";
-import { sendStatus } from "../routers/helpers/send-status";
+import { httpStatuses } from "../routers/helpers/send-status";
 import { UserViewModel } from "../models/users/userViewModel";
 import { UserInputModel } from "../models/users/userInputModel";
 import { createUser } from "../__tests__/user-test-helpers";
@@ -34,26 +34,26 @@ describe("tests for /users", () => {
   });
 
   it("should return 200 and user", async () => {
-    await getRequest().get(RouterPaths.users).expect(sendStatus.OK_200);
+    await getRequest().get(RouterPaths.users).expect(httpStatuses.OK_200);
   });
 
   it("should return 404 for not existing user", async () => {
     await getRequest()
       .get(`${RouterPaths.users}/999999`)
-      .expect(sendStatus.NOT_FOUND_404);
+      .expect(httpStatuses.NOT_FOUND_404);
   });
 
   it("shouldn't create a new user without auth", async () => {
     await getRequest()
       .post(RouterPaths.users)
       .send({})
-      .expect(sendStatus.UNAUTHORIZED_401);
+      .expect(httpStatuses.UNAUTHORIZED_401);
 
     await getRequest()
       .post(RouterPaths.users)
       .auth("login", "password")
       .send({})
-      .expect(sendStatus.UNAUTHORIZED_401);
+      .expect(httpStatuses.UNAUTHORIZED_401);
   });
 
   it("shouldn't create a new user with incorrect input data", async () => {
@@ -73,9 +73,9 @@ describe("tests for /users", () => {
     await getRequest()
       .post(RouterPaths.users)
       .send(data)
-      .expect(sendStatus.UNAUTHORIZED_401);
+      .expect(httpStatuses.UNAUTHORIZED_401);
 
-    await getRequest().get(RouterPaths.users).expect(sendStatus.OK_200);
+    await getRequest().get(RouterPaths.users).expect(httpStatuses.OK_200);
   });
 
   it("should create a new user with correct input data", async () => {
@@ -98,7 +98,7 @@ describe("tests for /users", () => {
       createdAt: expect.any(String), //так лучше
     });
 
-    expect(createResponse.status).toBe(sendStatus.CREATED_201);
+    expect(createResponse.status).toBe(httpStatuses.CREATED_201);
 
     const countOfUsersAfter = await UserModel.countDocuments();
     expect(countOfUsersAfter).toBe(1);
@@ -125,13 +125,11 @@ describe("tests for /users", () => {
     await getRequest()
       .delete(`${RouterPaths.users}/${user1.id}`)
       .auth("admin", "qwerty")
-      .expect(sendStatus.NO_CONTENT_204);
+      .expect(httpStatuses.NO_CONTENT_204);
 
     await getRequest()
       .delete(`${RouterPaths.users}/${user2.id}`)
       .auth("admin", "qwerty")
-      .expect(sendStatus.NO_CONTENT_204);
+      .expect(httpStatuses.NO_CONTENT_204);
   });
-
-  
 });

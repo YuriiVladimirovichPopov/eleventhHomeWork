@@ -8,9 +8,8 @@ import { PostModel } from "../domain/schemas/posts.schema";
 import { queryBlogsRepository } from "../query repozitory/queryBlogsRepository";
 import { likeStatus } from "../models/likes/likeInputModel";
 
-
 class PostsRepository {
-  _postMapper(post: PostsMongoDbType): PostsViewModel {
+  private postMapper(post: PostsMongoDbType): PostsViewModel {
     return {
       id: post._id.toString(),
       title: post.title,
@@ -39,7 +38,7 @@ class PostsRepository {
       createdAt: new Date().toISOString(),
     };
     await PostModel.insertMany(createPostForBlog);
-    return this._postMapper(createPostForBlog);
+    return this.postMapper(createPostForBlog);
   }
 
   async createCommentforPostId(
@@ -56,8 +55,8 @@ class PostsRepository {
       likeInfo: {
         likesCount: 0,
         disLikesCount: 0,
-        myStatus: likeStatus.None
-      }
+        myStatus: likeStatus.None,
+      },
     };
 
     await CommentModel.insertMany({ ...createCommentForPost });
@@ -66,7 +65,7 @@ class PostsRepository {
       content: createCommentForPost.content,
       commentatorInfo: createCommentForPost.commentatorInfo,
       createdAt: createCommentForPost.createdAt,
-      likeInfo: createCommentForPost.likeInfo
+      likeInfo: createCommentForPost.likeInfo,
     };
   }
 
@@ -95,6 +94,6 @@ class PostsRepository {
       return false;
     }
   }
-};
+}
 
-export const postsRepository = new PostsRepository()
+export const postsRepository = new PostsRepository();

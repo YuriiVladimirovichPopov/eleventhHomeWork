@@ -4,7 +4,7 @@ import { ObjectId } from "mongodb";
 import { EmailConfirmationSchema } from "./emailConfirmation.schema";
 
 export const UserSchema = new mongoose.Schema<UsersMongoDbType>({
-  _id: { type: ObjectId, required: true },
+  //_id: { type: ObjectId, required: true },
   login: { type: String, required: true },
   email: { type: String, required: true },
   createdAt: { type: String, required: true },

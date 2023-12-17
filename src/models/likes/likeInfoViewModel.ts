@@ -1,7 +1,7 @@
-import { likeStatus } from "./likeInputModel"
+import { likeStatus } from "./likeInputModel";
 
 export type likeInfoViewModel = {
-        likesCount: number,
-        disLikesCount: number,
-        myStatus: likeStatus   
-}
+  likesCount: number;
+  disLikesCount: number;
+  myStatus: likeStatus;
+};

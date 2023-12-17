@@ -1,6 +1,6 @@
 import { Response, Request, NextFunction } from "express";
 import { validationResult } from "express-validator";
-import { sendStatus } from "../routers/helpers/send-status";
+import { httpStatuses } from "../routers/helpers/send-status";
 
 export const authorizationValidation = (
   req: Request,
@@ -28,7 +28,7 @@ export const inputValidationErrors = (
   if (!errors.isEmpty()) {
     const errorsMessages = errors.array({ onlyFirstError: true });
 
-    res.status(sendStatus.BAD_REQUEST_400).send({ errorsMessages });
+    res.status(httpStatuses.BAD_REQUEST_400).send({ errorsMessages });
     return;
   } else {
     next();

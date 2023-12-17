@@ -7,7 +7,7 @@ import { PaginatedBlog } from "../models/blogs/paginatedQueryBlog";
 import { PaginatedType } from "../routers/helpers/pagination";
 import { queryBlogsRepository } from "../query repozitory/queryBlogsRepository";
 
-class BlogService  {
+class BlogService {
   async findAllBlogs(
     pagination: PaginatedType,
   ): Promise<PaginatedBlog<BlogViewModel[]>> {
@@ -41,6 +41,6 @@ class BlogService  {
   async deleteAllBlogs(): Promise<boolean> {
     return await blogsRepository.deleteAllBlogs();
   }
-};
+}
 
 export const blogService = new BlogService();

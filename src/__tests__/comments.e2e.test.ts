@@ -1,6 +1,6 @@
 import request from "supertest";
 import { app } from "../settings";
-import { sendStatus } from "../routers/helpers/send-status";
+import { httpStatuses } from "../routers/helpers/send-status";
 import { body } from "express-validator";
 import { MongoClient } from "mongodb";
 
@@ -32,25 +32,25 @@ describe("Tests for /posts/:postId/comments", () => {
     it("should return 404 when trying to get comments for a non-existent post", async () => {
       await getRequest()
         .get("/posts/nonExistentPostId/comments")
-        .expect(sendStatus.NOT_FOUND_404);
+        .expect(httpStatuses.NOT_FOUND_404);
     });
 
     it("should return a list of comments when getting comments for an existing post", async () => {
       await getRequest()
         .get("/posts/:postId/comments")
-        .expect(sendStatus.NOT_FOUND_404);
+        .expect(httpStatuses.NOT_FOUND_404);
       expect(body);
       expect.any(Array); //toEqual
     });
 
     it(`shouldn't update a comment for a non-existent post`, async () => {
       await getRequest().put("/posts/nonExistentPostId/comments").send({});
-      expect(sendStatus.NOT_FOUND_404);
+      expect(httpStatuses.NOT_FOUND_404);
     });
 
     it("should update a comment for an existing post", async () => {
       await getRequest().put("/posts/existingPostId/comments").send({});
-      expect(sendStatus.CREATED_201);
+      expect(httpStatuses.CREATED_201);
       expect(body).toEqual(expect.objectContaining({}));
     });
 
@@ -58,7 +58,7 @@ describe("Tests for /posts/:postId/comments", () => {
       await request(app)
         .delete("/comments/commentId")
         .set("Authorization", "Bearer");
-      expect(sendStatus.NO_CONTENT_204);
+      expect(httpStatuses.NO_CONTENT_204);
     });
   });
 });

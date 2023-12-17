@@ -1,4 +1,4 @@
-import { usersRepository } from '../repositories/users-repository';
+import { usersRepository } from "../repositories/users-repository";
 import bcrypt from "bcrypt";
 import { ObjectId } from "mongodb";
 import { DeviceMongoDbType, UsersMongoDbType } from "../types";
@@ -9,7 +9,10 @@ import Jwt from "jsonwebtoken";
 import { UserModel } from "../domain/schemas/users.schema";
 import { randomUUID } from "crypto";
 import { UserCreateViewModel } from "../models/users/createUser";
-import { DeviceModel } from '../domain/schemas/device.schema';
+import { DeviceModel } from "../domain/schemas/device.schema";
+import { isPast } from "date-fns";
+import { isPrimitive } from "util";
+import { queryUserRepository } from "../query repozitory/queryUserRepository";
 
 class AuthService {
   async createUser(
@@ -33,7 +36,7 @@ class AuthService {
           minutes: 60,
         }),
         isConfirmed: false,
-      }
+      },
     };
 
     const createResult = await usersRepository.createUser(newUser);
@@ -41,7 +44,7 @@ class AuthService {
     try {
       await emailManager.sendEmail(
         newUser.email,
-        newUser.emailConfirmation!.confirmationCode,   
+        newUser.emailConfirmation!.confirmationCode,
       );
     } catch (error) {}
     return createResult;
@@ -61,8 +64,8 @@ class AuthService {
 
   async checkAndFindUserByToken(token: string) {
     try {
-      const result: any = Jwt.verify(token, settings.JWT_SECRET);
-      const user = await usersRepository.findUserById(result.userId);
+      const result: any = Jwt.verify(token, settings.JWT_SECRET);   // any don't like. Need change
+      const user = await queryUserRepository.findUserById(result.userId);
       return user;
     } catch (error) {
       return null;
@@ -104,14 +107,15 @@ class AuthService {
     deviceId: string,
   ): Promise<{ accessToken: string; newRefreshToken: string }> {
     try {
-      const accessToken = Jwt.sign({ userId }, settings.accessTokenSecret1, {  // исправил на 50 мин
-        expiresIn: "50minutes",
+      const accessToken = Jwt.sign({ userId }, settings.accessTokenSecret1, {
+        // исправил на 10 мин
+        expiresIn: "10minutes",
       });
 
       const newRefreshToken = Jwt.sign(
         { userId, deviceId },
         settings.refreshTokenSecret2,
-        { expiresIn: "50minutes" }    // исправил на 50 мин
+        { expiresIn: "10minutes" }, // исправил на 10 мин
       );
 
       return { accessToken, newRefreshToken };
@@ -155,7 +159,7 @@ class AuthService {
     return null;
   }
 
-  async updateRefreshTokenByDeviceId(   // TODO перенести в девайсСервис
+  async updateRefreshTokenByDeviceId(
     deviceId: string,
     newLastActiveDate: string,
   ): Promise<boolean> {
@@ -166,18 +170,23 @@ class AuthService {
     return refTokenByDeviceId.matchedCount === 1;
   }
 
-  async findValidDevice(deviceId: string): Promise<DeviceMongoDbType | null> {
-    const device = await DeviceModel.findOne({ deviceId: deviceId })    // TODO перенести в девайсСервис
-    return device
-  }
-
-  async addNewDevice(data: DeviceMongoDbType) {
-    const user = await usersRepository.findUserById(data.deviceId)   // TODO перенести в девайсСервис
-      if (!user) {
-        return null
-      }
-      const newDevice = await DeviceModel.insertMany(data)
-    return newDevice
+  async addNewDevice(deviceId: string):Promise<DeviceMongoDbType | null> {
+    const user = await queryUserRepository.findUserById(deviceId); // TODO тут ошибка
+    if (!user) {
+      return null;
+    }
+    const newDevice = new DeviceModel({
+      _id: new ObjectId(deviceId),
+      deviceId: deviceId,
+    });
+  
+    try {
+      await newDevice.save();
+      return newDevice;
+    } catch (error) {
+      console.error("Error saving new device:", error);
+      return null;
+    }
   }
 }
 

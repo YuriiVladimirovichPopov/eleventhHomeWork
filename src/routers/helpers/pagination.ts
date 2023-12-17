@@ -1,3 +1,5 @@
+//надо ли переводить пагинацию на классы    YFLJ
+
 export type PaginatedType = {
   pageNumber: number;
   pageSize: number;
@@ -10,24 +12,19 @@ export type PaginatedType = {
 };
 
 export type DefaultPagination = {
-  sortBy: string;
-  sortDirection: "asc" | "desc";
   pageNumber: number;
   pageSize: number;
+  sortBy: string;
+  sortDirection: "asc" | "desc";
   skip: number;
 };
 
-export type UserPagination = {
-  pageNumber: number;
-  pageSize: number;
-  sortDirection: "asc" | "desc";
-  sortBy: string;
-  skip: number;
+export type UserPagination = DefaultPagination & {      
   searchLoginTerm?: string;
   searchEmailTerm?: string;
 };
 
-export const getPaginationFromQuery = (query: any): PaginatedType => {
+export const getPaginationFromQuery = (query: PaginatedType): DefaultPagination => {
   const defaultValues: PaginatedType = {
     pageNumber: 1,
     pageSize: 10,
@@ -45,18 +42,18 @@ export const getPaginationFromQuery = (query: any): PaginatedType => {
 
   if (
     query.pageNumber &&
-    !isNaN(parseInt(query.pageNumber, 10)) &&
-    parseInt(query.pageNumber, 10) > 0
+    !isNaN(parseInt(query.pageNumber.toString(), 10)) &&    // привел pageNumber к стринге тк ругались типы
+    parseInt(query.pageNumber.toString(), 10) > 0   // привел pageNumber к стринге тк ругались типы
   ) {
-    defaultValues.pageNumber = parseInt(query.pageNumber, 10);
+    defaultValues.pageNumber = parseInt(query.pageNumber.toString(), 10);    // привел pageNumber к стринге тк ругались типы
   }
 
   if (
     query.pageSize &&
-    !isNaN(parseInt(query.pageSize, 10)) &&
-    parseInt(query.pageSize, 10) > 0
+    !isNaN(parseInt(query.pageSize.toString(), 10)) &&   // привел pageNumber к стринге тк ругались типы
+    parseInt(query.pageSize.toString(), 10) > 0   // привел pageNumber к стринге тк ругались типы
   ) {
-    defaultValues.pageSize = parseInt(query.pageSize, 10);
+    defaultValues.pageSize = parseInt(query.pageSize.toString(), 10);    // привел pageNumber к стринге тк ругались типы
   }
 
   if (query.searchNameTerm) {
@@ -68,7 +65,7 @@ export const getPaginationFromQuery = (query: any): PaginatedType => {
   return defaultValues;
 };
 
-export const getDefaultPagination = (query: any): DefaultPagination => {
+export const getDefaultPagination = (query: PaginatedType): DefaultPagination => {   // any не нравится
   const defaultValues: DefaultPagination = {
     sortBy: "createdAt",
     sortDirection: "desc",
@@ -97,7 +94,7 @@ export const getDefaultPagination = (query: any): DefaultPagination => {
   return defaultValues;
 };
 
-export const getUsersPagination = (query: any): UserPagination => {
+export const getUsersPagination = (query: PaginatedType): UserPagination => {
   const defaultValues: UserPagination = {
     ...getDefaultPagination(query),
     searchEmailTerm: "",

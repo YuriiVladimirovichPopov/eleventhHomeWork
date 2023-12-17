@@ -5,7 +5,6 @@ import { PaginatedComment } from "../models/comments/paginatedQueryComment";
 import { CommentsMongoDbType } from "../types";
 import { CommentViewModel } from "../models/comments/commentViewModel";
 
-
 class CommentsQueryRepository {
   async getAllCommentsForPost(
     postId: string,
@@ -23,7 +22,7 @@ class CommentsQueryRepository {
         content: el.content,
         commentatorInfo: el.commentatorInfo,
         createdAt: el.createdAt,
-        likeInfo: el.likeInfo
+        likeInfo: el.likeInfo,
       }),
     );
     const totalCount: number = await CommentModel.countDocuments({ postId });
@@ -50,9 +49,9 @@ class CommentsQueryRepository {
       commentatorInfo: comment.commentatorInfo,
       content: comment.content,
       createdAt: comment.createdAt,
-      likeInfo: comment.likeInfo
+      likeInfo: comment.likeInfo,
     };
   }
-};
+}
 
-export const commentsQueryRepository = new CommentsQueryRepository()
+export const commentsQueryRepository = new CommentsQueryRepository();

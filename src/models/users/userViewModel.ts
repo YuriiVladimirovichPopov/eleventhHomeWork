@@ -8,4 +8,3 @@ export type UserViewModel = {
   emailConfirmation: EmailConfirmationType;
   recoveryCode: string;
 };
-

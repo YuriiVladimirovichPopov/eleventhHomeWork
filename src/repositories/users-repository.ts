@@ -4,13 +4,13 @@ import { UserPagination } from "../routers/helpers/pagination";
 import { UserViewModel } from "../models/users/userViewModel";
 import { PaginatedUser } from "../models/users/paginatedQueryUser";
 import { UserCreateViewModel } from "../models/users/createUser";
-import { UserModel } from "../domain/schemas/users.schema";
+import { UserModel, UserSchema } from '../domain/schemas/users.schema';
 import { authService } from "../application/auth-service";
 import { randomUUID } from "crypto";
 import bcrypt from "bcrypt";
 
 class UsersRepository {
-  _userMapper(user: UsersMongoDbType): UserViewModel {
+  _userMapper(user: UsersMongoDbType) {
     return {
       id: user._id.toString(),
       login: user.login,
@@ -20,7 +20,7 @@ class UsersRepository {
       recoveryCode: randomUUID(),
     };
   }
-// may be come through to userQueryRepository
+  // may be come through to userQueryRepository
   async findAllUsers(
     pagination: UserPagination,
   ): Promise<PaginatedUser<UserViewModel[]>> {
@@ -59,24 +59,8 @@ class UsersRepository {
     };
     return res;
   }
-// may be come through to userQueryRepository
-  async findUserById(id: string): Promise<UserViewModel | null> {
-    const userById = await UserModel.findOne(
-      { _id: new ObjectId(id) },
-      {
-        projection: {
-          passwordSalt: 0,
-          passwordHash: 0,
-          emailConfirmation: 0,
-          refreshTokenBlackList: 0,
-        },
-      },
-    );
-    if (!userById) {
-      return null;
-    }
-    return this._userMapper(userById);
-  }
+  
+  
 
   async findByLoginOrEmail(loginOrEmail: string) {
     const user = await UserModel.findOne({
@@ -150,19 +134,22 @@ class UsersRepository {
     return { success: true };
   }
 
-  async findUserByRecoryCode(recoveryCode: string): Promise<UsersMongoDbType | null> {
-    const user = await UserModel.findOne({ recoveryCode })
-    return user
+  async findUserByRecoryCode(
+    recoveryCode: string,
+  ): Promise<UsersMongoDbType | null> {
+    const user = await UserModel.findOne({ recoveryCode });
+    return user;
   }
 
   async sendRecoveryMessage(user: UsersMongoDbType): Promise<UsersMongoDbType> {
     const recoveryCode = Math.floor(100000 + Math.random() * 900000).toString();
-    const updatedUser: UsersMongoDbType | null = await UserModel.findByIdAndUpdate(
-      { _id: user._id },
-      { $set: { recoveryCode } },
-    ); 
-    return updatedUser!
+    const updatedUser: UsersMongoDbType | null =
+      await UserModel.findByIdAndUpdate(
+        { _id: user._id },
+        { $set: { recoveryCode } },
+      );
+    return updatedUser!;
   }
 }
 
-export const usersRepository = new UsersRepository()
+export const usersRepository = new UsersRepository();

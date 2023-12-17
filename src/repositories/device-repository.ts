@@ -12,6 +12,11 @@ class DeviceRepository {
       return null;
     }
   }
+
+  async findValidDevice(deviceId: string): Promise<DeviceMongoDbType | null> {
+    const device = await DeviceModel.findOne({ deviceId: deviceId }); 
+    return device;
+  }
   // may be come through to deviceQueryRepository
   async getAllDevicesByUser(userId: string): Promise<DeviceMongoDbType[]> {
     try {
@@ -26,9 +31,9 @@ class DeviceRepository {
     }
   }
 
-  async deleteDeviceById(deviceId: string): Promise<boolean> {
+  async deleteDeviceById(userId: string, deviceId: string): Promise<boolean> {
     try {
-      const result = await DeviceModel.deleteOne({ deviceId });
+      const result = await DeviceModel.deleteOne({userId, deviceId });
       if (result.deletedCount === 1) {
         return true;
       } else {
@@ -51,7 +56,7 @@ class DeviceRepository {
       throw new Error("Failed to refresh tokens");
     }
   }
-  
+
   async deleteAllDevices(): Promise<boolean> {
     try {
       const result = await DeviceModel.deleteMany({});
@@ -62,4 +67,4 @@ class DeviceRepository {
   }
 }
 
-export const deviceRepository = new DeviceRepository()
+export const deviceRepository = new DeviceRepository();
