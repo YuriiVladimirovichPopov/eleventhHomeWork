@@ -24,7 +24,7 @@ export class UsersRepository {
       recoveryCode: randomUUID(),
     };
   }
-  // may be come through to userQueryRepository
+  
   async findAllUsers(
     pagination: UserPagination,
   ): Promise<PaginatedUser<UserViewModel[]>> {
@@ -64,8 +64,6 @@ export class UsersRepository {
     return res;
   }
   
-  
-
   async findByLoginOrEmail(loginOrEmail: string) {
     const user = await UserModel.findOne({
       $or: [{ email: loginOrEmail }, { login: loginOrEmail }],

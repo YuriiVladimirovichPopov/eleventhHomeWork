@@ -16,7 +16,7 @@ export async function refTokenMiddleware(
         .status(httpStatuses.UNAUTHORIZED_401)
         .send({ message: "Refresh token not found" });
 
-    const isValid = await authService.validateRefreshToken(refreshToken);
+    const isValid = await AuthService.validateRefreshToken(refreshToken);
     if (!isValid) return res
         .status(httpStatuses.UNAUTHORIZED_401)
         .send({ message: "Invalid refresh token" });

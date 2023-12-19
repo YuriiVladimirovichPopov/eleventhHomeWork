@@ -26,16 +26,19 @@ import { deviceRepository } from "../repositories/device-repository";
 import { emailAdapter } from "../adapters/email-adapter";
 import { forCreateNewPasswordValidation } from "../middlewares/validations/auth.recoveryPass.validation";
 import { refTokenMiddleware } from "../middlewares/validations/refToken.validation";
-import { queryUserRepository } from "../query repozitory/queryUserRepository";
+import { QueryUserRepository } from "../query repozitory/queryUserRepository";
 
 export const authRouter = Router({});
 
 class AuthController {
   private usersRepository: UsersRepository;
   private authService: AuthService;
+  private queryUserRepository: QueryUserRepository;
+
   constructor( ) {
     this.usersRepository = new UsersRepository();
     this.authService = new AuthService()
+    this.queryUserRepository = new QueryUserRepository()
   }
   async login(req: Request, res: Response) {
     const user = await this.authService.checkCredentials(
@@ -118,7 +121,7 @@ class AuthController {
      if (!userId) {
        return res.sendStatus(httpStatuses.UNAUTHORIZED_401);
      } else {
-       const userViewModel =  await queryUserRepository.findUserById(userId)
+       const userViewModel =  await this.queryUserRepository.findUserById(userId)
        return res.status(httpStatuses.OK_200).send(userViewModel);
      }
    }

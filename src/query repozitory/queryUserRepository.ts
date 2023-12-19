@@ -10,7 +10,7 @@ import mongoose from "mongoose";
 
 const filter: mongoose.FilterQuery<UsersMongoDbType> = {};
 
-class QueryUserRepository {
+export class QueryUserRepository {
 
   _userMapper(user: UsersMongoDbType) {
     return {
@@ -66,4 +66,4 @@ class QueryUserRepository {
   }
 }
 
-export const queryUserRepository = new QueryUserRepository();
+

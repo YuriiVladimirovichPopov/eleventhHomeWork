@@ -10,12 +10,14 @@ import { UserModel } from "../domain/schemas/users.schema";
 import { randomUUID } from "crypto";
 import { UserCreateViewModel } from "../models/users/createUser";
 import { DeviceModel } from "../domain/schemas/device.schema";
-import { queryUserRepository } from "../query repozitory/queryUserRepository";
+import { QueryUserRepository } from "../query repozitory/queryUserRepository";
 
 export class AuthService {
   usersRepository: UsersRepository
+  queryUserRepository: QueryUserRepository
   constructor() {
     this.usersRepository = new UsersRepository()
+    this.queryUserRepository = new QueryUserRepository()
   }
   async createUser(
     login: string,
@@ -67,7 +69,7 @@ export class AuthService {
   async checkAndFindUserByToken(token: string) {
     try {
       const result: any = Jwt.verify(token, settings.JWT_SECRET);   // any don't like. Need change
-      const user = await queryUserRepository.findUserById(result.userId);
+      const user = await this.queryUserRepository.findUserById(result.userId);
       return user;
     } catch (error) {
       return null;
@@ -172,7 +174,7 @@ export class AuthService {
   }
 
   async addNewDevice(deviceId: string):Promise<DeviceMongoDbType | null> {
-    const user = await queryUserRepository.findUserById(deviceId); // TODO тут ошибка
+    const user = await this.queryUserRepository.findUserById(deviceId); // TODO тут ошибка
     if (!user) {
       return null;
     }

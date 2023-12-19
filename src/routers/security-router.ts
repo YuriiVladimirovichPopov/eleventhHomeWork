@@ -1,18 +1,17 @@
 import { Request, Response, Router } from "express";
 import { httpStatuses } from "./helpers/send-status";
 import { AuthService } from "../application/auth-service";
-import { UsersRepository } from "../repositories/users-repository";
 import { deviceRepository } from "../repositories/device-repository";
-import { queryUserRepository } from "../query repozitory/queryUserRepository";
+import { QueryUserRepository } from "../query repozitory/queryUserRepository";
 
 export const securityRouter = Router({});
 
 class SecurityController {
-  private usersRepository: UsersRepository;
+  private queryUserRepository: QueryUserRepository;
   private authService: AuthService;
   constructor( ) {
-    this.usersRepository = new UsersRepository();
     this.authService = new AuthService()
+    this.queryUserRepository = new QueryUserRepository();
   }
   async devices (req: Request, res: Response) {
     const refreshToken = req.cookies.refreshToken; // унести в мидлвар 
@@ -29,7 +28,7 @@ class SecurityController {
         .send({ message: "Invalid refresh token" });
     }
   
-    const user = await queryUserRepository.findUserById(isValid.userId);
+    const user = await this.queryUserRepository.findUserById(isValid.userId);
     if (!user) {
       return res
         .status(httpStatuses.UNAUTHORIZED_401)
@@ -75,7 +74,7 @@ class SecurityController {
         .send({ message: "Unauthorized" });
     }
 
-    const user = await queryUserRepository.findUserById(isValid.userId);
+    const user = await this.queryUserRepository.findUserById(isValid.userId);
     if (!user) {
       return res
         .status(httpStatuses.UNAUTHORIZED_401)
