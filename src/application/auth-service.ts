@@ -1,4 +1,4 @@
-import { usersRepository } from "../repositories/users-repository";
+import { UsersRepository } from "../repositories/users-repository";
 import bcrypt from "bcrypt";
 import { ObjectId } from "mongodb";
 import { DeviceMongoDbType, UsersMongoDbType } from "../types";
@@ -12,7 +12,11 @@ import { UserCreateViewModel } from "../models/users/createUser";
 import { DeviceModel } from "../domain/schemas/device.schema";
 import { queryUserRepository } from "../query repozitory/queryUserRepository";
 
-class AuthService {
+export class AuthService {
+  usersRepository: UsersRepository
+  constructor() {
+    this.usersRepository = new UsersRepository()
+  }
   async createUser(
     login: string,
     email: string,
@@ -37,7 +41,7 @@ class AuthService {
       },
     };
 
-    const createResult = await usersRepository.createUser(newUser);
+    const createResult = await this.usersRepository.createUser(newUser);
 
     try {
       await emailManager.sendEmail(
@@ -49,7 +53,7 @@ class AuthService {
   }
 
   async checkCredentials(loginOrEmail: string, password: string) {
-    const user = await usersRepository.findByLoginOrEmail(loginOrEmail);
+    const user = await this.usersRepository.findByLoginOrEmail(loginOrEmail);
 
     if (!user) return false;
 
@@ -187,4 +191,3 @@ class AuthService {
   }
 }
 
-export const authService = new AuthService();

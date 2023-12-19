@@ -8,9 +8,9 @@ import {
 import { jwtService } from "../application/jwt-service";
 import { authMiddleware } from "../middlewares/validations/auth.validation";
 import { UserInputModel } from "../models/users/userInputModel";
-import { usersRepository } from "../repositories/users-repository";
+import { UsersRepository } from "../repositories/users-repository";
 import { CodeType } from "../models/code";
-import { authService } from "../application/auth-service";
+import { AuthService } from "../application/auth-service";
 import { validateCode } from "../middlewares/validations/code.validation";
 import {
   emailConfValidation,
@@ -30,11 +30,15 @@ import { queryUserRepository } from "../query repozitory/queryUserRepository";
 
 export const authRouter = Router({});
 
-authRouter.post(
-  "/login",
-  customRateLimit,
-  async (req: Request, res: Response) => {
-    const user = await authService.checkCredentials(
+class AuthController {
+  private usersRepository: UsersRepository;
+  private authService: AuthService;
+  constructor( ) {
+    this.usersRepository = new UsersRepository();
+    this.authService = new AuthService()
+  }
+  async login(req: Request, res: Response) {
+    const user = await this.authService.checkCredentials(
       req.body.loginOrEmail,
       req.body.password,
     );
@@ -55,7 +59,7 @@ authRouter.post(
         deviceId,
         userId,
       };
-      await authService.addNewDevice(newDevice.deviceId);   //унести в сервис, вроде получилось!!!   тут ошибка!!! не понимать!!
+      await this.authService.addNewDevice(newDevice.deviceId);   //унести в сервис, вроде получилось!!!   тут ошибка!!! не понимать!!
       res
         .cookie("refreshToken", refreshToken, { httpOnly: true, secure: true })
         .status(httpStatuses.OK_200)
@@ -64,22 +68,16 @@ authRouter.post(
     } else {
       return res.sendStatus(httpStatuses.UNAUTHORIZED_401);
     }
-  },
-);
-
-authRouter.post(
-  "/password-recovery",
-  emailWithRecoveryCodeValidation,
-  customRateLimit,
-  async (req: Request, res: Response) => {
+  }
+  async passwordRecovery(req: Request, res: Response) {
     const email = req.body.email;
     const user: UsersMongoDbType | null=
-      await usersRepository.findUserByEmail(email);
+      await this.usersRepository.findUserByEmail(email);
     if (!user) {
       return res.sendStatus(httpStatuses.NO_CONTENT_204);
     }
     
-    const updatedUser = await usersRepository.sendRecoveryMessage(user)
+    const updatedUser = await this.usersRepository.sendRecoveryMessage(user)
 
     try {
       emailAdapter.sendEmailWithRecoveryCode(user.email, updatedUser.recoveryCode!);
@@ -89,17 +87,11 @@ authRouter.post(
     } catch (error) {
       return res.status(httpStatuses.INTERNAL_SERVER_ERROR_500).send({ error });
     }
-  },
-);
-
-authRouter.post(
-  "/new-password",
-  forCreateNewPasswordValidation,
-  customRateLimit,
-  async (req: Request, res: Response) => {
+  }
+  async newPassword(req: Request, res: Response) {
     const { newPassword, recoveryCode } = req.body;
     
-    const user = await usersRepository.findUserByRecoryCode(recoveryCode)  
+    const user = await this.usersRepository.findUserByRecoryCode(recoveryCode)  
     
     if (!user) {
       return res.status(httpStatuses.BAD_REQUEST_400).send({
@@ -111,7 +103,7 @@ authRouter.post(
         ],
       });
     }
-    const result = await usersRepository.resetPasswordWithRecoveryCode(
+    const result = await this.usersRepository.resetPasswordWithRecoveryCode(
       user._id,
       newPassword,
     );
@@ -121,30 +113,19 @@ authRouter.post(
         .send("code is valid and new password is accepted");
     }
   }
-);
-
-authRouter.get(
-  "/me",
-  authMiddleware,
-  async (req: Request, res: Response) => {
-   const userId = req.userId;
-    if (!userId) {
-      return res.sendStatus(httpStatuses.UNAUTHORIZED_401);
-    } else {
-      const userViewModel =  await queryUserRepository.findUserById(userId)
-      return res.status(httpStatuses.OK_200).send(userViewModel);
-    }
-  }
-);
-
-authRouter.post(
-  "/registration-confirmation",
-  customRateLimit,
-  validateCode,
-  async (req: RequestWithBody<CodeType>, res: Response) => {
+  async me(req: Request, res: Response) {
+    const userId = req.userId;
+     if (!userId) {
+       return res.sendStatus(httpStatuses.UNAUTHORIZED_401);
+     } else {
+       const userViewModel =  await queryUserRepository.findUserById(userId)
+       return res.status(httpStatuses.OK_200).send(userViewModel);
+     }
+   }
+  async registrationConfirmation(req: RequestWithBody<CodeType>, res: Response) {
     const currentDate = new Date();
 
-    const user = await usersRepository.findUserByConfirmationCode(
+    const user = await this.usersRepository.findUserByConfirmationCode(
       req.body.code,
     );
 
@@ -177,19 +158,12 @@ authRouter.post(
         .send({ errorsMessages: [{ message: "Invalid code", field: "code" }] });
     }
 
-    await authService.updateConfirmEmailByUser(user._id.toString());
+    await this.authService.updateConfirmEmailByUser(user._id.toString());
 
     return res.sendStatus(httpStatuses.NO_CONTENT_204);
-  },
-);
-
-authRouter.post(
-  "/registration",
-  customRateLimit,
-  createUserValidation,
-
-  async (req: RequestWithBody<UserInputModel>, res: Response) => {
-    const user = await authService.createUser(
+  }
+  async registration(req: RequestWithBody<UserInputModel>, res: Response) {
+    const user = await this.authService.createUser(
       req.body.login,
       req.body.email,
       req.body.password,
@@ -200,15 +174,9 @@ authRouter.post(
     } else {
       return res.sendStatus(httpStatuses.BAD_REQUEST_400);
     }
-  },
-);
-
-authRouter.post(
-  "/registration-email-resending",
-  customRateLimit,
-  emailConfValidation,
-  async (req: RequestWithBody<UsersMongoDbType>, res: Response) => {
-    const user = await usersRepository.findUserByEmail(req.body.email);
+  }
+  async registrationEmailResending(req: RequestWithBody<UsersMongoDbType>, res: Response) {
+    const user = await this.usersRepository.findUserByEmail(req.body.email);
     if (!user) {
       return res.sendStatus(httpStatuses.BAD_REQUEST_400);
     }
@@ -220,7 +188,7 @@ authRouter.post(
     }
 
     const userId = req.body._id;
-    const updatedUser = await authService.updateAndFindUserForEmailSend(userId);
+    const updatedUser = await this.authService.updateAndFindUserForEmailSend(userId);
 
     try {
       await emailManager.sendEmail(
@@ -231,47 +199,77 @@ authRouter.post(
       error("email is already confirmed", error);
     }
     return res.sendStatus(httpStatuses.NO_CONTENT_204);
-  },
-);
-
-authRouter.post("/refresh-token", refTokenMiddleware,
-async (req: Request, res: Response) => {
-  const deviceId = req.deviceId!;    // + body ... ts mazafakeril
-  const userId = req.userId!;
-
-  try {
-    const tokens = await authService.refreshTokens(userId, deviceId);
-    const newLastActiveDate = await jwtService.getLastActiveDate(
-      tokens.newRefreshToken,
-    );
-    await authService.updateRefreshTokenByDeviceId(
-      deviceId,
-      newLastActiveDate,
-    );
-   return res.status(httpStatuses.OK_200)
-  .cookie('refreshToken', tokens.newRefreshToken, {httpOnly: true, secure: true})
-  .send({accessToken: tokens.accessToken})
-    
-  } catch (error) {
-    return res
-      .status(httpStatuses.INTERNAL_SERVER_ERROR_500)
-      .send({ message: "Server error" });
-  } 
-});
-
-authRouter.post("/logout", refTokenMiddleware, 
-async (req: Request, res: Response) => {
-  const deviceId = req.deviceId!;    // + body ... ts mazafakeril
-  const userId = req.userId!;
-
-  try {
-    await deviceRepository.deleteDeviceById(userId, deviceId);
-    
-    return res.sendStatus(httpStatuses.NO_CONTENT_204)
-  } catch (error) {
-    console.error(error);
-    return res
-      .status(httpStatuses.INTERNAL_SERVER_ERROR_500)
-      .send({ message: "Server error" });
   }
-});
+  async refreshToken(req: Request, res: Response) {
+    const deviceId = req.deviceId!;    
+    const userId = req.userId!;
+  
+    try {
+      const tokens = await this.authService.refreshTokens(userId, deviceId);
+      const newLastActiveDate = await jwtService.getLastActiveDate(
+        tokens.newRefreshToken,
+      );
+      await this.authService.updateRefreshTokenByDeviceId(
+        deviceId,
+        newLastActiveDate,
+      );
+     return res.status(httpStatuses.OK_200)
+    .cookie('refreshToken', tokens.newRefreshToken, {httpOnly: true, secure: true})
+    .send({accessToken: tokens.accessToken})
+      
+    } catch (error) {
+      return res
+        .status(httpStatuses.INTERNAL_SERVER_ERROR_500)
+        .send({ message: "Server error" });
+    } 
+  }
+  async logOut(req: Request, res: Response) {
+    const deviceId = req.deviceId!;   
+    const userId = req.userId!;
+  
+    try {
+      await deviceRepository.deleteDeviceById(userId, deviceId);
+      
+      return res.sendStatus(httpStatuses.NO_CONTENT_204)
+    } catch (error) {
+      console.error(error);
+      return res
+        .status(httpStatuses.INTERNAL_SERVER_ERROR_500)
+        .send({ message: "Server error" });
+    }
+  }
+}
+
+const authController = new AuthController()
+
+authRouter.post("/login",
+  customRateLimit, authController.login.bind(authController));
+
+authRouter.post("/password-recovery",
+  emailWithRecoveryCodeValidation,
+  customRateLimit, authController.passwordRecovery.bind(authController));
+  
+authRouter.post("/new-password",
+  forCreateNewPasswordValidation,
+  customRateLimit, authController.newPassword.bind(authController));
+  
+authRouter.get("/me",
+  authMiddleware, authController.me.bind(authController))
+  
+authRouter.post("/registration-confirmation",
+  customRateLimit,
+  validateCode, authController.registrationConfirmation.bind(authController))
+  
+authRouter.post("/registration",
+  customRateLimit,
+  createUserValidation, authController.registration.bind(authController))
+
+authRouter.post("/registration-email-resending",
+  customRateLimit,
+  emailConfValidation, authController.registrationEmailResending.bind(authController))
+  
+authRouter.post("/refresh-token", 
+refTokenMiddleware, authController.refreshToken.bind(authController))
+
+authRouter.post("/logout", 
+refTokenMiddleware, authController.logOut.bind(authController))

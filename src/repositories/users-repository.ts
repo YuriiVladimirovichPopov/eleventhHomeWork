@@ -4,12 +4,16 @@ import { UserPagination } from "../routers/helpers/pagination";
 import { UserViewModel } from "../models/users/userViewModel";
 import { PaginatedUser } from "../models/users/paginatedQueryUser";
 import { UserCreateViewModel } from "../models/users/createUser";
-import { UserModel, UserSchema } from '../domain/schemas/users.schema';
-import { authService } from "../application/auth-service";
+import { UserModel } from '../domain/schemas/users.schema';
+import { AuthService } from "../application/auth-service";
 import { randomUUID } from "crypto";
 import bcrypt from "bcrypt";
 
-class UsersRepository {
+export class UsersRepository {
+  private authService: AuthService
+  constructor( ) {
+    this.authService = new AuthService
+  }
   _userMapper(user: UsersMongoDbType) {
     return {
       id: user._id.toString(),
@@ -115,7 +119,7 @@ class UsersRepository {
     newPassword: string,
   ): Promise<any> {
     const newPasswordSalt = await bcrypt.genSalt(10);
-    const newHashedPassword = await authService._generateHash(
+    const newHashedPassword = await this.authService._generateHash(
       newPassword,
       newPasswordSalt,
     );
@@ -152,4 +156,4 @@ class UsersRepository {
   }
 }
 
-export const usersRepository = new UsersRepository();
+

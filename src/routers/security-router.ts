@@ -1,70 +1,73 @@
 import { Request, Response, Router } from "express";
 import { httpStatuses } from "./helpers/send-status";
-import { authService } from "../application/auth-service";
-import { usersRepository } from "../repositories/users-repository";
+import { AuthService } from "../application/auth-service";
+import { UsersRepository } from "../repositories/users-repository";
 import { deviceRepository } from "../repositories/device-repository";
 import { queryUserRepository } from "../query repozitory/queryUserRepository";
 
 export const securityRouter = Router({});
 
-securityRouter.get("/devices", async (req: Request, res: Response) => {
-  const refreshToken = req.cookies.refreshToken; // унести в мидлвар стр 11-29
-  if (!refreshToken) {
-    return res
-      .status(httpStatuses.UNAUTHORIZED_401)
-      .send({ message: "Refresh token not found" });
+class SecurityController {
+  private usersRepository: UsersRepository;
+  private authService: AuthService;
+  constructor( ) {
+    this.usersRepository = new UsersRepository();
+    this.authService = new AuthService()
   }
-
-  const isValid = await authService.validateRefreshToken(refreshToken);
-  if (!isValid || !isValid.userId || !isValid.deviceId) {
-    return res
-      .status(httpStatuses.UNAUTHORIZED_401)
-      .send({ message: "Invalid refresh token" });
+  async devices (req: Request, res: Response) {
+    const refreshToken = req.cookies.refreshToken; // унести в мидлвар 
+    if (!refreshToken) {
+      return res
+        .status(httpStatuses.UNAUTHORIZED_401)
+        .send({ message: "Refresh token not found" });
+    }
+  
+    const isValid = await this.authService.validateRefreshToken(refreshToken);
+    if (!isValid || !isValid.userId || !isValid.deviceId) {
+      return res
+        .status(httpStatuses.UNAUTHORIZED_401)
+        .send({ message: "Invalid refresh token" });
+    }
+  
+    const user = await queryUserRepository.findUserById(isValid.userId);
+    if (!user) {
+      return res
+        .status(httpStatuses.UNAUTHORIZED_401)
+        .send({ message: "User not found" });
+    }
+  
+    const result = await deviceRepository.getAllDevicesByUser(isValid.userId);
+    if (!result) {
+      res.status(httpStatuses.UNAUTHORIZED_401);
+    } else {
+      res.status(httpStatuses.OK_200).send(result);
+    }
   }
-
-  const user = await queryUserRepository.findUserById(isValid.userId);
-  if (!user) {
-    return res
-      .status(httpStatuses.UNAUTHORIZED_401)
-      .send({ message: "User not found" });
+  async deleteDevices (req: Request, res: Response) {
+    const refreshToken = req.cookies.refreshToken;
+    const isValid = await this.authService.validateRefreshToken(refreshToken);
+    if (!isValid || !isValid.userId || !isValid.deviceId) {
+      return res
+        .status(httpStatuses.UNAUTHORIZED_401)
+        .send({ message: "Unathorized" });
+    }
+  
+    const result = await deviceRepository.deleteAllDevicesExceptCurrent(
+      isValid.userId,
+      isValid.deviceId,
+    );
+    if (result) {
+      res.status(httpStatuses.NO_CONTENT_204).send({ message: "Devices deleted" });
+    } else {
+      res
+        .status(httpStatuses.INTERNAL_SERVER_ERROR_500)
+        .send({ message: "Server error" });
+    }
   }
-
-  const result = await deviceRepository.getAllDevicesByUser(isValid.userId);
-  if (!result) {
-    res.status(httpStatuses.UNAUTHORIZED_401);
-  } else {
-    res.status(httpStatuses.OK_200).send(result);
-  }
-});
-
-securityRouter.delete("/devices", async (req: Request, res: Response) => {
-  const refreshToken = req.cookies.refreshToken;
-  const isValid = await authService.validateRefreshToken(refreshToken);
-  if (!isValid || !isValid.userId || !isValid.deviceId) {
-    return res
-      .status(httpStatuses.UNAUTHORIZED_401)
-      .send({ message: "Unathorized" });
-  }
-
-  const result = await deviceRepository.deleteAllDevicesExceptCurrent(
-    isValid.userId,
-    isValid.deviceId,
-  );
-  if (result) {
-    res.status(httpStatuses.NO_CONTENT_204).send({ message: "Devices deleted" });
-  } else {
-    res
-      .status(httpStatuses.INTERNAL_SERVER_ERROR_500)
-      .send({ message: "Server error" });
-  }
-});
-
-securityRouter.delete(
-  "/devices/:deviceId",
-  async (req: Request, res: Response) => {
+  async deleteDeviceById (req: Request, res: Response) {
     const refreshToken = req.cookies.refreshToken;
     const deviceId = req.params.deviceId;
-    const isValid = await authService.validateRefreshToken(refreshToken);
+    const isValid = await this.authService.validateRefreshToken(refreshToken);
 
     if (!isValid || !isValid.userId || !isValid.deviceId) {    // унести в мидлварю всЁ
       return res
@@ -95,5 +98,13 @@ securityRouter.delete(
     return res
       .status(httpStatuses.NO_CONTENT_204)
       .send({ message: "Device's ID deleted " });
-  },
-);
+  }
+}
+const securityController = new SecurityController()
+
+securityRouter.get("/devices", securityController.devices.bind(securityController));
+
+securityRouter.delete("/devices", securityController.deleteDevices.bind(securityController));
+
+securityRouter.delete(
+  "/devices/:deviceId", securityController.deleteDeviceById.bind(securityController));

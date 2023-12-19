@@ -10,12 +10,16 @@ import { PaginatedType, getUsersPagination } from "./helpers/pagination";
 import { queryUserRepository } from "../query repozitory/queryUserRepository";
 import { UserViewModel } from "../models/users/userViewModel";
 import { PaginatedUser } from "../models/users/paginatedQueryUser";
-import { authService } from "../application/auth-service";
+import { AuthService} from "../application/auth-service";
 import { createUserValidation } from "../middlewares/validations/users.validation";
 
 export const usersRouter = Router({});
 
 class UserController {
+  private authService: AuthService
+  constructor() { 
+    this.authService = new AuthService
+  }
   async getAllUsers (req: Request, res: Response) {
     const pagination = getUsersPagination(req.query as unknown as PaginatedType);
     const allUsers: PaginatedUser<UserViewModel[]> =
@@ -24,7 +28,7 @@ class UserController {
     return res.status(httpStatuses.OK_200).send(allUsers);
   }
   async createNewUser (req: Request, res: Response) {
-    const newUser = await authService.createUser(
+    const newUser = await this.authService.createUser(
       req.body.login,
       req.body.email,
       req.body.password,

@@ -1,7 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import { jwtService } from "../../application/jwt-service";
 import { httpStatuses } from "../../routers/helpers/send-status";
-import { UserModel } from "../../domain/schemas/users.schema";
 import { ObjectId } from "mongodb";
 
 export const authMiddleware = async (

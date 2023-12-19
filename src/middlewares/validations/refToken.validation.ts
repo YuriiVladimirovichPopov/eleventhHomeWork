@@ -1,7 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import { httpStatuses } from "../../routers/helpers/send-status";
-import { authService } from "../../application/auth-service";
-import { usersRepository } from "../../repositories/users-repository";
+import { AuthService } from "../../application/auth-service";
 import { jwtService } from "../../application/jwt-service";
 import { deviceRepository } from "../../repositories/device-repository";
 import { queryUserRepository } from "../../query repozitory/queryUserRepository";
