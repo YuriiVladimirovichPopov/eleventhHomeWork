@@ -10,8 +10,6 @@ import { UserModel } from "../domain/schemas/users.schema";
 import { randomUUID } from "crypto";
 import { UserCreateViewModel } from "../models/users/createUser";
 import { DeviceModel } from "../domain/schemas/device.schema";
-import { isPast } from "date-fns";
-import { isPrimitive } from "util";
 import { queryUserRepository } from "../query repozitory/queryUserRepository";
 
 class AuthService {
@@ -107,10 +105,9 @@ class AuthService {
     deviceId: string,
   ): Promise<{ accessToken: string; newRefreshToken: string }> {
     try {
-      const accessToken = Jwt.sign({ userId }, settings.accessTokenSecret1, {
-        // исправил на 10 мин
-        expiresIn: "10minutes",
-      });
+      const accessToken = Jwt.sign({ userId }, settings.accessTokenSecret1, 
+        { expiresIn: "10minutes" },  // исправил на 10 мин
+      );
 
       const newRefreshToken = Jwt.sign(
         { userId, deviceId },

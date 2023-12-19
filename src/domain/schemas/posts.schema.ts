@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 import { PostsMongoDbType } from "../../types";
-import { ObjectId } from "mongodb";
+import { ObjectId, WithId } from 'mongodb';
 
 export const titleValid = {
   minLength: 1,
@@ -22,7 +22,7 @@ export const blogNameValid = {
   maxLength: 15,
 };
 
-export const PostSchema = new mongoose.Schema<PostsMongoDbType>({
+export const PostSchema = new mongoose.Schema<WithId<PostsMongoDbType>>({
   //_id: { type: ObjectId, required: true },
   title: {
     type: String,

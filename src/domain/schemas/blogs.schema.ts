@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 import { BlogsMongoDbType } from "../../types";
-import { ObjectId } from "mongodb";
+import { ObjectId, WithId } from 'mongodb';
 
 export const nameValid = {
   minLength: 1,
@@ -11,7 +11,7 @@ export const descriptionValid = {
   maxLength: 500,
 };
 
-export const BlogSchema = new mongoose.Schema<BlogsMongoDbType>({
+export const BlogSchema = new mongoose.Schema<WithId<BlogsMongoDbType>>({
   // _id: { type: ObjectId, required: true },
   name: {
     type: String,

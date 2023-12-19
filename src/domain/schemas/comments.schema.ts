@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 import { CommentsMongoDbType } from "../../types";
-import { ObjectId } from "mongodb";
+import { ObjectId, WithId } from 'mongodb';
 import { commentatorInfoSchema } from "./commentatorInfo.schema";
 import { likeInfoSchema } from "./likeInfo.schema";
 
@@ -9,7 +9,7 @@ export const contentValid = {
   maxLength: 300,
 };
 
-export const CommentSchema = new mongoose.Schema<CommentsMongoDbType>({
+export const CommentSchema = new mongoose.Schema<WithId<CommentsMongoDbType>>({
   //_id: { type: ObjectId, required: true },
   postId: { type: String, required: true },
   content: {

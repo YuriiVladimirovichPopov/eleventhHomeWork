@@ -1,9 +1,9 @@
 import mongoose from "mongoose";
 import { UsersMongoDbType } from "../../types";
-import { ObjectId } from "mongodb";
+import { WithId } from 'mongodb';
 import { EmailConfirmationSchema } from "./emailConfirmation.schema";
 
-export const UserSchema = new mongoose.Schema<UsersMongoDbType>({
+export const UserSchema = new mongoose.Schema<WithId<UsersMongoDbType>>({
   //_id: { type: ObjectId, required: true },
   login: { type: String, required: true },
   email: { type: String, required: true },
