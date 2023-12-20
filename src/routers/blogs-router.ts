@@ -1,7 +1,5 @@
-// доделать .bind в blogsController
-
 import { Request, Response, Router } from "express";
-import { blogService } from "../application/blog-service";
+import { BlogService } from "../application/blog-service";
 import { httpStatuses } from "./helpers/send-status";
 import {
   authorizationValidation,
@@ -27,20 +25,24 @@ import { PostsViewModel } from "../models/posts/postsViewModel";
 export const blogsRouter = Router({});
 
 class BlogsController {
+  private blogService: BlogService;
+  constructor() {
+    this.blogService = new BlogService
+  }
 
   async getAllBlogs(req: Request, res: Response)  {
     const pagination = getPaginationFromQuery(req.query as unknown as PaginatedType);
     const allBlogs: PaginatedBlog<BlogViewModel[]> =
-      await blogService.findAllBlogs(pagination);
+      await this.blogService.findAllBlogs(pagination);
   
     return res.status(httpStatuses.OK_200).send(allBlogs);
   }
   async createBlogs(req: RequestWithBody<BlogViewModel>, res: Response<BlogViewModel>) {
-    const newBlog = await blogService.createBlog(req.body);
+    const newBlog = await this.blogService.createBlog(req.body);
     return res.status(httpStatuses.CREATED_201).send(newBlog);
   }
   async getPostByBlogId(req: Request<{ blogId: string }, {}, {}, {}>, res: Response) {
-    const blogWithPosts = await blogService.findBlogById(req.params.blogId);
+    const blogWithPosts = await this.blogService.findBlogById(req.params.blogId);
     if (!blogWithPosts) {
       return res.sendStatus(httpStatuses.NOT_FOUND_404);
     }
@@ -74,7 +76,7 @@ class BlogsController {
   async getBlogById(
     req: RequestWithParams<getByIdParam>,
     res: Response<BlogViewModel>) {
-    const foundBlog = await blogService.findBlogById(req.params.id);
+    const foundBlog = await this.blogService.findBlogById(req.params.id);
     if (!foundBlog) return res.sendStatus(httpStatuses.NOT_FOUND_404);
 
     return res.status(httpStatuses.OK_200).send(foundBlog);
@@ -82,13 +84,13 @@ class BlogsController {
   async updateBlogById(
     req: Request<getByIdParam, BlogInputModel>,
     res: Response<BlogViewModel>) {
-    const updateBlog = await blogService.updateBlog(req.params.id, req.body);
+    const updateBlog = await this.blogService.updateBlog(req.params.id, req.body);
     if (!updateBlog) return res.sendStatus(httpStatuses.NOT_FOUND_404);
     
     return res.sendStatus(httpStatuses.NO_CONTENT_204);
   }
   async deleteBlogById (req: RequestWithParams<getByIdParam>, res: Response) {
-    const foundBlog = await blogService.deleteBlog(req.params.id);
+    const foundBlog = await this.blogService.deleteBlog(req.params.id);
     if (!foundBlog) {
       return res.sendStatus(httpStatuses.NOT_FOUND_404);
     }
