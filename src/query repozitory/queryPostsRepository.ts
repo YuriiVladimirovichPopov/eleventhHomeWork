@@ -10,7 +10,7 @@ import { PostModel } from "../domain/schemas/posts.schema";
 
 const filter: mongoose.FilterQuery<PostsMongoDbType> = {};
 
-class QueryPostRepository {
+export class QueryPostRepository {
   _postMapper(post: PostsMongoDbType): PostsViewModel {
     return {
       id: post._id.toString(),

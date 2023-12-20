@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 import { BlogsMongoDbType } from "../../types";
-import { ObjectId, WithId } from 'mongodb';
+import { ObjectId, WithId } from "mongodb";
 
 export const nameValid = {
   minLength: 1,

@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 import { DeviceMongoDbType } from "../../types";
-import { ObjectId, WithId } from 'mongodb';
+import { ObjectId, WithId } from "mongodb";
 
 export const DeviceSchema = new mongoose.Schema<WithId<DeviceMongoDbType>>({
   //_id: { type: ObjectId, required: true },

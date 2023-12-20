@@ -40,7 +40,7 @@ const loginOrEmailValidation = body("loginOrEmail")
   .trim()
   .isLength({ min: 3, max: 30 }); //todo
 
-export const loginUserValidation = [loginOrEmailValidation, passwordValidation]; 
+export const loginUserValidation = [loginOrEmailValidation, passwordValidation];
 export const createUserValidation = [
   loginValidation,
   passwordValidation,

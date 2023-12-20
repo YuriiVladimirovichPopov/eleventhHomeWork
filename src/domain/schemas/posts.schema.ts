@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 import { PostsMongoDbType } from "../../types";
-import { ObjectId, WithId } from 'mongodb';
+import { ObjectId, WithId } from "mongodb";
 
 export const titleValid = {
   minLength: 1,

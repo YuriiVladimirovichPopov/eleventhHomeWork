@@ -12,7 +12,8 @@ export const authMiddleware = async (
     return res.sendStatus(httpStatuses.UNAUTHORIZED_401);
   }
   const typeAuth = req.headers.authorization.split(" ")[0];
-  if (typeAuth !== "Bearer") return res.sendStatus(httpStatuses.UNAUTHORIZED_401);
+  if (typeAuth !== "Bearer")
+    return res.sendStatus(httpStatuses.UNAUTHORIZED_401);
 
   const token = req.headers.authorization.split(" ")[1];
 

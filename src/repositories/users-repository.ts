@@ -4,15 +4,16 @@ import { UserPagination } from "../routers/helpers/pagination";
 import { UserViewModel } from "../models/users/userViewModel";
 import { PaginatedUser } from "../models/users/paginatedQueryUser";
 import { UserCreateViewModel } from "../models/users/createUser";
-import { UserModel } from '../domain/schemas/users.schema';
+import { UserModel } from "../domain/schemas/users.schema";
 import { AuthService } from "../application/auth-service";
 import { randomUUID } from "crypto";
 import bcrypt from "bcrypt";
 
 export class UsersRepository {
-  private authService: AuthService
-  constructor( ) {
-    this.authService = new AuthService
+  private authService: AuthService;
+  static findByLoginOrEmail: any; // TODO: спросить у Вани что это и как с этим бороться
+  constructor() {
+    this.authService = new AuthService();
   }
   _userMapper(user: UsersMongoDbType) {
     return {
@@ -24,7 +25,7 @@ export class UsersRepository {
       recoveryCode: randomUUID(),
     };
   }
-  
+
   async findAllUsers(
     pagination: UserPagination,
   ): Promise<PaginatedUser<UserViewModel[]>> {
@@ -63,7 +64,7 @@ export class UsersRepository {
     };
     return res;
   }
-  
+
   async findByLoginOrEmail(loginOrEmail: string) {
     const user = await UserModel.findOne({
       $or: [{ email: loginOrEmail }, { login: loginOrEmail }],
@@ -116,6 +117,7 @@ export class UsersRepository {
     _id: ObjectId,
     newPassword: string,
   ): Promise<any> {
+    // TODO: any don't like. need to change this Promise
     const newPasswordSalt = await bcrypt.genSalt(10);
     const newHashedPassword = await this.authService._generateHash(
       newPassword,
@@ -153,5 +155,3 @@ export class UsersRepository {
     return updatedUser!;
   }
 }
-
-

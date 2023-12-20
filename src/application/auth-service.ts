@@ -13,11 +13,12 @@ import { DeviceModel } from "../domain/schemas/device.schema";
 import { QueryUserRepository } from "../query repozitory/queryUserRepository";
 
 export class AuthService {
-  usersRepository: UsersRepository
-  queryUserRepository: QueryUserRepository
+  usersRepository: UsersRepository;
+  queryUserRepository: QueryUserRepository;
+  static validateRefreshToken: any;
   constructor() {
-    this.usersRepository = new UsersRepository()
-    this.queryUserRepository = new QueryUserRepository()
+    this.usersRepository = new UsersRepository();
+    this.queryUserRepository = new QueryUserRepository();
   }
   async createUser(
     login: string,
@@ -68,7 +69,7 @@ export class AuthService {
 
   async checkAndFindUserByToken(token: string) {
     try {
-      const result: any = Jwt.verify(token, settings.JWT_SECRET);   // any don't like. Need change
+      const result: any = Jwt.verify(token, settings.JWT_SECRET); // any don't like. Need change
       const user = await this.queryUserRepository.findUserById(result.userId);
       return user;
     } catch (error) {
@@ -111,8 +112,10 @@ export class AuthService {
     deviceId: string,
   ): Promise<{ accessToken: string; newRefreshToken: string }> {
     try {
-      const accessToken = Jwt.sign({ userId }, settings.accessTokenSecret1, 
-        { expiresIn: "10minutes" },  // исправил на 10 мин
+      const accessToken = Jwt.sign(
+        { userId },
+        settings.accessTokenSecret1,
+        { expiresIn: "10minutes" }, // исправил на 10 мин
       );
 
       const newRefreshToken = Jwt.sign(
@@ -173,7 +176,7 @@ export class AuthService {
     return refTokenByDeviceId.matchedCount === 1;
   }
 
-  async addNewDevice(deviceId: string):Promise<DeviceMongoDbType | null> {
+  async addNewDevice(deviceId: string): Promise<DeviceMongoDbType | null> {
     const user = await this.queryUserRepository.findUserById(deviceId); // TODO тут ошибка
     if (!user) {
       return null;
@@ -182,7 +185,7 @@ export class AuthService {
       _id: new ObjectId(deviceId),
       deviceId: deviceId,
     });
-  
+
     try {
       await newDevice.save();
       return newDevice;
@@ -192,4 +195,3 @@ export class AuthService {
     }
   }
 }
-

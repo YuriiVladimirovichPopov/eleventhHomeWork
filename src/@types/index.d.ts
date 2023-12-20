@@ -7,7 +7,7 @@ declare global {
     export interface Request {
       userId?: string;
       deviceId?: string;
-      user?: UserViewModel
+      user?: UserViewModel;
     }
   }
 }

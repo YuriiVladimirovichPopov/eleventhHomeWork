@@ -5,14 +5,14 @@ import { commentsRepository } from "../repositories/comments-repository";
 import { httpStatuses } from "./helpers/send-status";
 import { createPostValidationForComment } from "../middlewares/validations/comments.validation";
 import { CommentModel } from "../domain/schemas/comments.schema";
-import { likeStatus } from '../models/likes/likeInputModel';
-import { likeInfoViewModel } from '../models/likes/likeInfoViewModel';
-import { likeInfoSchema } from '../domain/schemas/likeInfo.schema';
+import { likeStatus } from "../models/likes/likeInputModel";
+import { likeInfoViewModel } from "../models/likes/likeInfoViewModel";
+import { likeInfoSchema } from "../domain/schemas/likeInfo.schema";
 
 export const commentsRouter = Router({});
 
 class CommentController {
-  async getCommentById (req: Request, res: Response) {
+  async getCommentById(req: Request, res: Response) {
     const foundComment = await commentsQueryRepository.findCommentById(
       req.params.commentId,
     );
@@ -23,7 +23,7 @@ class CommentController {
     }
   }
 
-  async updateCommentById (req: Request, res: Response) {
+  async updateCommentById(req: Request, res: Response) {
     const user = req.user!;
     const commentId = req.params.commentId;
     const existingComment =
@@ -88,10 +88,11 @@ class CommentController {
         return res.status(500).send({ message: 'Internal server error' });
       }
     }
- */  
-  async deleteCommentById (
+ */
+  async deleteCommentById(
     req: Request<{ commentId: string }, {}, {}, {}, { user: string }>,
-    res: Response) {
+    res: Response,
+  ) {
     const user = req.user!;
     const commentId = req.params.commentId;
 
@@ -112,26 +113,27 @@ class CommentController {
   }
 }
 
-const commentController = new CommentController()
+const commentController = new CommentController();
 
-commentsRouter.get("/:commentId", commentController.getCommentById.bind(commentController));
+commentsRouter.get(
+  "/:commentId",
+  commentController.getCommentById.bind(commentController),
+);
 
 commentsRouter.put(
   "/:commentId",
   authMiddleware,
   createPostValidationForComment,
-  commentController.updateCommentById.bind(commentController)
+  commentController.updateCommentById.bind(commentController),
 );
 commentsRouter.put(
   "/:commentId/like-status",
   authMiddleware,
   createPostValidationForComment,
-  
 );
-
 
 commentsRouter.delete(
   "/:commentId",
   authMiddleware,
-  commentController.deleteCommentById.bind(commentController)
+  commentController.deleteCommentById.bind(commentController),
 );

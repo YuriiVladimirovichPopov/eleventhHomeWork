@@ -2,7 +2,7 @@ import { Request } from "express";
 import { ObjectId } from "mongodb";
 import { UserViewModel } from "./models/users/userViewModel";
 import { likeInfoViewModel } from "./models/likes/likeInfoViewModel";
-import { likeStatus } from './models/likes/likeInputModel';
+import { likeStatus } from "./models/likes/likeInputModel";
 
 export class BlogsMongoDbType {
   constructor(
@@ -12,7 +12,7 @@ export class BlogsMongoDbType {
     public websiteUrl: string,
     public createdAt: string,
     public isMembership: boolean,
-  ) { }
+  ) {}
 }
 
 export class PostsMongoDbType {
@@ -24,7 +24,7 @@ export class PostsMongoDbType {
     public blogId: string,
     public blogName: string | null,
     public createdAt: string,
-  ) { }
+  ) {}
 }
 
 export class UsersMongoDbType {
@@ -37,7 +37,7 @@ export class UsersMongoDbType {
     public passwordSalt: string,
     public emailConfirmation: EmailConfirmationType,
     public recoveryCode?: string,
-  ) { }
+  ) {}
 }
 
 export type EmailConfirmationType = {
@@ -68,7 +68,7 @@ export class CommentsMongoDbType {
     },
     public createdAt: string,
     public likeInfo: likeInfoViewModel,
-  ) { }
+  ) {}
 }
 
 export class DeviceMongoDbType {
@@ -79,7 +79,7 @@ export class DeviceMongoDbType {
     public lastActiveDate: string,
     public deviceId: string,
     public userId: string,
-  ) { }
+  ) {}
 }
 
 export class RateLimitMongoDbType {
@@ -87,7 +87,7 @@ export class RateLimitMongoDbType {
     public IP: string,
     public URL: string,
     public date: Date,
-  ) { }
+  ) {}
 }
 
 export class LikeModelMongoDbType {
@@ -97,8 +97,8 @@ export class LikeModelMongoDbType {
     public commentId: string,
     public type: likeStatus,
     public createdAt: Date,
-    public updatedAt: boolean
-  ) { }
+    public updatedAt: boolean,
+  ) {}
 }
 
 export type RegistrationDataType = {

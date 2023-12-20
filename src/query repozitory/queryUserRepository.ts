@@ -3,7 +3,7 @@ import { UserViewModel } from "../models/users/userViewModel";
 import { PaginatedUser } from "../models/users/paginatedQueryUser";
 import { randomUUID } from "crypto";
 import { UsersMongoDbType } from "../types";
-import { UserModel } from '../domain/schemas/users.schema';
+import { UserModel } from "../domain/schemas/users.schema";
 import { ObjectId, WithId } from "mongodb";
 import { PostsViewModel } from "../models/posts/postsViewModel";
 import mongoose from "mongoose";
@@ -11,6 +11,7 @@ import mongoose from "mongoose";
 const filter: mongoose.FilterQuery<UsersMongoDbType> = {};
 
 export class QueryUserRepository {
+  static findUserById: any;
 
   _userMapper(user: UsersMongoDbType) {
     return {
@@ -20,26 +21,25 @@ export class QueryUserRepository {
       createdAt: user.createdAt,
       emailConfirmation: user.emailConfirmation,
       recoveryCode: randomUUID(),
-    }
+    };
   }
   //TODO переделал этот метод. надо проверить на работоспособность
   async findAllUsers(
     pagination: PaginatedType,
   ): Promise<PaginatedUser<UserViewModel[]>> {
-   const findUsers = await UserModel.create(pagination)
-   const result: WithId<UsersMongoDbType>[] = await UserModel.find(filter)
+    const findUsers = await UserModel.create(pagination);
+    const result: WithId<UsersMongoDbType>[] = await UserModel.find(filter);
 
-   const totalCount: number = await UserModel.countDocuments(filter);
+    const totalCount: number = await UserModel.countDocuments(filter);
     const pageCount: number = Math.ceil(totalCount / pagination.pageSize);
 
-   return {
+    return {
       pagesCount: pageCount,
       page: pagination.pageNumber,
       pageSize: pagination.pageSize,
       totalCount: totalCount,
-      items: result.map((findUsers) => this._userMapper(findUsers))
-   }
-     
+      items: result.map((findUsers) => this._userMapper(findUsers)),
+    };
   }
 
   async findUserById(_id: string): Promise<UsersMongoDbType | null> {
@@ -61,9 +61,7 @@ export class QueryUserRepository {
   }
 
   async deleteUserById(id: string): Promise<PostsViewModel | boolean> {
-    const deletedUser = await UserModel.deleteOne({ _id: new ObjectId(id) })
-     return deletedUser.deletedCount === 1 
+    const deletedUser = await UserModel.deleteOne({ _id: new ObjectId(id) });
+    return deletedUser.deletedCount === 1;
   }
 }
-
-

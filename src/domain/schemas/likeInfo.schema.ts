@@ -6,4 +6,4 @@ export const likeInfoSchema = new mongoose.Schema({
   //myStatus: { type: likeStatusSchema, required: true },   //TODO: тут какая-то беда
 });
 
-export const LikeModel = mongoose.model("likes", likeInfoSchema)
+export const LikeModel = mongoose.model("likes", likeInfoSchema);

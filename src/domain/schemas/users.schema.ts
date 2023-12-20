@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 import { UsersMongoDbType } from "../../types";
-import { WithId } from 'mongodb';
+import { WithId } from "mongodb";
 import { EmailConfirmationSchema } from "./emailConfirmation.schema";
 
 export const UserSchema = new mongoose.Schema<WithId<UsersMongoDbType>>({

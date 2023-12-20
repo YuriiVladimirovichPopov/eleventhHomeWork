@@ -5,10 +5,15 @@ import { PostsViewModel } from "../models/posts/postsViewModel";
 import { CommentViewModel } from "../models/comments/commentViewModel";
 import { CommentModel } from "../domain/schemas/comments.schema";
 import { PostModel } from "../domain/schemas/posts.schema";
-import { queryBlogsRepository } from "../query repozitory/queryBlogsRepository";
+import { QueryBlogsRepository } from "../query repozitory/queryBlogsRepository";
 import { likeStatus } from "../models/likes/likeInputModel";
 
-class PostsRepository {
+export class PostsRepository {
+  private queryBlogsRepository: QueryBlogsRepository;
+  constructor() {
+    this.queryBlogsRepository = new QueryBlogsRepository();
+  }
+
   private postMapper(post: PostsMongoDbType): PostsViewModel {
     return {
       id: post._id.toString(),
@@ -24,7 +29,7 @@ class PostsRepository {
   async createdPostForSpecificBlog(
     model: PostsInputModel,
   ): Promise<PostsViewModel | null> {
-    const blog = await queryBlogsRepository.findBlogById(model.blogId);
+    const blog = await this.queryBlogsRepository.findBlogById(model.blogId);
     if (!blog) {
       return null;
     }

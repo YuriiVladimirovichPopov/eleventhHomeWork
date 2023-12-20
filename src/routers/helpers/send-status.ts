@@ -8,4 +8,4 @@ export enum httpStatuses {
   FORBIDDEN_403 = 403,
   TOO_MANY_REQUESTS_429 = 429,
   INTERNAL_SERVER_ERROR_500 = 500,
-};
+}

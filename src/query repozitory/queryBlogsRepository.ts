@@ -6,7 +6,7 @@ import { PaginatedBlog } from "../models/blogs/paginatedQueryBlog";
 import { BlogModel } from "../domain/schemas/blogs.schema";
 import { isValidObjectId } from "mongoose";
 
-class QueryBlogsRepository {
+export class QueryBlogsRepository {
   _blogMapper(blog: BlogsMongoDbType): BlogViewModel {
     return {
       id: blog._id.toString(),
@@ -48,7 +48,7 @@ class QueryBlogsRepository {
   }
 
   async findBlogById(id: string): Promise<BlogViewModel | null> {
-    if(!isValidObjectId(id)) return null;
+    if (!isValidObjectId(id)) return null;
     const blogById = await BlogModel.findOne({ _id: new ObjectId(id) });
     if (!blogById) {
       return null;
@@ -56,5 +56,3 @@ class QueryBlogsRepository {
     return this._blogMapper(blogById);
   }
 }
-
-export const queryBlogsRepository = new QueryBlogsRepository();

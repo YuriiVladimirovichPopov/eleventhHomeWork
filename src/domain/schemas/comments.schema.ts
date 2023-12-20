@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 import { CommentsMongoDbType } from "../../types";
-import { ObjectId, WithId } from 'mongodb';
+import { ObjectId, WithId } from "mongodb";
 import { commentatorInfoSchema } from "./commentatorInfo.schema";
 import { likeInfoSchema } from "./likeInfo.schema";
 

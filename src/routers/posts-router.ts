@@ -10,7 +10,7 @@ import {
   createPostValidation,
   updatePostValidation,
 } from "../middlewares/validations/posts.validation";
-import { RequestWithBody, RequestWithParams, PostsMongoDbType } from '../types';
+import { RequestWithBody, RequestWithParams, PostsMongoDbType } from "../types";
 import { PostsInputModel } from "../models/posts/postsInputModel";
 import { getByIdParam } from "../models/getById";
 import { PostsViewModel } from "../models/posts/postsViewModel";
@@ -24,12 +24,20 @@ import { commentsQueryRepository } from "../query repozitory/queryCommentsReposi
 import { authMiddleware } from "../middlewares/validations/auth.validation";
 import { createPostValidationForComment } from "../middlewares/validations/comments.validation";
 import { postsRepository } from "../repositories/posts-repository";
-import { queryBlogsRepository } from "../query repozitory/queryBlogsRepository";
+import { QueryBlogsRepository } from "../query repozitory/queryBlogsRepository";
 
 export const postsRouter = Router({});
 
-class PostController {
-  async getCommentsByPostId (req: Request, res: Response<PaginatedComment<CommentViewModel>>) {  // TODO: расширить тип джанериком
+export class PostController {
+  private queryBlogsRepository: QueryBlogsRepository;
+  constructor() {
+    this.queryBlogsRepository = new QueryBlogsRepository();
+  }
+  async getCommentsByPostId(
+    req: Request,
+    res: Response<PaginatedComment<CommentViewModel>>,
+  ) {
+    // TODO: расширить тип джанериком
     const foundedPostId = await queryPostRepository.findPostById(
       req.params.postId,
     );
@@ -37,7 +45,9 @@ class PostController {
       return res.sendStatus(httpStatuses.NOT_FOUND_404);
     }
 
-    const pagination = getPaginationFromQuery(req.query as unknown as PaginatedType);
+    const pagination = getPaginationFromQuery(
+      req.query as unknown as PaginatedType,
+    );
     const allCommentsForPostId: PaginatedComment<CommentViewModel> =
       await commentsQueryRepository.getAllCommentsForPost(
         req.params.postId,
@@ -45,7 +55,7 @@ class PostController {
       );
     return res.status(httpStatuses.OK_200).send(allCommentsForPostId);
   }
-  async createCommentsByPostId (req: Request, res: Response) {
+  async createCommentsByPostId(req: Request, res: Response) {
     const postWithId: PostsViewModel | null =
       await queryPostRepository.findPostById(req.params.postId);
     if (!postWithId) {
@@ -63,8 +73,13 @@ class PostController {
       );
     return res.status(httpStatuses.CREATED_201).send(comment);
   }
-  async getAllPosts (req: Request, res: Response<PaginatedPost<PostsViewModel>>) {
-    const pagination = getPaginationFromQuery(req.query as unknown as PaginatedType);
+  async getAllPosts(
+    req: Request,
+    res: Response<PaginatedPost<PostsViewModel>>,
+  ) {
+    const pagination = getPaginationFromQuery(
+      req.query as unknown as PaginatedType,
+    );
     const allPosts: PaginatedPost<PostsViewModel> =
       await queryPostRepository.findAllPosts(pagination);
     if (!allPosts) {
@@ -72,10 +87,11 @@ class PostController {
     }
     res.status(httpStatuses.OK_200).send(allPosts);
   }
-  async createPostByBlogId (
+  async createPostByBlogId(
     req: RequestWithBody<PostsInputModel>,
-    res: Response<PostsViewModel>) {
-    const findBlogById = await queryBlogsRepository.findBlogById(
+    res: Response<PostsViewModel>,
+  ) {
+    const findBlogById = await this.queryBlogsRepository.findBlogById(
       req.body.blogId,
     );
 
@@ -94,7 +110,7 @@ class PostController {
       return res.status(httpStatuses.CREATED_201).send(newPost);
     }
   }
-  async getPostById (req: RequestWithParams<getByIdParam>, res: Response) {
+  async getPostById(req: RequestWithParams<getByIdParam>, res: Response) {
     const foundPost = await postsService.findPostById(req.params.id);
     if (!foundPost) {
       res.sendStatus(httpStatuses.NOT_FOUND_404);
@@ -102,9 +118,10 @@ class PostController {
       res.status(httpStatuses.OK_200).send(foundPost);
     }
   }
-  async updatePostById (
+  async updatePostById(
     req: Request<getByIdParam, PostsInputModel>,
-    res: Response<PostsViewModel>) {
+    res: Response<PostsViewModel>,
+  ) {
     const updatePost = await postsService.updatePost(req.params.id, req.body);
 
     if (!updatePost) {
@@ -113,58 +130,50 @@ class PostController {
       res.sendStatus(httpStatuses.NO_CONTENT_204);
     }
   }
-  async deletePostById (
-    req: RequestWithParams<getByIdParam>, 
-    res: Response) {  
-      const foundPost = await postsService.deletePost(req.params.id);
-        if (!foundPost) {
-          return res.sendStatus(httpStatuses.NOT_FOUND_404);
-        }
-          return res.sendStatus(httpStatuses.NO_CONTENT_204);
+  async deletePostById(req: RequestWithParams<getByIdParam>, res: Response) {
+    const foundPost = await postsService.deletePost(req.params.id);
+    if (!foundPost) {
+      return res.sendStatus(httpStatuses.NOT_FOUND_404);
+    }
+    return res.sendStatus(httpStatuses.NO_CONTENT_204);
   }
 }
 
-const postController = new PostController()
+const postController = new PostController();
 
 postsRouter.get(
   "/:postId/comments",
-  postController.getCommentsByPostId.bind(postController)
+  postController.getCommentsByPostId.bind(postController),
 );
 
 postsRouter.post(
   "/:postId/comments",
   authMiddleware,
   createPostValidationForComment,
-  postController.createCommentsByPostId.bind(postController)
+  postController.createCommentsByPostId.bind(postController),
 );
 
-postsRouter.get(
-  "/",
-  postController.getAllPosts.bind(postController)
-);
+postsRouter.get("/", postController.getAllPosts.bind(postController));
 
 postsRouter.post(
   "/",
   authorizationValidation,
   createPostValidation,
-  postController.createPostByBlogId.bind(postController)
+  postController.createPostByBlogId.bind(postController),
 );
 
-postsRouter.get(
-  "/:id",
-  postController.getPostById.bind(postController)
-);
+postsRouter.get("/:id", postController.getPostById.bind(postController));
 
 postsRouter.put(
   "/:id",
   authorizationValidation,
   updatePostValidation,
-  postController.updatePostById.bind(postController)
+  postController.updatePostById.bind(postController),
 );
 
 postsRouter.delete(
   "/:id",
   authorizationValidation,
   inputValidationErrors,
-  postController.deletePostById.bind(postController)
+  postController.deletePostById.bind(postController),
 );

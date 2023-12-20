@@ -3,11 +3,11 @@ import { settings } from "../settings";
 import { UsersMongoDbType } from "../types";
 
 type Payload = {
- userId: string,
- deviceId: string, 
- iat: number,
- exp: number
-}
+  userId: string;
+  deviceId: string;
+  iat: number;
+  exp: number;
+};
 
 // interface Payload extends JwtPayload {
 //   userId?: string
@@ -23,7 +23,7 @@ class JWTService {
 
   async getUserIdByToken(token: string): Promise<string | null> {
     try {
-      const result = jwt.verify(token, settings.accessTokenSecret1) as Payload;  //типизировать
+      const result = jwt.verify(token, settings.accessTokenSecret1) as Payload; //типизировать
       return result.userId;
     } catch (error) {
       return null;

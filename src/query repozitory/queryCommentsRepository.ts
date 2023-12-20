@@ -5,7 +5,7 @@ import { PaginatedComment } from "../models/comments/paginatedQueryComment";
 import { CommentsMongoDbType } from "../types";
 import { CommentViewModel } from "../models/comments/commentViewModel";
 
-class CommentsQueryRepository {
+export class CommentsQueryRepository {
   async getAllCommentsForPost(
     postId: string,
     pagination: PaginatedType,

@@ -12,7 +12,7 @@ export async function customRateLimit(
   res: Response,
   next: NextFunction,
 ) {
-  const IP = req.ip || '';    //добавил " " т.к. ругался после обновления на undefined
+  const IP = req.ip || ""; //добавил " " т.к. ругался после обновления на undefined
   const URL = req.url;
   const date = new Date();
 
@@ -28,7 +28,6 @@ export async function customRateLimit(
       date: { $gte: new Date(+date - interval) }, // +date === integer
     });
     //const count = connections.filter(c => c.IP === IP && c.URL === URL && c.date >= new Date(+date - interval)).length
-    
 
     if (count + 1 > maxRequests) {
       return res.sendStatus(httpStatuses.TOO_MANY_REQUESTS_429);

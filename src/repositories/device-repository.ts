@@ -1,7 +1,9 @@
 import { DeviceMongoDbType } from "../types";
 import { DeviceModel } from "../domain/schemas/device.schema";
 
-class DeviceRepository {
+export class DeviceRepository {
+  static findDeviceByUser: any;
+
   // may be come through to deviceQueryRepository
   async findDeviceByUser(deviceId: string): Promise<DeviceMongoDbType | null> {
     try {
@@ -14,7 +16,7 @@ class DeviceRepository {
   }
 
   async findValidDevice(deviceId: string): Promise<DeviceMongoDbType | null> {
-    const device = await DeviceModel.findOne({ deviceId: deviceId }); 
+    const device = await DeviceModel.findOne({ deviceId: deviceId });
     return device;
   }
   // may be come through to deviceQueryRepository
@@ -33,7 +35,7 @@ class DeviceRepository {
 
   async deleteDeviceById(userId: string, deviceId: string): Promise<boolean> {
     try {
-      const result = await DeviceModel.deleteOne({userId, deviceId });
+      const result = await DeviceModel.deleteOne({ userId, deviceId });
       if (result.deletedCount === 1) {
         return true;
       } else {
@@ -66,5 +68,3 @@ class DeviceRepository {
     }
   }
 }
-
-export const deviceRepository = new DeviceRepository();

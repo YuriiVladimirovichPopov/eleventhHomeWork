@@ -19,12 +19,14 @@ export type DefaultPagination = {
   skip: number;
 };
 
-export type UserPagination = DefaultPagination & {      
+export type UserPagination = DefaultPagination & {
   searchLoginTerm?: string;
   searchEmailTerm?: string;
 };
 
-export const getPaginationFromQuery = (query: PaginatedType): DefaultPagination => {
+export const getPaginationFromQuery = (
+  query: PaginatedType,
+): DefaultPagination => {
   const defaultValues: PaginatedType = {
     pageNumber: 1,
     pageSize: 10,
@@ -42,18 +44,18 @@ export const getPaginationFromQuery = (query: PaginatedType): DefaultPagination 
 
   if (
     query.pageNumber &&
-    !isNaN(parseInt(query.pageNumber.toString(), 10)) &&    // привел pageNumber к стринге тк ругались типы
-    parseInt(query.pageNumber.toString(), 10) > 0   // привел pageNumber к стринге тк ругались типы
+    !isNaN(parseInt(query.pageNumber.toString(), 10)) && // привел pageNumber к стринге тк ругались типы
+    parseInt(query.pageNumber.toString(), 10) > 0 // привел pageNumber к стринге тк ругались типы
   ) {
-    defaultValues.pageNumber = parseInt(query.pageNumber.toString(), 10);    // привел pageNumber к стринге тк ругались типы
+    defaultValues.pageNumber = parseInt(query.pageNumber.toString(), 10); // привел pageNumber к стринге тк ругались типы
   }
 
   if (
     query.pageSize &&
-    !isNaN(parseInt(query.pageSize.toString(), 10)) &&   // привел pageNumber к стринге тк ругались типы
-    parseInt(query.pageSize.toString(), 10) > 0   // привел pageNumber к стринге тк ругались типы
+    !isNaN(parseInt(query.pageSize.toString(), 10)) && // привел pageNumber к стринге тк ругались типы
+    parseInt(query.pageSize.toString(), 10) > 0 // привел pageNumber к стринге тк ругались типы
   ) {
-    defaultValues.pageSize = parseInt(query.pageSize.toString(), 10);    // привел pageNumber к стринге тк ругались типы
+    defaultValues.pageSize = parseInt(query.pageSize.toString(), 10); // привел pageNumber к стринге тк ругались типы
   }
 
   if (query.searchNameTerm) {
@@ -65,7 +67,10 @@ export const getPaginationFromQuery = (query: PaginatedType): DefaultPagination 
   return defaultValues;
 };
 
-export const getDefaultPagination = (query: PaginatedType): DefaultPagination => {   // any не нравится
+export const getDefaultPagination = (
+  query: PaginatedType,
+): DefaultPagination => {
+  // any не нравится
   const defaultValues: DefaultPagination = {
     sortBy: "createdAt",
     sortDirection: "desc",

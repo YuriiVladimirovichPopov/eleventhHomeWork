@@ -4,7 +4,7 @@ import { BlogsMongoDbType } from "../types";
 import { BlogViewModel } from "../models/blogs/blogsViewModel";
 import { BlogModel } from "../domain/schemas/blogs.schema";
 
-class BlogsRepository {
+export class BlogsRepository {
   _blogMapper(blog: BlogsMongoDbType): BlogViewModel {
     return {
       id: blog._id.toString(),
@@ -17,8 +17,8 @@ class BlogsRepository {
   }
 
   async createBlog(newBlog: BlogsMongoDbType): Promise<BlogViewModel> {
-    const blog = new BlogModel(newBlog)
-    await blog.save()
+    const blog = new BlogModel(newBlog);
+    await blog.save();
     //await BlogModel.create(newBlog);
     return this._blogMapper(newBlog);
   }
@@ -54,5 +54,3 @@ class BlogsRepository {
     }
   }
 }
-
-export const blogsRepository = new BlogsRepository();
