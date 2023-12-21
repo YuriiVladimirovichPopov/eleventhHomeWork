@@ -1,6 +1,6 @@
 import { body } from "express-validator";
 import { inputValidationErrors } from "../input-validation-middleware";
-import { queryBlogsRepository } from "../../query repozitory/queryBlogsRepository";
+import { QueryBlogsRepository } from "../../query repozitory/queryBlogsRepository";
 
 const titleValidation = body("title")
   .isString()
@@ -26,7 +26,7 @@ const blogIdValidation = body("blogId")
   .withMessage("Must be string")
   .trim()
   .custom(async (id) => {
-    const blog = await queryBlogsRepository.findBlogById(id);
+    const blog = await QueryBlogsRepository.findBlogById(id);
     if (!blog) {
       throw Error("Blog is not found");
     }

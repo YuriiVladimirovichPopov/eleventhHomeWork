@@ -14,27 +14,30 @@ import { RequestWithParams, RequestWithBody } from "../types";
 import { BlogInputModel } from "../models/blogs/blogsInputModel";
 import { getByIdParam } from "../models/getById";
 import { BlogViewModel } from "../models/blogs/blogsViewModel";
-import { queryPostRepository } from "../query repozitory/queryPostsRepository";
+import { QueryPostRepository } from "../query repozitory/queryPostsRepository";
 import { getPaginationFromQuery, PaginatedType } from "./helpers/pagination";
-import { PaginatedBlog } from "../models/blogs/paginatedQueryBlog";
-import { PaginatedPost } from "../models/posts/paginatedQueryPost";
+import { Paginated } from "./helpers/pagination";
 import { PostsInputModel } from "../models/posts/postsInputModel";
-import { postsService } from "../application/post-service";
+import { PostsService } from "../application/post-service";
 import { PostsViewModel } from "../models/posts/postsViewModel";
 
 export const blogsRouter = Router({});
 
 class BlogsController {
   private blogService: BlogService;
+  private postsService: PostsService;
+  private queryPostRepository: QueryPostRepository;
   constructor() {
     this.blogService = new BlogService();
+    this.postsService = new PostsService();
+    this.queryPostRepository = new QueryPostRepository();
   }
 
   async getAllBlogs(req: Request, res: Response) {
     const pagination = getPaginationFromQuery(
       req.query as unknown as PaginatedType,
     );
-    const allBlogs: PaginatedBlog<BlogViewModel[]> =
+    const allBlogs: Paginated<BlogViewModel> =
       await this.blogService.findAllBlogs(pagination);
 
     return res.status(httpStatuses.OK_200).send(allBlogs);
@@ -59,8 +62,8 @@ class BlogsController {
     const pagination = getPaginationFromQuery(
       req.query as unknown as PaginatedType,
     );
-    const foundBlogWithAllPosts: PaginatedPost<PostsViewModel> =
-      await queryPostRepository.findAllPostsByBlogId(
+    const foundBlogWithAllPosts: Paginated<PostsViewModel> =
+      await this.queryPostRepository.findAllPostsByBlogId(
         req.params.blogId,
         pagination,
       );
@@ -73,7 +76,7 @@ class BlogsController {
     const { title, shortDescription, content } = req.body;
 
     const newPostForBlogById: PostsInputModel | null =
-      await postsService.createPost({
+      await this.postsService.createPost({
         title,
         shortDescription,
         content,

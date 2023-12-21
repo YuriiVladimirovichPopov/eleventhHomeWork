@@ -1,6 +1,6 @@
 import { PaginatedType } from "../routers/helpers/pagination";
 import { UserViewModel } from "../models/users/userViewModel";
-import { PaginatedUser } from "../models/users/paginatedQueryUser";
+import { Paginated } from "../routers/helpers/pagination";
 import { randomUUID } from "crypto";
 import { UsersMongoDbType } from "../types";
 import { UserModel } from "../domain/schemas/users.schema";
@@ -11,7 +11,7 @@ import mongoose from "mongoose";
 const filter: mongoose.FilterQuery<UsersMongoDbType> = {};
 
 export class QueryUserRepository {
-  static findUserById: any;
+  static findUserById: any;    // TODO: ref token middleware
 
   _userMapper(user: UsersMongoDbType) {
     return {
@@ -26,7 +26,7 @@ export class QueryUserRepository {
   //TODO переделал этот метод. надо проверить на работоспособность
   async findAllUsers(
     pagination: PaginatedType,
-  ): Promise<PaginatedUser<UserViewModel[]>> {
+  ): Promise<Paginated<UserViewModel>> {
     const findUsers = await UserModel.create(pagination);
     const result: WithId<UsersMongoDbType>[] = await UserModel.find(filter);
 

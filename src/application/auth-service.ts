@@ -1,25 +1,25 @@
-import { UsersRepository } from "../repositories/users-repository";
 import bcrypt from "bcrypt";
+import add from "date-fns/add";
+import Jwt from "jsonwebtoken";
+import { randomUUID } from "crypto";
 import { ObjectId } from "mongodb";
 import { DeviceMongoDbType, UsersMongoDbType } from "../types";
-import add from "date-fns/add";
 import { emailManager } from "../managers/email-manager";
 import { settings } from "../settings";
-import Jwt from "jsonwebtoken";
 import { UserModel } from "../domain/schemas/users.schema";
-import { randomUUID } from "crypto";
 import { UserCreateViewModel } from "../models/users/createUser";
 import { DeviceModel } from "../domain/schemas/device.schema";
+import { UsersRepository } from "../repositories/users-repository";
 import { QueryUserRepository } from "../query repozitory/queryUserRepository";
 
 export class AuthService {
-  usersRepository: UsersRepository;
-  queryUserRepository: QueryUserRepository;
-  static validateRefreshToken: any;
-  constructor() {
-    this.usersRepository = new UsersRepository();
-    this.queryUserRepository = new QueryUserRepository();
-  }
+  
+  static validateRefreshToken: any;   // TODO: это не нравится!!!  ref token middleware
+  constructor(
+    protected usersRepository: UsersRepository,
+    protected queryUserRepository: QueryUserRepository
+    ) {  }
+
   async createUser(
     login: string,
     email: string,
@@ -66,10 +66,10 @@ export class AuthService {
     }
     return user;
   }
-
+ 
   async checkAndFindUserByToken(token: string) {
     try {
-      const result: any = Jwt.verify(token, settings.JWT_SECRET); // any don't like. Need change
+      const result: any = Jwt.verify(token, settings.JWT_SECRET); // todo: any don't like. Need change
       const user = await this.queryUserRepository.findUserById(result.userId);
       return user;
     } catch (error) {
@@ -175,7 +175,7 @@ export class AuthService {
     );
     return refTokenByDeviceId.matchedCount === 1;
   }
-
+  //todo: may by to come through to devise servise
   async addNewDevice(deviceId: string): Promise<DeviceMongoDbType | null> {
     const user = await this.queryUserRepository.findUserById(deviceId); // TODO тут ошибка
     if (!user) {
@@ -193,5 +193,29 @@ export class AuthService {
       console.error("Error saving new device:", error);
       return null;
     }
+  }
+   // TODO: this method need to come through in authServise may be
+   async resetPasswordWithRecoveryCode(
+    _id: ObjectId,
+    newPassword: string,
+  ): Promise<any> {
+    // TODO: any don't like. need to change this Promise
+    const newPasswordSalt = await bcrypt.genSalt(10);
+    const newHashedPassword = await this._generateHash(   // TODO:тут зацикливается
+      newPassword,
+      newPasswordSalt,
+    );
+
+    await UserModel.updateOne(
+      { _id: _id },
+      {
+        $set: {
+          passwordHash: newHashedPassword,
+          passwordSalt: newPasswordSalt,
+          recoveryCode: null,
+        },
+      },
+    )
+    return { success: true };
   }
 }

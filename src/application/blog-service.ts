@@ -3,7 +3,7 @@ import { BlogInputModel } from "../models/blogs/blogsInputModel";
 import { BlogsMongoDbType } from "../types";
 import { BlogViewModel } from "../models/blogs/blogsViewModel";
 import { BlogsRepository } from "../repositories/blogs-repository";
-import { PaginatedBlog } from "../models/blogs/paginatedQueryBlog";
+import { Paginated } from "../routers/helpers/pagination";
 import { PaginatedType } from "../routers/helpers/pagination";
 import { QueryBlogsRepository } from "../query repozitory/queryBlogsRepository";
 
@@ -16,7 +16,7 @@ export class BlogService {
   }
   async findAllBlogs(
     pagination: PaginatedType,
-  ): Promise<PaginatedBlog<BlogViewModel[]>> {
+  ): Promise<Paginated<BlogViewModel>> {
     return await this.queryBlogsRepository.findAllBlogs(pagination);
   }
 

@@ -7,15 +7,13 @@ import { QueryUserRepository } from "../query repozitory/queryUserRepository";
 export const securityRouter = Router({});
 
 class SecurityController {
-  private queryUserRepository: QueryUserRepository;
-  private authService: AuthService;
-  private deviceRepository: DeviceRepository;
-  constructor() {
-    this.authService = new AuthService();
-    this.queryUserRepository = new QueryUserRepository();
-    this.deviceRepository = new DeviceRepository();
-  }
-  async devices(req: Request, res: Response) {
+  
+  constructor(
+    protected queryUserRepository: QueryUserRepository,
+    protected authService: AuthService,
+    protected deviceRepository: DeviceRepository) {}
+  
+    async devices(req: Request, res: Response) {
     const refreshToken = req.cookies.refreshToken; // унести в мидлвар
     if (!refreshToken) {
       return res

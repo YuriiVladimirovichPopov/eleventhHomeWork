@@ -2,11 +2,12 @@ import { ObjectId, WithId } from "mongodb";
 import { BlogsMongoDbType } from "../types";
 import { BlogViewModel } from "../models/blogs/blogsViewModel";
 import { PaginatedType } from "../routers/helpers/pagination";
-import { PaginatedBlog } from "../models/blogs/paginatedQueryBlog";
+import { Paginated } from "../routers/helpers/pagination";
 import { BlogModel } from "../domain/schemas/blogs.schema";
 import { isValidObjectId } from "mongoose";
 
 export class QueryBlogsRepository {
+  static findBlogById: any;
   _blogMapper(blog: BlogsMongoDbType): BlogViewModel {
     return {
       id: blog._id.toString(),
@@ -20,7 +21,7 @@ export class QueryBlogsRepository {
 
   async findAllBlogs(
     pagination: PaginatedType,
-  ): Promise<PaginatedBlog<BlogViewModel[]>> {
+  ): Promise<Paginated<BlogViewModel>> {
     let filter = {};
     if (pagination.searchNameTerm) {
       filter = {
@@ -37,7 +38,7 @@ export class QueryBlogsRepository {
     const totalCount: number = await BlogModel.countDocuments(filter);
     const pageCount: number = Math.ceil(totalCount / pagination.pageSize);
 
-    const res: PaginatedBlog<BlogViewModel[]> = {
+    const res: Paginated<BlogViewModel> = {
       pagesCount: pageCount,
       page: pagination.pageNumber,
       pageSize: pagination.pageSize,

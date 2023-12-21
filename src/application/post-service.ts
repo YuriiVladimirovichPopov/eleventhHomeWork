@@ -1,23 +1,32 @@
 import { PostsInputModel } from "../models/posts/postsInputModel";
 import { PostsViewModel } from "../models/posts/postsViewModel";
-import { postsRepository } from "../repositories/posts-repository";
-import { queryPostRepository } from "../query repozitory/queryPostsRepository";
-import { PaginatedPost } from "../models/posts/paginatedQueryPost";
+import { PostsRepository } from "../repositories/posts-repository";
+import { QueryPostRepository } from "../query repozitory/queryPostsRepository";
+import { Paginated } from "../routers/helpers/pagination";
 import { PaginatedType } from "../routers/helpers/pagination";
-import { queryBlogsRepository } from "../query repozitory/queryBlogsRepository";
+import { QueryBlogsRepository } from "../query repozitory/queryBlogsRepository";
 
-class PostsService {
+export class PostsService {
+  queryBlogsRepository: QueryBlogsRepository
+  queryPostRepository: QueryPostRepository
+  postsRepository: PostsRepository
+  constructor() {
+    this.queryBlogsRepository = new QueryBlogsRepository
+    this.queryPostRepository = new QueryPostRepository
+    this.postsRepository = new PostsRepository
+  }
+
   async findAllPosts(
     pagination: PaginatedType,
-  ): Promise<PaginatedPost<PostsViewModel>> {
-    return await queryPostRepository.findAllPosts(pagination);
+  ): Promise<Paginated<PostsViewModel>> {
+    return await this.queryPostRepository.findAllPosts(pagination);
   }
 
   async findPostById(id: string): Promise<PostsViewModel | null> {
-    return await queryPostRepository.findPostById(id);
+    return await this.queryPostRepository.findPostById(id);
   }
   async createPost(data: PostsInputModel): Promise<PostsViewModel | null> {
-    const blog = await queryBlogsRepository.findBlogById(data.blogId);
+    const blog = await this.queryBlogsRepository.findBlogById(data.blogId);
     if (!blog) return null;
 
     const newPost = {
@@ -25,7 +34,7 @@ class PostsService {
       blogName: blog.name,
       createdAt: new Date().toISOString(),
     };
-    const createdPost = await postsRepository.createdPostForSpecificBlog(data);
+    const createdPost = await this.postsRepository.createdPostForSpecificBlog(data);
 
     return createdPost;
   }
@@ -34,16 +43,15 @@ class PostsService {
     id: string,
     data: PostsInputModel,
   ): Promise<PostsViewModel | boolean> {
-    return await postsRepository.updatePost(id, { ...data });
+    return await this.postsRepository.updatePost(id, { ...data });
   }
 
   async deletePost(id: string): Promise<PostsViewModel | boolean> {
-    return await postsRepository.deletePost(id);
+    return await this.postsRepository.deletePost(id);
   }
 
   async deleteAllPosts(): Promise<boolean> {
-    return await postsRepository.deleteAllPosts();
+    return await this.postsRepository.deleteAllPosts();
   }
 }
 
-export const postsService = new PostsService();

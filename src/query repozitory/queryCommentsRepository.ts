@@ -1,7 +1,7 @@
 import { ObjectId } from "mongodb";
 import { CommentModel } from "../domain/schemas/comments.schema";
 import { PaginatedType } from "../routers/helpers/pagination";
-import { PaginatedComment } from "../models/comments/paginatedQueryComment";
+import { Paginated } from "../routers/helpers/pagination";
 import { CommentsMongoDbType } from "../types";
 import { CommentViewModel } from "../models/comments/commentViewModel";
 
@@ -9,7 +9,7 @@ export class CommentsQueryRepository {
   async getAllCommentsForPost(
     postId: string,
     pagination: PaginatedType,
-  ): Promise<PaginatedComment<CommentViewModel>> {
+  ): Promise<Paginated<CommentViewModel>> {
     const result = await CommentModel.find({ postId: postId })
       .sort({ [pagination.sortBy]: pagination.sortDirection })
       .skip(pagination.skip)
@@ -29,7 +29,7 @@ export class CommentsQueryRepository {
 
     const pageCount: number = Math.ceil(totalCount / pagination.pageSize);
 
-    const response: PaginatedComment<CommentViewModel> = {
+    const response: Paginated<CommentViewModel> = {
       pagesCount: pageCount,
       page: pagination.pageNumber,
       pageSize: pagination.pageSize,
@@ -54,4 +54,4 @@ export class CommentsQueryRepository {
   }
 }
 
-export const commentsQueryRepository = new CommentsQueryRepository();
+

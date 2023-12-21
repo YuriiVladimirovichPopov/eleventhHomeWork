@@ -10,17 +10,16 @@ import {
   createPostValidation,
   updatePostValidation,
 } from "../middlewares/validations/posts.validation";
-import { RequestWithBody, RequestWithParams, PostsMongoDbType } from "../types";
+import { RequestWithBody, RequestWithParams } from "../types";
 import { PostsInputModel } from "../models/posts/postsInputModel";
 import { getByIdParam } from "../models/getById";
 import { PostsViewModel } from "../models/posts/postsViewModel";
-import { postsService } from "../application/post-service";
-import { queryPostRepository } from "../query repozitory/queryPostsRepository";
+import { PostsService } from '../application/post-service';
+import { QueryPostRepository } from "../query repozitory/queryPostsRepository";
 import { PaginatedType, getPaginationFromQuery } from "./helpers/pagination";
-import { PaginatedPost } from "../models/posts/paginatedQueryPost";
+import { Paginated } from "./helpers/pagination";
 import { CommentViewModel } from "../models/comments/commentViewModel";
-import { PaginatedComment } from "../models/comments/paginatedQueryComment";
-import { commentsQueryRepository } from "../query repozitory/queryCommentsRepository";
+import { CommentsQueryRepository } from "../query repozitory/queryCommentsRepository";
 import { authMiddleware } from "../middlewares/validations/auth.validation";
 import { createPostValidationForComment } from "../middlewares/validations/comments.validation";
 import { postsRepository } from "../repositories/posts-repository";
@@ -29,16 +28,23 @@ import { QueryBlogsRepository } from "../query repozitory/queryBlogsRepository";
 export const postsRouter = Router({});
 
 export class PostController {
+  private postsService: PostsService;
   private queryBlogsRepository: QueryBlogsRepository;
+  private queryPostRepository: QueryPostRepository;
+  private commentsQueryRepository: CommentsQueryRepository;
   constructor() {
     this.queryBlogsRepository = new QueryBlogsRepository();
+    this.queryPostRepository = new QueryPostRepository()
+    this.postsService = new PostsService()
+    this.commentsQueryRepository = new CommentsQueryRepository();
   }
+  
   async getCommentsByPostId(
     req: Request,
-    res: Response<PaginatedComment<CommentViewModel>>,
+    res: Response<Paginated<CommentViewModel>>,
   ) {
     // TODO: расширить тип джанериком
-    const foundedPostId = await queryPostRepository.findPostById(
+    const foundedPostId = await this.queryPostRepository.findPostById(
       req.params.postId,
     );
     if (!foundedPostId) {
@@ -48,8 +54,8 @@ export class PostController {
     const pagination = getPaginationFromQuery(
       req.query as unknown as PaginatedType,
     );
-    const allCommentsForPostId: PaginatedComment<CommentViewModel> =
-      await commentsQueryRepository.getAllCommentsForPost(
+    const allCommentsForPostId: Paginated<CommentViewModel> =
+      await this.commentsQueryRepository.getAllCommentsForPost(
         req.params.postId,
         pagination,
       );
@@ -57,7 +63,7 @@ export class PostController {
   }
   async createCommentsByPostId(req: Request, res: Response) {
     const postWithId: PostsViewModel | null =
-      await queryPostRepository.findPostById(req.params.postId);
+      await this.queryPostRepository.findPostById(req.params.postId);
     if (!postWithId) {
       return res.sendStatus(httpStatuses.NOT_FOUND_404);
     }
@@ -75,13 +81,13 @@ export class PostController {
   }
   async getAllPosts(
     req: Request,
-    res: Response<PaginatedPost<PostsViewModel>>,
+    res: Response<Paginated<PostsViewModel>>,
   ) {
     const pagination = getPaginationFromQuery(
       req.query as unknown as PaginatedType,
     );
-    const allPosts: PaginatedPost<PostsViewModel> =
-      await queryPostRepository.findAllPosts(pagination);
+    const allPosts: Paginated<PostsViewModel> =
+      await this.queryPostRepository.findAllPosts(pagination);
     if (!allPosts) {
       return res.status(httpStatuses.NOT_FOUND_404);
     }
@@ -97,7 +103,7 @@ export class PostController {
 
     if (findBlogById) {
       const { title, shortDescription, content, blogId } = req.body;
-      const newPost: PostsViewModel | null = await postsService.createPost({
+      const newPost: PostsViewModel | null = await this.postsService.createPost({
         title,
         shortDescription,
         content,
@@ -111,7 +117,7 @@ export class PostController {
     }
   }
   async getPostById(req: RequestWithParams<getByIdParam>, res: Response) {
-    const foundPost = await postsService.findPostById(req.params.id);
+    const foundPost = await this.postsService.findPostById(req.params.id);
     if (!foundPost) {
       res.sendStatus(httpStatuses.NOT_FOUND_404);
     } else {
@@ -122,7 +128,7 @@ export class PostController {
     req: Request<getByIdParam, PostsInputModel>,
     res: Response<PostsViewModel>,
   ) {
-    const updatePost = await postsService.updatePost(req.params.id, req.body);
+    const updatePost = await this.postsService.updatePost(req.params.id, req.body);
 
     if (!updatePost) {
       return res.sendStatus(httpStatuses.NOT_FOUND_404);
@@ -131,7 +137,7 @@ export class PostController {
     }
   }
   async deletePostById(req: RequestWithParams<getByIdParam>, res: Response) {
-    const foundPost = await postsService.deletePost(req.params.id);
+    const foundPost = await this.postsService.deletePost(req.params.id);
     if (!foundPost) {
       return res.sendStatus(httpStatuses.NOT_FOUND_404);
     }

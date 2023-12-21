@@ -1,7 +1,7 @@
 import { Request, Response, Router } from "express";
 import { authMiddleware } from "../middlewares/validations/auth.validation";
-import { commentsQueryRepository } from "../query repozitory/queryCommentsRepository";
-import { commentsRepository } from "../repositories/comments-repository";
+import { CommentsQueryRepository } from "../query repozitory/queryCommentsRepository";
+import { CommentsRepository } from "../repositories/comments-repository";
 import { httpStatuses } from "./helpers/send-status";
 import { createPostValidationForComment } from "../middlewares/validations/comments.validation";
 import { CommentModel } from "../domain/schemas/comments.schema";
@@ -12,8 +12,14 @@ import { likeInfoSchema } from "../domain/schemas/likeInfo.schema";
 export const commentsRouter = Router({});
 
 class CommentController {
+  commentsRepository: CommentsRepository;
+  commentsQueryRepository: CommentsQueryRepository;
+  constructor() {
+    this.commentsRepository = new CommentsRepository
+    this.commentsQueryRepository = new CommentsQueryRepository
+  }
   async getCommentById(req: Request, res: Response) {
-    const foundComment = await commentsQueryRepository.findCommentById(
+    const foundComment = await this.commentsQueryRepository.findCommentById(
       req.params.commentId,
     );
     if (foundComment) {
@@ -27,7 +33,7 @@ class CommentController {
     const user = req.user!;
     const commentId = req.params.commentId;
     const existingComment =
-      await commentsQueryRepository.findCommentById(commentId);
+      await this.commentsQueryRepository.findCommentById(commentId);
     if (!existingComment) {
       return res.sendStatus(httpStatuses.NOT_FOUND_404);
     }
@@ -36,7 +42,7 @@ class CommentController {
       return res.sendStatus(httpStatuses.FORBIDDEN_403);
     }
 
-    const updateComment = await commentsRepository.updateComment(
+    const updateComment = await this.commentsRepository.updateComment(
       commentId,
       req.body.content,
     );
@@ -96,7 +102,7 @@ class CommentController {
     const user = req.user!;
     const commentId = req.params.commentId;
 
-    const comment = await commentsQueryRepository.findCommentById(commentId);
+    const comment = await this.commentsQueryRepository.findCommentById(commentId);
     if (!comment) {
       return res.sendStatus(httpStatuses.NOT_FOUND_404);
     }
@@ -104,7 +110,7 @@ class CommentController {
     if (commentUserId !== user.id.toString()) {
       return res.sendStatus(httpStatuses.FORBIDDEN_403);
     }
-    const commentDelete = await commentsRepository.deleteComment(
+    const commentDelete = await this.commentsRepository.deleteComment(
       req.params.commentId,
     );
     if (commentDelete) {

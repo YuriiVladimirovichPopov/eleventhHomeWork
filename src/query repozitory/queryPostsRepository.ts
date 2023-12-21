@@ -1,9 +1,7 @@
 import { CommentsMongoDbType, PostsMongoDbType } from "../types";
-import { PaginatedType } from "../routers/helpers/pagination";
+import { PaginatedType, Paginated } from '../routers/helpers/pagination';
 import { ObjectId, WithId } from "mongodb";
-import { PaginatedPost } from "../models/posts/paginatedQueryPost";
 import { PostsViewModel } from "../models/posts/postsViewModel";
-import { PaginatedComment } from "../models/comments/paginatedQueryComment";
 import mongoose from "mongoose";
 import { CommentModel } from "../domain/schemas/comments.schema";
 import { PostModel } from "../domain/schemas/posts.schema";
@@ -26,14 +24,14 @@ export class QueryPostRepository {
   async findAllPostsByBlogId(
     blogId: string,
     pagination: PaginatedType,
-  ): Promise<PaginatedPost<PostsViewModel>> {
+  ): Promise<Paginated<PostsViewModel>> {
     const filter = { blogId };
     return this._findPostsByFilter(filter, pagination);
   }
 
   async findAllPosts(
     pagination: PaginatedType,
-  ): Promise<PaginatedPost<PostsViewModel>> {
+  ): Promise<Paginated<PostsViewModel>> {
     const filter = {};
     return this._findPostsByFilter(filter, pagination);
   }
@@ -41,7 +39,7 @@ export class QueryPostRepository {
   async _findPostsByFilter(
     filter: {},
     pagination: PaginatedType,
-  ): Promise<PaginatedPost<PostsViewModel>> {
+  ): Promise<Paginated<PostsViewModel>> {
     //TODO filter: {}
     const result: WithId<PostsMongoDbType>[] = await PostModel.find(filter)
       .sort({ [pagination.sortBy]: pagination.sortDirection })
@@ -75,13 +73,12 @@ export class QueryPostRepository {
 
   async findAllCommentsforPostId(
     pagination: PaginatedType,
-  ): Promise<PaginatedComment<CommentsMongoDbType>> {
+  ): Promise<Paginated<CommentsMongoDbType>> {
     const filter = {
       name: { $regex: pagination.searchNameTerm, $options: "i" },
     };
     const result: WithId<WithId<CommentsMongoDbType>>[] =
       await CommentModel.find(filter)
-
         .sort({ [pagination.sortBy]: pagination.sortDirection })
         .skip(pagination.skip)
         .limit(pagination.pageSize)
@@ -99,4 +96,4 @@ export class QueryPostRepository {
   }
 }
 
-export const queryPostRepository = new QueryPostRepository();
+
