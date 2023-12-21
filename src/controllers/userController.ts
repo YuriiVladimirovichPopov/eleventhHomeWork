@@ -12,8 +12,7 @@ import { UsersMongoDbType, RequestWithParams } from "../types";
 export class UserController {
     constructor(
       private usersRepository: UsersRepository,
-      private queryUserRepository: QueryUserRepository) {
-    }
+      private queryUserRepository: QueryUserRepository) { }
   
     async getAllUsers(req: Request, res: Response) {
       const pagination = getUsersPagination(
