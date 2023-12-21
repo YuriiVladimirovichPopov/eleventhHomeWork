@@ -1,5 +1,6 @@
 import { AuthService } from "./application/auth-service";
 import { AuthController } from "./controllers/authController";
+import { UserController } from "./controllers/userController";
 import { QueryUserRepository } from "./query repozitory/queryUserRepository";
 import { DeviceRepository } from "./repositories/device-repository";
 import { UsersRepository } from "./repositories/users-repository";
@@ -18,3 +19,8 @@ export const authController = new AuthController(
     queryUserRepository, 
     deviceRepository
     );
+
+export const userController = new UserController(
+    usersRepository,
+    queryUserRepository
+)    
