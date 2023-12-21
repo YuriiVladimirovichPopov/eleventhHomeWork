@@ -16,10 +16,10 @@ import { DeviceMongoDbType, UsersMongoDbType, RequestWithBody } from "../types";
 
 export class AuthController {
     constructor(
-      protected usersRepository: UsersRepository,
-      protected authService: AuthService,
-      protected queryUserRepository: QueryUserRepository,
-      protected deviceRepository: DeviceRepository) {  }
+      private usersRepository: UsersRepository,
+      private authService: AuthService,
+      private queryUserRepository: QueryUserRepository,
+      private deviceRepository: DeviceRepository) {  }
     
     async login(req: Request, res: Response) {
       const user = await this.authService.checkCredentials(

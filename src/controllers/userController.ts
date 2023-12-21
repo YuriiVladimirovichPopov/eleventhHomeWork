@@ -11,8 +11,8 @@ import { UsersMongoDbType, RequestWithParams } from "../types";
 
 export class UserController {
     constructor(
-      protected usersRepository: UsersRepository,
-      protected queryUserRepository: QueryUserRepository) {
+      private usersRepository: UsersRepository,
+      private queryUserRepository: QueryUserRepository) {
     }
   
     async getAllUsers(req: Request, res: Response) {
