@@ -4,8 +4,10 @@ import { PostsService } from "./application/post-service";
 import { AuthController } from "./controllers/authController";
 import { BlogsController } from "./controllers/blogsController";
 import { CommentController } from "./controllers/commentController";
+import { PostController } from "./controllers/postController";
 import { SecurityController } from "./controllers/securityController";
 import { UserController } from "./controllers/userController";
+import { QueryBlogsRepository } from "./query repozitory/queryBlogsRepository";
 import { CommentsQueryRepository } from "./query repozitory/queryCommentsRepository";
 import { QueryPostRepository } from "./query repozitory/queryPostsRepository";
 import { QueryUserRepository } from "./query repozitory/queryUserRepository";
@@ -18,6 +20,7 @@ const blogService = new BlogService()
 const postsService = new PostsService()
 const commentsRepository = new CommentsRepository()
 const commentsQueryRepository = new CommentsQueryRepository()
+const queryBlogsRepository = new QueryBlogsRepository()
 const queryPostRepository = new QueryPostRepository()
 const usersRepository = new UsersRepository()
 const queryUserRepository = new QueryUserRepository()
@@ -51,5 +54,12 @@ export const blogsController = new BlogsController(
 
 export const commentController = new CommentController(
     commentsRepository,
+    commentsQueryRepository
+)
+
+export const postController = new PostController(
+    postsService,
+    queryBlogsRepository,
+    queryPostRepository,
     commentsQueryRepository
 )
