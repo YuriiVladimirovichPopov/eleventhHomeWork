@@ -16,16 +16,16 @@ import { DeviceRepository } from "./repositories/device-repository";
 import { UsersRepository } from "./repositories/users-repository";
 
 
-const blogService = new BlogService()
-const postsService = new PostsService()
-const commentsRepository = new CommentsRepository()
-const commentsQueryRepository = new CommentsQueryRepository()
-const queryBlogsRepository = new QueryBlogsRepository()
-const queryPostRepository = new QueryPostRepository()
-const usersRepository = new UsersRepository()
-const queryUserRepository = new QueryUserRepository()
-const deviceRepository = new DeviceRepository()
-const authService = new AuthService(usersRepository, queryUserRepository)
+export const blogService = new BlogService()
+export const postsService = new PostsService()
+export const commentsRepository = new CommentsRepository()
+export const commentsQueryRepository = new CommentsQueryRepository()
+export const queryBlogsRepository = new QueryBlogsRepository()
+export const queryPostRepository = new QueryPostRepository()
+export const usersRepository = new UsersRepository()
+export const queryUserRepository = new QueryUserRepository()
+export const deviceRepository = new DeviceRepository()
+export const authService = new AuthService(usersRepository, queryUserRepository)
 
 
 export const authController = new AuthController(

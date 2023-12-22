@@ -6,10 +6,9 @@ import { Paginated } from "../routers/helpers/pagination";
 import { UserCreateViewModel } from "../models/users/createUser";
 import { UserModel } from "../domain/schemas/users.schema";
 import { randomUUID } from "crypto";
+import { PostsViewModel } from "../models/posts/postsViewModel";
 
 export class UsersRepository {
-  
-  static findByLoginOrEmail: any; // TODO: спросить у Вани что это и как с этим бороться
   constructor() { }
   
   _userMapper(user: UsersMongoDbType) {
@@ -91,7 +90,7 @@ export class UsersRepository {
     };
   }
 
-  async deleteUser(id: string): Promise<boolean> {
+  /* async deleteUser(id: string): Promise<boolean> {  
     if (!ObjectId.isValid(id)) {
       return false;
     }
@@ -99,8 +98,12 @@ export class UsersRepository {
     const foundUserById = await UserModel.deleteOne({ _id: new ObjectId(id) });
 
     return foundUserById.deletedCount === 1;
-  }
+  } */
 
+  async deleteUserById(id: string): Promise<PostsViewModel | boolean> {  //todo  come throw to usersRepo
+    const deletedUser = await UserModel.deleteOne({ _id: new ObjectId(id) });
+    return deletedUser.deletedCount === 1;
+  }
   async deleteAllUsers(): Promise<boolean> {
     try {
       const result = await UserModel.deleteMany({});

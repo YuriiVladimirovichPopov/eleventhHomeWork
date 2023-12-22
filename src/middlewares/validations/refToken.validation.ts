@@ -1,9 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import { httpStatuses } from "../../routers/helpers/send-status";
-import { AuthService } from "../../application/auth-service";
 import { jwtService } from "../../application/jwt-service";
-import { DeviceRepository } from "../../repositories/device-repository";
-import { QueryUserRepository } from "../../query repozitory/queryUserRepository";
+import { authService, deviceRepository, queryUserRepository } from "../../composition-root";
 
 export async function refTokenMiddleware(
   req: Request,
@@ -17,19 +15,19 @@ export async function refTokenMiddleware(
         .status(httpStatuses.UNAUTHORIZED_401)
         .send({ message: "Refresh token not found" });
 
-    const isValid = await AuthService.validateRefreshToken(refreshToken);
+    const isValid = await authService.validateRefreshToken(refreshToken);
     if (!isValid)
       return res
         .status(httpStatuses.UNAUTHORIZED_401)
         .send({ message: "Invalid refresh token" });
 
-    const user = await QueryUserRepository.findUserById(isValid.userId);
+    const user = await queryUserRepository.findUserById(isValid.userId);
     if (!user)
       return res
         .status(httpStatuses.UNAUTHORIZED_401)
         .send({ message: "User not found", isValid: isValid });
 
-    const device = await DeviceRepository.findDeviceByUser(isValid.deviceId);
+    const device = await deviceRepository.findDeviceByUser(isValid.deviceId);  
     if (!device)
       return res
         .status(httpStatuses.UNAUTHORIZED_401)

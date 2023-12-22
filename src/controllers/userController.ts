@@ -45,7 +45,7 @@ export class UserController {
       return res.status(httpStatuses.CREATED_201).send(createdUser);
     }
     async deleteUserById(req: RequestWithParams<getByIdParam>, res: Response) {
-      const foundUser = await this.queryUserRepository.deleteUserById(
+      const foundUser = await this.usersRepository.deleteUserById(
         req.params.id,
       );
       if (!foundUser) {

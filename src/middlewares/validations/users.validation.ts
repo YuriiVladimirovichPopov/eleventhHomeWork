@@ -1,6 +1,6 @@
 import { body } from "express-validator";
 import { inputValidationErrors } from "../input-validation-middleware";
-import { UsersRepository } from "../../repositories/users-repository";
+import { usersRepository } from "../../composition-root";
 
 const loginValidation = body("login")
   .isString()
@@ -8,7 +8,7 @@ const loginValidation = body("login")
   .trim()
   .withMessage("incorrect login")
   .custom(async (login) => {
-    const user = await UsersRepository.findByLoginOrEmail(login);
+    const user = await usersRepository.findByLoginOrEmail(login);
     if (user) {
       throw new Error("User already exists");
     }
@@ -28,7 +28,7 @@ const emailValidation = body("email")
   .matches(/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/)
   .withMessage("incorrect email")
   .custom(async (email) => {
-    const user = await UsersRepository.findByLoginOrEmail(email);
+    const user = await usersRepository.findByLoginOrEmail(email);
     if (user) {
       throw new Error("User already exists");
     }

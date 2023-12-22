@@ -13,8 +13,6 @@ import { UsersRepository } from "../repositories/users-repository";
 import { QueryUserRepository } from "../query repozitory/queryUserRepository";
 
 export class AuthService {
-  
-  static validateRefreshToken: any;   // TODO: это не нравится!!!  ref token middleware
   constructor(
     protected usersRepository: UsersRepository,
     protected queryUserRepository: QueryUserRepository

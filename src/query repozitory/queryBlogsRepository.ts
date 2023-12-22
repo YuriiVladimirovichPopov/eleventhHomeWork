@@ -7,7 +7,7 @@ import { BlogModel } from "../domain/schemas/blogs.schema";
 import { isValidObjectId } from "mongoose";
 
 export class QueryBlogsRepository {
-  static findBlogById: any;
+
   _blogMapper(blog: BlogsMongoDbType): BlogViewModel {
     return {
       id: blog._id.toString(),

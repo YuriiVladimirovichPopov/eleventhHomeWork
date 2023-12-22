@@ -2,7 +2,7 @@ import { DeviceMongoDbType } from "../types";
 import { DeviceModel } from "../domain/schemas/device.schema";
 
 export class DeviceRepository {
-  static findDeviceByUser: any;
+  
 
   // TODO: may be come through to deviceQueryRepository
   async findDeviceByUser(deviceId: string): Promise<DeviceMongoDbType | null> {

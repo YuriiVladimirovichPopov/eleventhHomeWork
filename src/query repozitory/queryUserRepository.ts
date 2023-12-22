@@ -11,7 +11,6 @@ import mongoose from "mongoose";
 const filter: mongoose.FilterQuery<UsersMongoDbType> = {};
 
 export class QueryUserRepository {
-  static findUserById: any;    // TODO: ref token middleware
 
   _userMapper(user: UsersMongoDbType) {
     return {
@@ -60,8 +59,5 @@ export class QueryUserRepository {
     return userById;
   }
 
-  async deleteUserById(id: string): Promise<PostsViewModel | boolean> {
-    const deletedUser = await UserModel.deleteOne({ _id: new ObjectId(id) });
-    return deletedUser.deletedCount === 1;
-  }
+  
 }
