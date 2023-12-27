@@ -38,7 +38,7 @@ const emailValidation = body("email")
 const loginOrEmailValidation = body("loginOrEmail")
   .isString()
   .trim()
-  .isLength({ min: 3, max: 30 }); //todo
+  .isLength({ min: 3, max: 30 }); 
 
 export const loginUserValidation = [loginOrEmailValidation, passwordValidation];
 export const createUserValidation = [

@@ -5,8 +5,10 @@ import { BlogViewModel } from "../models/blogs/blogsViewModel";
 import { BlogInputModel } from "../models/blogs/blogsInputModel";
 import { createBlog } from "./blog-test-helpers";
 import { RouterPaths } from "../routerPaths";
-import { MongoClient } from "mongodb";
 import { BlogModel } from "../domain/schemas/blogs.schema";
+import mongoose from "mongoose";
+import dotenv from "dotenv";
+dotenv.config();
 
 const getRequest = () => {
   return request(app);
@@ -14,20 +16,19 @@ const getRequest = () => {
 let connection: any;
 let db;
 
-describe("tests for /posts", () => {
+describe("tests for /blogs", () => {
+  const mongoURI = process.env.mongoUrl || `mongodb://0.0.0.0:27017`;
+
   beforeAll(async () => {
-    connection = await MongoClient.connect(process.env.mongoUrl!, {
-      // @ts-ignore
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-    });
-    db = await connection.db();
-    await getRequest()
-      .delete("/testing/all-data")
-      .set("Authorization", "Basic YWRtaW46cXdlcnR5");
+    console.log("Connect to db", mongoURI);
+    
+    await mongoose.connect(mongoURI);
+
+    await getRequest().delete("/testing/all-data");
   });
+
   afterAll(async () => {
-    await connection.close();
+    await mongoose.connection.close();
   });
 
   it("should return 200 and blog", async () => {

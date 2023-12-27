@@ -4,8 +4,10 @@ import { httpStatuses } from "../routers/helpers/send-status";
 import { PostsViewModel } from "../models/posts/postsViewModel";
 import { PostsInputModel } from "../models/posts/postsInputModel";
 import { RouterPaths } from "../routerPaths";
-import { MongoClient } from "mongodb";
 import { BlogInputModel } from "../models/blogs/blogsInputModel";
+import mongoose from "mongoose";
+import dotenv from "dotenv";
+dotenv.config();
 
 const getRequest = () => {
   return request(app);
@@ -15,21 +17,20 @@ let connection: any;
 let db;
 
 describe("tests for /blogs", () => {
+  const mongoURI = process.env.mongoUrl || `mongodb://0.0.0.0:27017`;
+
   beforeAll(async () => {
-    connection = await MongoClient.connect(process.env.mongoUrl!, {
-      // @ts-ignore
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-    });
-    db = await connection.db();
-    await getRequest()
-      .delete("/testing/all-data")
-      .set("Authorization", "Basic YWRtaW46cXdlcnR5");
+    console.log("Connect to db", mongoURI);
+    
+    await mongoose.connect(mongoURI);
+
+    await getRequest().delete("/testing/all-data");
   });
 
   afterAll(async () => {
-    await connection.close();
+    await mongoose.connection.close();
   });
+
 
   it("should return 200 and post", async () => {
     await getRequest().get("/blogs").expect(httpStatuses.OK_200);

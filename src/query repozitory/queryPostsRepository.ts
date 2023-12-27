@@ -40,7 +40,6 @@ export class QueryPostRepository {
     filter: {},
     pagination: PaginatedType,
   ): Promise<Paginated<PostsViewModel>> {
-    //TODO filter: {}
     const result: WithId<PostsMongoDbType>[] = await PostModel.find(filter)
       .sort({ [pagination.sortBy]: pagination.sortDirection })
       .skip(pagination.skip)

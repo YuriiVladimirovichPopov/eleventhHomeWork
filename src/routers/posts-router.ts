@@ -10,6 +10,7 @@ import {
 import { authMiddleware } from "../middlewares/validations/auth.validation";
 import { createPostValidationForComment } from "../middlewares/validations/comments.validation";
 import { postController } from "../composition-root";
+import { userValidationMiddleware } from "../middlewares/validations/user.id.validation";
 
 export const postsRouter = Router({});
 
@@ -22,6 +23,7 @@ postsRouter.get(
 postsRouter.post(
   "/:postId/comments",
   authMiddleware,
+  userValidationMiddleware,  
   createPostValidationForComment,
   postController.createCommentsByPostId.bind(postController),
 );

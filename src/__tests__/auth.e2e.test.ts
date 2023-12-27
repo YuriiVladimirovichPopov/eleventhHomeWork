@@ -44,11 +44,7 @@ describe("Mongoose integration", () => {
 
   beforeAll(async () => {
     console.log("Connect to db", mongoURI);
-    //await client.close();
-    //const connection = await client.connect()
-    //db = connection.db();
-
-    //.set("Authorization", "Basic YWRtaW46cXdlcnR5");
+    
     await mongoose.connect(mongoURI);
 
     await getRequest().delete("/testing/all-data");
@@ -70,8 +66,8 @@ describe("Mongoose integration", () => {
   it("should return 429 status code", async () => {
     for (const endpoint of endpoints) {
       for (let i = 0; i <= 5; i++) {
-        console.log(endpoint);
-        console.log(i);
+        //console.log(endpoint);
+        //console.log(i);
         const res = await getRequest().post(endpoint).send();
         if (i === 5) {
           expect(res.status).toBe(httpStatuses.TOO_MANY_REQUESTS_429);

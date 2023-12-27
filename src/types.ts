@@ -2,7 +2,7 @@ import { Request } from "express";
 import { ObjectId } from "mongodb";
 import { UserViewModel } from "./models/users/userViewModel";
 import { likeInfoViewModel } from "./models/likes/likeInfoViewModel";
-import { likeStatus } from "./models/likes/likeInputModel";
+import { ReactionStatusEnum } from "./domain/schemas/likeInfo.schema";
 
 export class BlogsMongoDbType {
   constructor(
@@ -93,9 +93,10 @@ export class RateLimitMongoDbType {
 export class LikeModelMongoDbType {
   constructor(
     public _id: ObjectId,
+    //public parentId: string,
     public userId: string,
     public commentId: string,
-    public type: likeStatus,
+    public myStatus: ReactionStatusEnum,
     public createdAt: Date,
     public updatedAt: boolean,
   ) {}

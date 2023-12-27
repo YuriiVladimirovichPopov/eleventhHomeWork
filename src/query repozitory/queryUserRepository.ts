@@ -1,11 +1,7 @@
-import { PaginatedType } from "../routers/helpers/pagination";
-import { UserViewModel } from "../models/users/userViewModel";
-import { Paginated } from "../routers/helpers/pagination";
 import { randomUUID } from "crypto";
 import { UsersMongoDbType } from "../types";
 import { UserModel } from "../domain/schemas/users.schema";
-import { ObjectId, WithId } from "mongodb";
-import { PostsViewModel } from "../models/posts/postsViewModel";
+import { ObjectId } from "mongodb";
 import mongoose from "mongoose";
 
 const filter: mongoose.FilterQuery<UsersMongoDbType> = {};
@@ -20,24 +16,6 @@ export class QueryUserRepository {
       createdAt: user.createdAt,
       emailConfirmation: user.emailConfirmation,
       recoveryCode: randomUUID(),
-    };
-  }
-  //TODO переделал этот метод. надо проверить на работоспособность
-  async findAllUsers(
-    pagination: PaginatedType,
-  ): Promise<Paginated<UserViewModel>> {
-    const findUsers = await UserModel.create(pagination);
-    const result: WithId<UsersMongoDbType>[] = await UserModel.find(filter);
-
-    const totalCount: number = await UserModel.countDocuments(filter);
-    const pageCount: number = Math.ceil(totalCount / pagination.pageSize);
-
-    return {
-      pagesCount: pageCount,
-      page: pagination.pageNumber,
-      pageSize: pagination.pageSize,
-      totalCount: totalCount,
-      items: result.map((findUsers) => this._userMapper(findUsers)),
     };
   }
 

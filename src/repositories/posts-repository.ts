@@ -6,7 +6,7 @@ import { CommentViewModel } from "../models/comments/commentViewModel";
 import { CommentModel } from "../domain/schemas/comments.schema";
 import { PostModel } from "../domain/schemas/posts.schema";
 import { QueryBlogsRepository } from "../query repozitory/queryBlogsRepository";
-import { likeStatus } from "../models/likes/likeInputModel";
+import { ReactionStatusEnum } from "../domain/schemas/likeInfo.schema";
 
 export class PostsRepository {
   private queryBlogsRepository: QueryBlogsRepository;
@@ -50,6 +50,7 @@ export class PostsRepository {
     postId: string,
     content: string,
     commentatorInfo: { userId: string; userLogin: string },
+    
   ): Promise<CommentViewModel> {
     const createCommentForPost: CommentsMongoDbType = {
       _id: new ObjectId(),
@@ -60,7 +61,7 @@ export class PostsRepository {
       likeInfo: {
         likesCount: 0,
         disLikesCount: 0,
-        myStatus: likeStatus.None,
+        myStatus: ReactionStatusEnum.None,
       },
     };
 

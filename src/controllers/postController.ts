@@ -48,13 +48,13 @@ export class PostController {
       if (!postWithId) {
         return res.sendStatus(httpStatuses.NOT_FOUND_404);
       }
-  
+      console.log('req.user:', req.user);
       const comment: CommentViewModel | null =
         await postsRepository.createCommentforPostId(
           postWithId.id,
           req.body.content,
           {
-            userId: req.user!.id.toString(),
+            userId: req.user!.id,  //TODO: здесь ошибка
             userLogin: req.user!.login,
           },
         );

@@ -17,7 +17,7 @@ export class AuthService {
     protected usersRepository: UsersRepository,
     protected queryUserRepository: QueryUserRepository
     ) {  }
-
+//todo надо разобраться
   async createUser(
     login: string,
     email: string,
@@ -173,7 +173,7 @@ export class AuthService {
     );
     return refTokenByDeviceId.matchedCount === 1;
   }
-  //todo: may by to come through to devise servise
+  
   async addNewDevice(deviceId: string): Promise<DeviceMongoDbType | null> {
     const user = await this.queryUserRepository.findUserById(deviceId); // TODO тут ошибка
     if (!user) {
@@ -192,14 +192,14 @@ export class AuthService {
       return null;
     }
   }
-   // TODO: this method need to come through in authServise may be
+
    async resetPasswordWithRecoveryCode(
     _id: ObjectId,
     newPassword: string,
   ): Promise<any> {
     // TODO: any don't like. need to change this Promise
     const newPasswordSalt = await bcrypt.genSalt(10);
-    const newHashedPassword = await this._generateHash(   // TODO:тут зацикливается
+    const newHashedPassword = await this._generateHash(   
       newPassword,
       newPasswordSalt,
     );

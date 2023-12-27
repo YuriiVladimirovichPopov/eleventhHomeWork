@@ -6,8 +6,9 @@ import { UserInputModel } from "../models/users/userInputModel";
 import { createUser } from "../__tests__/user-test-helpers";
 import { UserModel } from "../domain/schemas/users.schema";
 import { RouterPaths } from "../routerPaths";
-import { MongoClient } from "mongodb";
 import mongoose from "mongoose";
+import dotenv from "dotenv";
+dotenv.config();
 
 const getRequest = () => {
   return request(app);
@@ -16,17 +17,14 @@ let connection: any;
 let db;
 
 describe("tests for /users", () => {
+  const mongoURI = process.env.mongoUrl || `mongodb://0.0.0.0:27017`;
+
   beforeAll(async () => {
-    connection = await MongoClient.connect(process.env.mongoUrl!, {
-      // @ts-ignore
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-    });
-    db = await connection.db();
-    await mongoose.connect(db);
-    await getRequest()
-      .delete("/testing/all-data")
-      .set("Authorization", "Basic YWRtaW46cXdlcnR5");
+    console.log("Connect to db", mongoURI);
+    
+    await mongoose.connect(mongoURI);
+
+    await getRequest().delete("/testing/all-data");
   });
 
   afterAll(async () => {

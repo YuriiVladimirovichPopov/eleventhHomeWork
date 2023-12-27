@@ -3,8 +3,6 @@ import { DeviceModel } from "../domain/schemas/device.schema";
 
 export class DeviceRepository {
   
-
-  // TODO: may be come through to deviceQueryRepository
   async findDeviceByUser(deviceId: string): Promise<DeviceMongoDbType | null> {
     try {
       const device = await DeviceModel.findOne({ deviceId });
@@ -19,7 +17,7 @@ export class DeviceRepository {
     const device = await DeviceModel.findOne({ deviceId: deviceId });
     return device;
   }
-  // TODO: may be come through to deviceQueryRepository
+
   async getAllDevicesByUser(userId: string): Promise<DeviceMongoDbType[]> {
     try {
       const devices = await DeviceModel.find(

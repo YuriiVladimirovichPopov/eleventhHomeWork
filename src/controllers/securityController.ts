@@ -11,7 +11,7 @@ export class SecurityController {
       protected deviceRepository: DeviceRepository) {}
     
       async devices(req: Request, res: Response) {
-      const refreshToken = req.cookies.refreshToken; // унести в мидлвар
+      const refreshToken = req.cookies.refreshToken; // todo унести в мидлвар
       if (!refreshToken) {
         return res
           .status(httpStatuses.UNAUTHORIZED_401)
@@ -70,7 +70,7 @@ export class SecurityController {
       const isValid = await this.authService.validateRefreshToken(refreshToken);
   
       if (!isValid || !isValid.userId || !isValid.deviceId) {
-        // унести в мидлварю всЁ
+        // todo унести в мидлварю всЁ
         return res
           .status(httpStatuses.UNAUTHORIZED_401)
           .send({ message: "Unauthorized" });

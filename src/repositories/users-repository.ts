@@ -79,9 +79,9 @@ export class UsersRepository {
     });
     return user;
   }
-
+   //todo не понимать!!!!
   async createUser(newUser: UsersMongoDbType): Promise<UserCreateViewModel> {
-    await UserModel.insertMany(newUser);
+    await UserModel.insertMany(newUser);   
     return {
       id: newUser._id.toString(),
       login: newUser.login,
@@ -90,17 +90,7 @@ export class UsersRepository {
     };
   }
 
-  /* async deleteUser(id: string): Promise<boolean> {  
-    if (!ObjectId.isValid(id)) {
-      return false;
-    }
-
-    const foundUserById = await UserModel.deleteOne({ _id: new ObjectId(id) });
-
-    return foundUserById.deletedCount === 1;
-  } */
-
-  async deleteUserById(id: string): Promise<PostsViewModel | boolean> {  //todo  come throw to usersRepo
+  async deleteUserById(id: string): Promise<PostsViewModel | boolean> { 
     const deletedUser = await UserModel.deleteOne({ _id: new ObjectId(id) });
     return deletedUser.deletedCount === 1;
   }
