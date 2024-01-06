@@ -40,7 +40,13 @@ export class PostsRepository {
       content: model.content,
       blogId: model.blogId,
       blogName: blog.name,
-      createdAt: new Date().toISOString(),
+      createdAt: new Date().toISOString(), //todo: should be 12 home work
+      /* likeInfoSchema: {
+        likesCount: 0,
+        disLikesCount: 0,
+        myStatus: ReactionStatusEnum.None
+      } */
+
     };
     await PostModel.insertMany(createPostForBlog);
     return this.postMapper(createPostForBlog);
@@ -61,11 +67,10 @@ export class PostsRepository {
       likeInfo: {
         likesCount: 0,
         disLikesCount: 0,
-        myStatus: ReactionStatusEnum.None,
       },
     };
 
-    await CommentModel.insertMany({ ...createCommentForPost });
+    await CommentModel.create({ ...createCommentForPost })   //be insertMany
     return {
       id: createCommentForPost._id.toString(),
       content: createCommentForPost.content,
@@ -102,4 +107,4 @@ export class PostsRepository {
   }
 }
 
-export const postsRepository = new PostsRepository();
+//export const postsRepository = new PostsRepository();

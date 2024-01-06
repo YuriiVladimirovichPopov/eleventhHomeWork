@@ -12,7 +12,7 @@ export const descriptionValid = {
 };
 
 export const BlogSchema = new mongoose.Schema<WithId<BlogsMongoDbType>>({
-  // _id: { type: ObjectId, required: true },
+  _id: { type: mongoose.Schema.Types.ObjectId, required: true },   
   name: {
     type: String,
     required: true,
