@@ -1,4 +1,4 @@
-import { Response, Request } from "express";
+import { Response, Request, json } from "express";
 import { ObjectId } from "bson";
 import { error } from "console";
 import { randomUUID } from "crypto";
@@ -22,13 +22,15 @@ export class AuthController {
       private deviceRepository: DeviceRepository) {  }
     
     async login(req: Request, res: Response) {
+      console.log(1)
       const user = await this.authService.checkCredentials(
         req.body.loginOrEmail,
         req.body.password,
       );
+      console.log(2)
       if (user) {
-        const deviceId = randomUUID();
-        const userId = user._id.toString();
+        const deviceId = new ObjectId().toString();
+        const userId = user._id.toString();   //  TODO: be _id.toString()
         const accessToken = await jwtService.createJWT(user);
         const refreshToken = await jwtService.createRefreshToken(
           userId,
@@ -43,7 +45,9 @@ export class AuthController {
           deviceId,
           userId,
         };
-        await this.authService.addNewDevice(newDevice.deviceId); //унести в сервис, вроде получилось!!!   тут ошибка!!! не понимать!!
+        console.log(3)
+        await this.authService.addNewDevice(newDevice); 
+        console.log(4)//унести в сервис, вроде получилось!!!   тут ошибка!!! не понимать!!
         res
           .cookie("refreshToken", refreshToken, { httpOnly: true, secure: true })
           .status(httpStatuses.OK_200)

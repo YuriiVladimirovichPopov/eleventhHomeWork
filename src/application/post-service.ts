@@ -25,14 +25,14 @@ export class PostsService {
   async findPostById(id: string): Promise<PostsViewModel | null> {
     return await this.queryPostRepository.findPostById(id);
   }
-  async createPost(data: PostsInputModel): Promise<PostsViewModel | null> {
+  async createPost(data: PostsInputModel): Promise<PostsViewModel | null> {   //TODO: change PostsInputModel
     const blog = await this.queryBlogsRepository.findBlogById(data.blogId);
     if (!blog) return null;
 
     const newPost = {
       ...data,
       blogName: blog.name,
-      createdAt: new Date().toISOString(),
+      createdAt: new Date().toISOString(), // TODO: здесь добавляем нехватающие элементы
     };
     const createdPost = await this.postsRepository.createdPostForSpecificBlog(data);
 

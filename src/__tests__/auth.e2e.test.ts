@@ -48,6 +48,8 @@ describe("Mongoose integration", () => {
     await mongoose.connect(mongoURI);
 
     await getRequest().delete("/testing/all-data");
+
+    jest.clearAllMocks() //TODO: надо посмотреть и если что добавить метод в другие тесты 
   });
 
   afterAll(async () => {

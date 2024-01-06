@@ -23,7 +23,7 @@ export const blogNameValid = {
 };
 
 export const PostSchema = new mongoose.Schema<WithId<PostsMongoDbType>>({
-  //_id: { type: ObjectId, required: true },
+  _id: { type: mongoose.Schema.Types.ObjectId, required: true },
   title: {
     type: String,
     required: true,

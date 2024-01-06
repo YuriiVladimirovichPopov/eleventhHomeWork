@@ -77,7 +77,6 @@ export const getPaginationFromQuery = (
 export const getDefaultPagination = (
   query: PaginatedType,
 ): DefaultPagination => {
-  // any не нравится
   const defaultValues: DefaultPagination = {
     sortBy: "createdAt",
     sortDirection: "desc",

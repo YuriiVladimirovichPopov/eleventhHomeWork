@@ -23,7 +23,7 @@ postsRouter.get(
 postsRouter.post(
   "/:postId/comments",
   authMiddleware,
-  userValidationMiddleware,  
+  //userValidationMiddleware,  
   createPostValidationForComment,
   postController.createCommentsByPostId.bind(postController),
 );
@@ -37,7 +37,8 @@ postsRouter.post(
   postController.createPostByBlogId.bind(postController),
 );
 
-postsRouter.get("/:id", postController.getPostById.bind(postController));
+postsRouter.get("/:id", 
+  postController.getPostById.bind(postController));
 
 postsRouter.put(
   "/:id",

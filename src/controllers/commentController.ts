@@ -30,7 +30,7 @@ export class CommentController {
         return res.sendStatus(httpStatuses.NOT_FOUND_404);
       }
   
-      if (existingComment.commentatorInfo.userId !== user.id) { //user._id.toString()
+      if (existingComment.commentatorInfo.userId !== user.id.toString()) { //user._id.toString()
         return res.sendStatus(httpStatuses.FORBIDDEN_403);
       }
   
@@ -99,7 +99,7 @@ export class CommentController {
         return res.sendStatus(httpStatuses.NOT_FOUND_404);
       }
       const commentUserId = comment.commentatorInfo.userId;
-      if (commentUserId !== user.id) {   //user._id.toString()
+      if (commentUserId !== user.id.toString()) {   //user._id.toString()
         return res.sendStatus(httpStatuses.FORBIDDEN_403);
       }
       const commentDelete = await this.commentsRepository.deleteComment(

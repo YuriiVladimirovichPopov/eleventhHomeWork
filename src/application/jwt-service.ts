@@ -2,7 +2,7 @@ import jwt from "jsonwebtoken";
 import { settings } from "../settings";
 import { UsersMongoDbType } from "../types";
 
-type Payload = {
+export type Payload = {
   userId: string;
   deviceId: string;
   iat: number;
@@ -23,7 +23,7 @@ class JWTService {
 
   async getUserIdByToken(token: string): Promise<string | null> {
     try {
-      const result = jwt.verify(token, settings.accessTokenSecret1) as Payload; //типизировать
+      const result = jwt.verify(token, settings.accessTokenSecret1) as Payload; //TODO: типизировать
       return result.userId;
     } catch (error) {
       return null;

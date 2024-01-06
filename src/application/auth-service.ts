@@ -11,6 +11,7 @@ import { UserCreateViewModel } from "../models/users/createUser";
 import { DeviceModel } from "../domain/schemas/device.schema";
 import { UsersRepository } from "../repositories/users-repository";
 import { QueryUserRepository } from "../query repozitory/queryUserRepository";
+import {Request} from "express"
 
 export class AuthService {
   constructor(
@@ -65,10 +66,12 @@ export class AuthService {
     return user;
   }
  
-  async checkAndFindUserByToken(token: string) {
+  async checkAndFindUserByToken(req: Request, token: string) {
     try {
       const result: any = Jwt.verify(token, settings.JWT_SECRET); // todo: any don't like. Need change
       const user = await this.queryUserRepository.findUserById(result.userId);
+      // console.log({user: user});
+      // req.body.user = user; //todo: добавили
       return user;
     } catch (error) {
       return null;
@@ -88,7 +91,7 @@ export class AuthService {
     return foundUserByEmail.matchedCount === 1;
   }
 
-  async validateRefreshToken(refreshToken: string): Promise<any> {
+  async validateRefreshToken(refreshToken: string): Promise<any> {   // TODO any don't like. Need change
     try {
       const payload = Jwt.verify(refreshToken, settings.refreshTokenSecret2);
       return payload;
@@ -174,15 +177,8 @@ export class AuthService {
     return refTokenByDeviceId.matchedCount === 1;
   }
   
-  async addNewDevice(deviceId: string): Promise<DeviceMongoDbType | null> {
-    const user = await this.queryUserRepository.findUserById(deviceId); // TODO тут ошибка
-    if (!user) {
-      return null;
-    }
-    const newDevice = new DeviceModel({
-      _id: new ObjectId(deviceId),
-      deviceId: deviceId,
-    });
+  async addNewDevice(device: DeviceMongoDbType): Promise<DeviceMongoDbType | null> {
+    const newDevice = new DeviceModel(device);
 
     try {
       await newDevice.save();

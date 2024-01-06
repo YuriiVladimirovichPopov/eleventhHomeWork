@@ -19,7 +19,6 @@ export class BlogsRepository {
   async createBlog(newBlog: BlogsMongoDbType): Promise<BlogViewModel> {
     const blog = new BlogModel(newBlog);
     await blog.save();
-    //await BlogModel.create(newBlog);
     return this._blogMapper(newBlog);
   }
 

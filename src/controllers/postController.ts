@@ -7,10 +7,10 @@ import { PostsViewModel } from "../models/posts/postsViewModel";
 import { QueryBlogsRepository } from "../query repozitory/queryBlogsRepository";
 import { CommentsQueryRepository } from "../query repozitory/queryCommentsRepository";
 import { QueryPostRepository } from "../query repozitory/queryPostsRepository";
-import { postsRepository } from "../repositories/posts-repository";
 import { Paginated, getPaginationFromQuery, PaginatedType } from "../routers/helpers/pagination";
 import { httpStatuses } from "../routers/helpers/send-status";
-import { RequestWithBody, RequestWithParams } from "../types";
+import { RequestWithBody, RequestWithParams } from '../types';
+import { postsRepository, queryUserRepository, usersRepository } from '../composition-root';
 
 
 export class PostController {
@@ -18,7 +18,7 @@ export class PostController {
       private postsService: PostsService,
       private queryBlogsRepository: QueryBlogsRepository,
       private queryPostRepository: QueryPostRepository,
-      private commentsQueryRepository: CommentsQueryRepository
+      private commentsQueryRepository: CommentsQueryRepository,
     ) { }
     
     async getCommentsByPostId(
@@ -42,24 +42,36 @@ export class PostController {
         );
       return res.status(httpStatuses.OK_200).send(allCommentsForPostId);
     }
+
     async createCommentsByPostId(req: Request, res: Response) {
+      console.log(666)
       const postWithId: PostsViewModel | null =
         await this.queryPostRepository.findPostById(req.params.postId);
+        console.log(postWithId, "post with id: " + req.params.postId);
       if (!postWithId) {
         return res.sendStatus(httpStatuses.NOT_FOUND_404);
       }
-      console.log('req.user:', req.user);
+      console.log('req.body:', req.body);
+
+      const userLogin = await queryUserRepository.findLoginById(req.body.userId)
+      console.log('login', userLogin)
+      if (!userLogin) {
+        return res.status(httpStatuses.NOT_FOUND_404).send('User not found');
+      }
+      
       const comment: CommentViewModel | null =
         await postsRepository.createCommentforPostId(
           postWithId.id,
           req.body.content,
+          
           {
-            userId: req.user!.id,  //TODO: здесь ошибка
-            userLogin: req.user!.login,
+            userId: req.body.userId,  
+            userLogin 
           },
         );
       return res.status(httpStatuses.CREATED_201).send(comment);
     }
+
     async getAllPosts(
       req: Request,
       res: Response<Paginated<PostsViewModel>>,

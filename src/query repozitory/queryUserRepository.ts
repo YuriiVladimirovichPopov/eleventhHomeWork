@@ -19,9 +19,9 @@ export class QueryUserRepository {
     };
   }
 
-  async findUserById(_id: string): Promise<UsersMongoDbType | null> {
+  async findUserById(id: string): Promise<UsersMongoDbType | null> { 
     const userById = await UserModel.findOne(
-      { _id: new ObjectId() },
+      { _id: new mongoose.Types.ObjectId(id) },
       {
         projection: {
           passwordSalt: 0,
@@ -37,5 +37,12 @@ export class QueryUserRepository {
     return userById;
   }
 
-  
+  async findLoginById(userId: string): Promise<string | null> {
+    const user = await this.findUserById(userId)
+    if (!user) { 
+      return null 
+    }
+
+    return user.login
+  }
 }

@@ -20,7 +20,7 @@ export const inputValidationErrors = (
   res: Response,
   next: NextFunction,
 ) => {
-  const errors = validationResult(req).formatWith((error: any) => ({
+  const errors = validationResult(req).formatWith((error: any) => ({  //TODO: any don't like. Need change
     message: error.msg,
     field: error.path,
   }));

@@ -7,8 +7,9 @@ declare global {
     export interface Request {
       userId?: string;
       deviceId?: string;
-      user?: UserViewModel | null;
-      //user: UsersMongoDbType;
+      user?: UserViewModel | null | undefined;
+      //userLogin: string;
+      //user: UsersMongoDbType | null;
     }
   }
 }

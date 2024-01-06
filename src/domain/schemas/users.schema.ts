@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 import { UsersMongoDbType } from "../../types";
-import { WithId } from "mongodb";
 import { EmailConfirmationSchema } from "./emailConfirmation.schema";
+import { WithId } from 'mongodb';
 
 
 export const loginValid = {
@@ -19,8 +19,8 @@ export const loginOrEmailValid = {
   maxLength: 30,
 };
 
-export const UserSchema = new mongoose.Schema<WithId<UsersMongoDbType>>({
-  //_id: { type: ObjectId, required: true },
+export const UserSchema = new mongoose.Schema<UsersMongoDbType>({
+  _id: { type: mongoose.Schema.Types.ObjectId, required: true },
   login: { type: String, required: true, minLength: loginValid.minLength, maxLength: loginValid.maxLength  },
   email: { type: String, required: true },
   createdAt: { type: String, required: true },
