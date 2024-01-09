@@ -1,7 +1,6 @@
-import { Response, Request, json } from "express";
+import { Response, Request } from "express";
 import { ObjectId } from "bson";
 import { error } from "console";
-import { randomUUID } from "crypto";
 import { emailAdapter } from "../adapters/email-adapter";
 import { AuthService } from "../application/auth-service";
 import { jwtService } from "../application/jwt-service";
@@ -30,7 +29,7 @@ export class AuthController {
       console.log(2)
       if (user) {
         const deviceId = new ObjectId().toString();
-        const userId = user._id.toString();   //  TODO: be _id.toString()
+        const userId = user._id.toString();   
         const accessToken = await jwtService.createJWT(user);
         const refreshToken = await jwtService.createRefreshToken(
           userId,
@@ -47,7 +46,7 @@ export class AuthController {
         };
         console.log(3)
         await this.authService.addNewDevice(newDevice); 
-        console.log(4)//унести в сервис, вроде получилось!!!   тут ошибка!!! не понимать!!
+        console.log(4)
         res
           .cookie("refreshToken", refreshToken, { httpOnly: true, secure: true })
           .status(httpStatuses.OK_200)
@@ -76,7 +75,7 @@ export class AuthController {
           .status(httpStatuses.NO_CONTENT_204)
           .send({ message: "Recovery code sent" });
       } catch (error) {
-        return res.status(httpStatuses.INTERNAL_SERVER_ERROR_500).send({ error });
+        return res.status(httpStatuses.INTERNAL_SERVER_ERROR_500).send({ message: "Сервер на кофе-брейке!" });
       }
     }
     async newPassword(req: Request, res: Response) {
@@ -215,7 +214,7 @@ export class AuthController {
       } catch (error) {
         return res
           .status(httpStatuses.INTERNAL_SERVER_ERROR_500)
-          .send({ message: "Server error" });
+          .send({ message: "Сервер на кофе-брейке!" });
       }
     }
     async logOut(req: Request, res: Response) {
@@ -230,7 +229,7 @@ export class AuthController {
         console.error(error);
         return res
           .status(httpStatuses.INTERNAL_SERVER_ERROR_500)
-          .send({ message: "Server error" });
+          .send({ message: "Сервер на кофе-брейке!" });
       }
     }
   }

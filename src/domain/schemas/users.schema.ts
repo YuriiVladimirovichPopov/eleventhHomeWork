@@ -1,7 +1,6 @@
 import mongoose from "mongoose";
-import { UsersMongoDbType } from "../../types";
+import { EmailConfirmationType, UsersMongoDbType } from "../../types";
 import { EmailConfirmationSchema } from "./emailConfirmation.schema";
-import { WithId } from 'mongodb';
 
 
 export const loginValid = {
@@ -18,6 +17,10 @@ export const loginOrEmailValid = {
   minLength: 3,
   maxLength: 30,
 };
+
+export const AccountData = new mongoose.Schema<EmailConfirmationType>({  // TODO создать новый класс
+
+})
 
 export const UserSchema = new mongoose.Schema<UsersMongoDbType>({
   _id: { type: mongoose.Schema.Types.ObjectId, required: true },

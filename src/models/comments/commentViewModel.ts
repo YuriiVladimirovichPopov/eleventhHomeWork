@@ -1,4 +1,4 @@
-import { likeInfoViewModel } from "../likes/likeInfoViewModel";
+import { reactionInfoViewModel } from "../reaction/reactionInfoViewModel";
 
 export type CommentViewModel = {
   id: string;
@@ -8,5 +8,5 @@ export type CommentViewModel = {
     userLogin: string;
   };
   createdAt: string;
-  likeInfo: likeInfoViewModel;
+  likeInfo: reactionInfoViewModel;
 };

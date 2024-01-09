@@ -33,7 +33,7 @@ export class PostController {
       }
   
       const pagination = getPaginationFromQuery(
-        req.query as unknown as PaginatedType,
+        req.query as unknown as PaginatedType    // TODO bad solution
       );
       const allCommentsForPostId: Paginated<CommentViewModel> =
         await this.commentsQueryRepository.getAllCommentsForPost(
@@ -77,7 +77,7 @@ export class PostController {
       res: Response<Paginated<PostsViewModel>>,
     ) {
       const pagination = getPaginationFromQuery(
-        req.query as unknown as PaginatedType,
+        req.query as unknown as PaginatedType    // TODO bad solution
       );
       const allPosts: Paginated<PostsViewModel> =
         await this.queryPostRepository.findAllPosts(pagination);

@@ -2,6 +2,8 @@ import { Response, Request } from "express";
 import { CommentsQueryRepository } from "../query repozitory/queryCommentsRepository";
 import { CommentsRepository } from "../repositories/comments-repository";
 import { httpStatuses } from "../routers/helpers/send-status";
+import { PaginatedType, getPaginationFromQuery, parsePaginatedType } from "../routers/helpers/pagination";
+import { ParsedQs } from 'qs';
 
 
 export class CommentController {
@@ -43,50 +45,36 @@ export class CommentController {
         return res.sendStatus(httpStatuses.NO_CONTENT_204);
       }
     }
-    /* 
-      async updateCommentByIdWithLikes (req: Request, res: Response) {
-        // прописываем логику лайка дизлайка и отмены лайка или дизлайка
-        try {
-          const commentId = req.params.commentId;
-          const userId = req.user!.id; // Предположим, что у вас есть middleware authMiddleware, который добавляет пользователя в объект запроса req.user
-    
-          const comment = await CommentModel.findById(commentId);
-          if (!comment) {
-            return res.status(404).send({ message: 'Comment not found' });
-          }
-          const { action } = req.body; // Ожидается, что в теле запроса у вас есть поле action со значением 'like', 'dislike', 'cancel-like' или 'cancel-dislike'
-          switch (action) {
-            case 'like':
-              if (!comment.likeInfo.myStatus.includes(userId)) {
-                comment.likeInfo.(userId);
-              }
-              comment.dislikes = comment.dislikes.filter(dislikeId => dislikeId !== userId);
-              break;
-            case 'dislike':
-              if (!comment.dislikes.includes(userId)) {
-                comment.dislikes.push(userId);
-              }
-              comment.likes = comment.likes.filter(likeId => likeId !== userId);
-              break;
-            case 'cancel-like':
-              comment.likes = comment.likes.filter(likeId => likeId !== userId);
-              break;
-            case 'cancel-dislike':
-              comment.dislikes = comment.dislikes.filter(dislikeId => dislikeId !== userId);
-              break;
-            default:
-              return res.status(400).send({ message: 'Invalid action' });
-          }
-    
-          await comment.save();
-    
-          return res.status(200).send({ message: 'Action performed successfully' });
-        } catch (error) {
-          console.error(error);
-          return res.status(500).send({ message: 'Internal server error' });
-        }
+
+    async getCommentsByParentId(req: Request, res: Response) {
+      try {
+        const parentId = req.params.parentId;
+        const pagination = parsePaginatedType(req.query) // TODO вроде поправил, но все равно не нравится
+  
+        const paginatedComments = await this.commentsQueryRepository.findCommentsByParentId(parentId, pagination);
+        return res.status(httpStatuses.OK_200).send(paginatedComments);
+      } catch (error) {
+        return res.status(httpStatuses.INTERNAL_SERVER_ERROR_500).send({ message: "Сервер на кофе-брейке!" });
       }
-   */
+    }
+  
+    async updateLikesDislikes(req: Request, res: Response) {
+      try {
+        const commentId = req.params.commentId;
+        const userId = req.user!.id; // Предполагается, что пользовательский ID доступен через req.user
+        const { action } = req.body; // Действие: 'like', 'dislike', 'cancel-like', 'cancel-dislike'
+  
+        const updatedComment = await this.commentsRepository.updateLikesDislikes(commentId, userId, action);
+        if (updatedComment) {
+          return res.status(httpStatuses.OK_200).send(updatedComment);
+        } else {
+          return res.status(httpStatuses.NOT_FOUND_404).send({ message: 'Comment not found' });
+        }
+      } catch (error) {
+        return res.status(httpStatuses.INTERNAL_SERVER_ERROR_500).send({ message: "Сервер на кофе-брейке!" });
+      }
+    }
+    
     async deleteCommentById(
       req: Request<{ commentId: string }, {}, {}, {}, { user: string }>,
       res: Response,

@@ -6,7 +6,7 @@ import { CommentViewModel } from "../models/comments/commentViewModel";
 import { CommentModel } from "../domain/schemas/comments.schema";
 import { PostModel } from "../domain/schemas/posts.schema";
 import { QueryBlogsRepository } from "../query repozitory/queryBlogsRepository";
-import { ReactionStatusEnum } from "../domain/schemas/likeInfo.schema";
+import { ReactionStatusEnum } from "../domain/schemas/reactionInfo.schema";
 
 export class PostsRepository {
   private queryBlogsRepository: QueryBlogsRepository;
@@ -67,10 +67,11 @@ export class PostsRepository {
       likeInfo: {
         likesCount: 0,
         disLikesCount: 0,
+        myStatus: ReactionStatusEnum.None
       },
     };
 
-    await CommentModel.create({ ...createCommentForPost })   //be insertMany
+    await CommentModel.create({ ...createCommentForPost })   
     return {
       id: createCommentForPost._id.toString(),
       content: createCommentForPost.content,

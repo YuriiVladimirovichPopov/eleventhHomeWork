@@ -6,7 +6,7 @@ import { QueryUserRepository } from "../query repozitory/queryUserRepository";
 import { UsersRepository } from "../repositories/users-repository";
 import { getUsersPagination, PaginatedType, Paginated } from "../routers/helpers/pagination";
 import { httpStatuses } from "../routers/helpers/send-status";
-import { UsersMongoDbType, RequestWithParams } from "../types";
+import { RequestWithParams } from "../types";
 import { authService } from "../composition-root";
 
 
@@ -17,7 +17,7 @@ export class UserController {
   
     async getAllUsers(req: Request, res: Response) {
       const pagination = getUsersPagination(
-        req.query as unknown as PaginatedType,
+        req.query as unknown as PaginatedType    // TODO bad solution
       );
       const allUsers: Paginated<UserViewModel> =
         await this.usersRepository.findAllUsers(pagination);

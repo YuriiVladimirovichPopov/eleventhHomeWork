@@ -52,6 +52,41 @@ export class CommentsQueryRepository {
       likeInfo: comment.likeInfo,
     };
   }
+
+
+  async findCommentsByParentId(
+    parentId: string,
+    pagination: PaginatedType
+  ): Promise<Paginated<CommentViewModel>> {
+    const result = await CommentModel.find({ parentId: new ObjectId(parentId) })
+      .sort({ [pagination.sortBy]: pagination.sortDirection === "asc" ? 1 : -1 })
+      .skip(pagination.skip)
+      .limit(pagination.pageSize)
+      .lean();
+
+    const mappedComments: CommentViewModel[] = result.map(
+      (comment: CommentsMongoDbType): CommentViewModel => ({
+        id: comment._id.toString(),
+        content: comment.content,
+        commentatorInfo: comment.commentatorInfo,
+        createdAt: comment.createdAt,
+        likeInfo: comment.likeInfo,
+      }),
+    );
+
+    const totalCount: number = await CommentModel.countDocuments({ parentId: new ObjectId(parentId) });
+    const pageCount: number = Math.ceil(totalCount / pagination.pageSize);
+
+    const response: Paginated<CommentViewModel> = {
+      pagesCount: pageCount,
+      page: pagination.pageNumber,
+      pageSize: pagination.pageSize,
+      totalCount: totalCount,
+      items: mappedComments,
+    };
+
+    return response;
+  }
 }
 
 

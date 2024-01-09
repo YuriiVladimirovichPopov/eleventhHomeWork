@@ -22,7 +22,7 @@ export class BlogsController {
   
     async getAllBlogs(req: Request, res: Response) {
       const pagination = getPaginationFromQuery(
-        req.query as unknown as PaginatedType,
+        req.query as unknown as PaginatedType   // TODO bad solution
       );
       const allBlogs: Paginated<BlogViewModel> =
         await this.blogService.findAllBlogs(pagination);
@@ -47,7 +47,7 @@ export class BlogsController {
         return res.sendStatus(httpStatuses.NOT_FOUND_404);
       }
       const pagination = getPaginationFromQuery(
-        req.query as unknown as PaginatedType,
+        req.query as unknown as PaginatedType    // TODO bad solution
       );
       const foundBlogWithAllPosts: Paginated<PostsViewModel> =
         await this.queryPostRepository.findAllPostsByBlogId(

@@ -1,16 +1,16 @@
 import { Request } from "express";
 import { ObjectId } from "mongodb";
 import { UserViewModel } from "./models/users/userViewModel";
-import { likeInfoViewModel } from "./models/likes/likeInfoViewModel";
-import { ReactionStatusEnum } from "./domain/schemas/likeInfo.schema";
+import { reactionInfoViewModel } from "./models/reaction/reactionInfoViewModel";
+import { ReactionStatusEnum } from "./domain/schemas/reactionInfo.schema";
 
 export class BlogsMongoDbType {
   constructor(
     public _id: ObjectId,
+    public createdAt: string,
     public name: string | null,
     public description: string,
     public websiteUrl: string,
-    public createdAt: string,
     public isMembership: boolean,
   ) {}
 }
@@ -67,7 +67,7 @@ export class CommentsMongoDbType {
       userLogin: string;
     },
     public createdAt: string,
-    public likeInfo: likeInfoViewModel,
+    public likeInfo: reactionInfoViewModel,
   ) {}
 }
 
@@ -90,14 +90,14 @@ export class RateLimitMongoDbType {
   ) {}
 }
 
-export class LikeModelMongoDbType {
+export class ReactionMongoDb {
   constructor(
     public _id: ObjectId,
-    //public parentId: string,
+    public parentId: string,
     public userId: string,
-    public commentId: string,
+    public userLogin: string,
     public myStatus: ReactionStatusEnum,
-    public createdAt: Date,
+    public createdAt: string,
     public updatedAt: boolean,
   ) {}
 }
