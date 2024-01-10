@@ -232,4 +232,64 @@ describe("Mongoose integration", () => {
       .post(`${RouterPaths.auth}/logout`)
       .expect(httpStatuses.UNAUTHORIZED_401);
   });
-});
+
+
+
+  it("should return 429 status code", async () => {
+    for (const endpoint of endpoints) {
+      for (let i = 0; i <= 5; i++) {
+        const res = await getRequest().post(endpoint).send();
+        if (i === 5) {
+          expect(res.status).toBe(httpStatuses.TOO_MANY_REQUESTS_429);
+          await sleep(10.5);
+          const res2 = await getRequest().post(endpoint).send();
+          expect(res2.status).not.toBe(httpStatuses.TOO_MANY_REQUESTS_429);
+        }
+      }
+    }
+  })
+
+  it(`"auth/registration": should create new user and send confirmation email with code`, async () => {
+    const newUser = {
+      login: "newUserLogin",
+      email: "newUserEmail@example.com",
+      password: "newUserPassword",
+    };
+  
+    await getRequest()
+      .post(`/auth/registration`)
+      .send(newUser)
+      .expect(httpStatuses.NO_CONTENT_204);
+  
+    // Проверка, что функция отправки email была вызвана
+    expect(emailAdapter.sendEmail).toHaveBeenCalledWith(expect.anything(), expect.anything());
+  });
+
+  it(`"auth/registration": should return error if email or login already exist`, async () => {
+    const existingUser = {
+      login: "existingUser",
+      email: "existing@example.com",
+      password: "existingPassword",
+    };
+  
+    // Предположим, что пользователь с таким логином и email уже существует
+    await getRequest()
+      .post(`/auth/registration`)
+      .send(existingUser)
+      .expect(httpStatuses.BAD_REQUEST_400);
+  });
+
+
+  it(`"auth/registration-email-resending": should send email with new code if user exists but not confirmed yet; status 204`, async () => {
+    const existingUserEmail = "existing@example.com";
+  
+    await getRequest()
+      .post(`/auth/registration-email-resending`)
+      .send({ email: existingUserEmail })
+      .expect(httpStatuses.NO_CONTENT_204);
+  
+    // Проверка, что функция отправки email была вызвана
+    expect(emailAdapter.sendEmail).toHaveBeenCalledWith(existingUserEmail, expect.anything());
+  });
+})
+

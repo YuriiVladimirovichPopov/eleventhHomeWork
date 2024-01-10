@@ -67,6 +67,7 @@ export class PostsRepository {
       likesInfo: {
         likesCount: 0,
         dislikesCount: 0,
+        myStatus: ReactionStatusEnum.None
       },
     };
 

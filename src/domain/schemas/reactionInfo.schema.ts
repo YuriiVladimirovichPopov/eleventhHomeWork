@@ -32,5 +32,6 @@ export const LikesInfoSchema = new mongoose.Schema({
   myStatus: { 
     type: String, 
     required: true,
-    enum: ReactionStatusEnum }
+    enum: ReactionStatusEnum, 
+    default: ReactionStatusEnum.None }
 }, {_id: false})
