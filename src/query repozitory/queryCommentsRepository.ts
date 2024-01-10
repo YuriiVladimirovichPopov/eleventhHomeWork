@@ -22,7 +22,7 @@ export class CommentsQueryRepository {
         content: el.content,
         commentatorInfo: el.commentatorInfo,
         createdAt: el.createdAt,
-        likeInfo: el.likeInfo,
+        likesInfo: el.likesInfo,
       }),
     );
     const totalCount: number = await CommentModel.countDocuments({ postId });
@@ -49,8 +49,8 @@ export class CommentsQueryRepository {
       commentatorInfo: comment.commentatorInfo,
       content: comment.content,
       createdAt: comment.createdAt,
-      likeInfo: comment.likeInfo,
-    };
+      likesInfo: comment.likesInfo
+    }
   }
 
 
@@ -70,7 +70,7 @@ export class CommentsQueryRepository {
         content: comment.content,
         commentatorInfo: comment.commentatorInfo,
         createdAt: comment.createdAt,
-        likeInfo: comment.likeInfo,
+        likesInfo: comment.likesInfo,
       }),
     );
 

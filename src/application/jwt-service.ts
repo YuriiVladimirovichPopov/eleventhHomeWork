@@ -16,7 +16,7 @@ export type Payload = {
 class JWTService {
   async createJWT(user: UsersMongoDbType) {
     const token = jwt.sign({ userId: user._id }, settings.accessTokenSecret1, {
-      expiresIn: "10minutes",
+      expiresIn: "1000minutes",
     });
     return token;
   }
@@ -34,7 +34,7 @@ class JWTService {
     const refToken = jwt.sign(
       { userId, deviceId },
       settings.refreshTokenSecret2,
-      { expiresIn: "10minutes" },
+      { expiresIn: "1000minutes" },
     );
     return refToken;
   }

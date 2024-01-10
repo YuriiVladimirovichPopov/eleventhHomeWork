@@ -41,7 +41,7 @@ export class PostsRepository {
       blogId: model.blogId,
       blogName: blog.name,
       createdAt: new Date().toISOString(), //todo: should be 12 home work
-      /* likeInfoSchema: {
+      /* likesInfoSchema: {
         likesCount: 0,
         disLikesCount: 0,
         myStatus: ReactionStatusEnum.None
@@ -64,10 +64,9 @@ export class PostsRepository {
       content,
       commentatorInfo,
       createdAt: new Date().toISOString(),
-      likeInfo: {
+      likesInfo: {
         likesCount: 0,
-        disLikesCount: 0,
-        myStatus: ReactionStatusEnum.None
+        dislikesCount: 0,
       },
     };
 
@@ -77,7 +76,7 @@ export class PostsRepository {
       content: createCommentForPost.content,
       commentatorInfo: createCommentForPost.commentatorInfo,
       createdAt: createCommentForPost.createdAt,
-      likeInfo: createCommentForPost.likeInfo,
+      likesInfo: {...createCommentForPost.likesInfo, myStatus: ReactionStatusEnum.None},
     };
   }
 

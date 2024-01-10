@@ -7,7 +7,7 @@ import { getByIdParam } from "../models/getById";
 import { PostsInputModel } from "../models/posts/postsInputModel";
 import { PostsViewModel } from "../models/posts/postsViewModel";
 import { QueryPostRepository } from "../query repozitory/queryPostsRepository";
-import { getPaginationFromQuery, PaginatedType, Paginated } from "../routers/helpers/pagination";
+import { getPaginationFromQuery, PaginatedType, Paginated, parsePaginatedType } from "../routers/helpers/pagination";
 import { httpStatuses } from "../routers/helpers/send-status";
 import { RequestWithBody, RequestWithParams } from "../types";
 
@@ -21,9 +21,7 @@ export class BlogsController {
       private queryPostRepository: QueryPostRepository) { }
   
     async getAllBlogs(req: Request, res: Response) {
-      const pagination = getPaginationFromQuery(
-        req.query as unknown as PaginatedType   // TODO bad solution
-      );
+      const pagination = parsePaginatedType(req.query)
       const allBlogs: Paginated<BlogViewModel> =
         await this.blogService.findAllBlogs(pagination);
   
@@ -46,9 +44,7 @@ export class BlogsController {
       if (!blogWithPosts) {
         return res.sendStatus(httpStatuses.NOT_FOUND_404);
       }
-      const pagination = getPaginationFromQuery(
-        req.query as unknown as PaginatedType    // TODO bad solution
-      );
+      const pagination = parsePaginatedType(req.query)
       const foundBlogWithAllPosts: Paginated<PostsViewModel> =
         await this.queryPostRepository.findAllPostsByBlogId(
           req.params.blogId,

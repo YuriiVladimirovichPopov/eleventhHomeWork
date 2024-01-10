@@ -2,7 +2,7 @@ import mongoose from "mongoose";
 import { DeviceMongoDbType } from "../../types";
 import { ObjectId, WithId } from "mongodb";
 
-export const DeviceSchema = new mongoose.Schema<WithId<DeviceMongoDbType>>({
+export const DeviceSchema = new mongoose.Schema<DeviceMongoDbType>({
   _id: { type: mongoose.Schema.Types.ObjectId, required: true },
   ip: { type: String, required: true },
   title: { type: String, required: true },

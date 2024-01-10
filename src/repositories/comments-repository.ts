@@ -20,6 +20,8 @@ export class CommentsRepository {
     }
   }
 
+  
+
   async updateLikesDislikes(
     commentId: string, 
     userId: string, 
@@ -29,39 +31,40 @@ export class CommentsRepository {
     if (!comment) {
       return null;
     }
+  
+    const currentStatus = comment.likesInfo.myStatus || ReactionStatusEnum.None;
+  
     switch (action) {
       case 'like':
-        // Увеличиваем количество лайков, если это не повторное действие
-        if (comment.likeInfo.myStatus !== ReactionStatusEnum.Like) {
-          comment.likeInfo.likesCount++;
-          comment.likeInfo.myStatus = ReactionStatusEnum.Like;
+        if (currentStatus !== ReactionStatusEnum.Like) {
+          comment.likesInfo.likesCount += (currentStatus === ReactionStatusEnum.None ? 1 : 2);
+          comment.likesInfo.myStatus = ReactionStatusEnum.Like;
         }
         break;
       case 'dislike':
-        // Увеличиваем количество дизлайков, если это не повторное действие
-        if (comment.likeInfo.myStatus !== ReactionStatusEnum.Dislike) {
-          comment.likeInfo.disLikesCount++;
-          comment.likeInfo.myStatus = ReactionStatusEnum.Dislike;
+        if (currentStatus !== ReactionStatusEnum.Dislike) {
+          comment.likesInfo.dislikesCount += (currentStatus === ReactionStatusEnum.None ? 1 : 2);
+          comment.likesInfo.myStatus = ReactionStatusEnum.Dislike;
         }
         break;
       case 'cancel-like':
-        // Уменьшаем количество лайков, если ранее был поставлен лайк
-        if (comment.likeInfo.myStatus === ReactionStatusEnum.Like) {
-          comment.likeInfo.likesCount--;
-          comment.likeInfo.myStatus = ReactionStatusEnum.None;
+        if (currentStatus === ReactionStatusEnum.Like) {
+          comment.likesInfo.likesCount--;
+          comment.likesInfo.myStatus = ReactionStatusEnum.None;
         }
         break;
       case 'cancel-dislike':
-        // Уменьшаем количество дизлайков, если ранее был поставлен дизлайк
-        if (comment.likeInfo.myStatus === ReactionStatusEnum.Dislike) {
-          comment.likeInfo.disLikesCount--;
-          comment.likeInfo.myStatus = ReactionStatusEnum.None;
+        if (currentStatus === ReactionStatusEnum.Dislike) {
+          comment.likesInfo.dislikesCount--;
+          comment.likesInfo.myStatus = ReactionStatusEnum.None;
         }
         break;
     }
-          await comment.save()
-          return comment
+  
+    await comment.save();
+    return comment;
   }
+  
         
   async deleteComment(commentId: string) {
     const result = await CommentModel.deleteOne({

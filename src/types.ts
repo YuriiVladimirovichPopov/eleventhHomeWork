@@ -67,7 +67,7 @@ export class CommentsMongoDbType {
       userLogin: string;
     },
     public createdAt: string,
-    public likeInfo: reactionInfoViewModel,
+    public likesInfo: reactionInfoViewModel,
   ) {}
 }
 

@@ -49,7 +49,7 @@ export class CommentController {
     async getCommentsByParentId(req: Request, res: Response) {
       try {
         const parentId = req.params.parentId;
-        const pagination = parsePaginatedType(req.query) // TODO вроде поправил, но все равно не нравится
+        const pagination = parsePaginatedType(req.query) 
   
         const paginatedComments = await this.commentsQueryRepository.findCommentsByParentId(parentId, pagination);
         return res.status(httpStatuses.OK_200).send(paginatedComments);

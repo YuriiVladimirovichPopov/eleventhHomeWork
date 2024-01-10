@@ -49,7 +49,7 @@ export class PostController {
         await this.queryPostRepository.findPostById(req.params.postId);
         console.log(postWithId, "post with id: " + req.params.postId);
       if (!postWithId) {
-        return res.sendStatus(httpStatuses.NOT_FOUND_404);
+        return res.status(httpStatuses.NOT_FOUND_404).send({message: "post not found"});
       }
       console.log('req.body:', req.body);
 

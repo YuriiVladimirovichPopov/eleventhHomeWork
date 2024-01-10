@@ -13,10 +13,9 @@ export enum ReactionStatusEnum {
 
 export const ReactionSchema = new mongoose.Schema({
   parentId: { type: String, required: true },
+  parentType: { type: String, required: true },
   userId: { type: mongoose.Schema.Types.ObjectId, required: true },    //been type: String, required: true
   userLogin: { type: String, required: true, minLength: userLoginValid.minLength, maxLength: userLoginValid.maxLength  },
-  likesCount: { type: Number, required: true },
-  disLikesCount: { type: Number, required: true },
   myStatus: { 
     type: String, 
     required: true,
@@ -25,3 +24,13 @@ export const ReactionSchema = new mongoose.Schema({
 
 
 export const ReactionModel = mongoose.model("reaction", ReactionSchema);
+
+
+export const LikesInfoSchema = new mongoose.Schema({
+  likesCount: { type: Number, required: true },
+  dislikesCount: { type: Number, required: true }, // добавил майСтатус
+  myStatus: { 
+    type: String, 
+    required: true,
+    enum: ReactionStatusEnum }
+}, {_id: false})

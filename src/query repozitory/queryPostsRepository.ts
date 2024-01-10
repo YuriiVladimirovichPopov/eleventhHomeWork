@@ -59,9 +59,11 @@ export class QueryPostRepository {
   }
 
   async findPostById(id: string): Promise<PostsViewModel | null> {
+    console.log("Searching for post with ID:", id)  
     if (!ObjectId.isValid(id)) {
       return null;
     }
+
     const _id = new ObjectId(id);
     const findPost = await PostModel.findOne({ _id: _id });
     if (!findPost) {

@@ -116,13 +116,13 @@ export class AuthService {
       const accessToken = Jwt.sign(
         { userId },
         settings.accessTokenSecret1,
-        { expiresIn: "10minutes" }, // исправил на 10 мин
+        { expiresIn: "1000minutes" }, // исправил на 10 мин
       );
 
       const newRefreshToken = Jwt.sign(
         { userId, deviceId },
         settings.refreshTokenSecret2,
-        { expiresIn: "10minutes" }, // исправил на 10 мин
+        { expiresIn: "1000minutes" }, // исправил на 10 мин
       );
 
       return { accessToken, newRefreshToken };

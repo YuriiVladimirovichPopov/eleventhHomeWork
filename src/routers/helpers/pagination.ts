@@ -1,5 +1,3 @@
-//TODO надо ли переводить пагинацию на классы  
-
 import { ParsedQs } from 'qs';
 
 export const parsePaginatedType = (query: ParsedQs): PaginatedType => {
@@ -14,9 +12,6 @@ export const parsePaginatedType = (query: ParsedQs): PaginatedType => {
     searchEmailTerm: query.searchEmailTerm as string || undefined,
   };
 }
-
-
-
 
 export type Paginated<T> = {
   pagesCount: number;

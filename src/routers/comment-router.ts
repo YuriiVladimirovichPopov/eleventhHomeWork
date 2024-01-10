@@ -22,8 +22,9 @@ commentsRouter.put(
 commentsRouter.put(
   "/:commentId/like-status",
   authMiddleware,
-  userValidationMiddleware,  // добавил хз зачем
+  //userValidationMiddleware,  // добавил хз зачем
   createPostValidationForComment,
+  commentController.updateLikesDislikes.bind(commentController),
 );
 
 commentsRouter.delete(

@@ -22,7 +22,7 @@ export const blogNameValid = {
   maxLength: 15,
 };
 
-export const PostSchema = new mongoose.Schema<WithId<PostsMongoDbType>>({
+export const PostSchema = new mongoose.Schema<PostsMongoDbType>({
   _id: { type: mongoose.Schema.Types.ObjectId, required: true },
   title: {
     type: String,

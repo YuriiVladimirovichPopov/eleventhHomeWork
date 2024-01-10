@@ -11,7 +11,7 @@ export const descriptionValid = {
   maxLength: 500,
 };
 
-export const BlogSchema = new mongoose.Schema<WithId<BlogsMongoDbType>>({
+export const BlogSchema = new mongoose.Schema<BlogsMongoDbType>({
   _id: { type: mongoose.Schema.Types.ObjectId, required: true },   
   name: {
     type: String,
