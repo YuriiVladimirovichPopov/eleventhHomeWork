@@ -61,6 +61,7 @@ export class CommentsMongoDbType {
   constructor(
     public _id: ObjectId,
     public postId: string,
+    public parentId: string,
     public content: string,
     public commentatorInfo: {
       userId: string;

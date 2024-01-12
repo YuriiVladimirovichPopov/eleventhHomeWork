@@ -12,3 +12,4 @@ export const createPostValidationForComment = [
   contentValidation,
   inputValidationErrors,
 ];
+ 

@@ -7,12 +7,14 @@ import { Paginated } from "../routers/helpers/pagination";
 import { PaginatedType } from "../routers/helpers/pagination";
 import { QueryBlogsRepository } from "../query repozitory/queryBlogsRepository";
 
-export class BlogService {  //todo change. add to constructor
-  blogsRepository: BlogsRepository;
-  queryBlogsRepository: QueryBlogsRepository;
-  constructor() {
-    this.blogsRepository = new BlogsRepository();
-    this.queryBlogsRepository = new QueryBlogsRepository();
+export class BlogService {
+  //todo change. add to constructor
+  
+  constructor(
+    protected blogsRepository: BlogsRepository,
+    protected queryBlogsRepository: QueryBlogsRepository
+    ) {
+    
   }
   async findAllBlogs(
     pagination: PaginatedType,

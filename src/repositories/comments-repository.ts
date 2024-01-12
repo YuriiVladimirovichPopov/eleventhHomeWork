@@ -2,9 +2,43 @@ import { ObjectId } from "mongodb";
 import { CommentModel } from "../domain/schemas/comments.schema";
 import { CommentsMongoDbType } from "../types";
 import { ReactionStatusEnum } from "../domain/schemas/reactionInfo.schema";
+import { CommentViewModel } from "../models/comments/commentViewModel";
 
 export class CommentsRepository {
-  
+  //constructor(private readonly LikesInfoModel: Model<reactionInfoViewModel>) {}
+
+  async createComment(
+    parentId: string,
+    postId: string,
+    content: string,
+    commentatorInfo: { userId: string; userLogin: string },
+  ): Promise<CommentViewModel> {
+    const createCommentForPost: CommentsMongoDbType = {
+      _id: new ObjectId(),
+      parentId,
+      postId,
+      content,
+      commentatorInfo,
+      createdAt: new Date().toISOString(),
+      likesInfo: {
+        likesCount: 0,
+        dislikesCount: 0,
+        myStatus: ReactionStatusEnum.None,
+      },
+    };
+
+    await CommentModel.create({ ...createCommentForPost });
+    return {
+      id: createCommentForPost._id.toString(),
+      content: createCommentForPost.content,
+      commentatorInfo: createCommentForPost.commentatorInfo,
+      createdAt: createCommentForPost.createdAt,
+      likesInfo: {
+        ...createCommentForPost.likesInfo,
+        myStatus: ReactionStatusEnum.None,
+      },
+    };
+  }
 
   async updateComment(
     commentId: string,
@@ -21,50 +55,6 @@ export class CommentsRepository {
   }
 
   
-
-  async updateLikesDislikes(
-    commentId: string, 
-    userId: string, 
-    action: 'like' | 'dislike' | 'cancel-like' | 'cancel-dislike'
-  ): Promise<CommentsMongoDbType | null> {
-    const comment = await CommentModel.findById(commentId);
-    if (!comment) {
-      return null;
-    }
-  
-    const currentStatus = comment.likesInfo.myStatus || ReactionStatusEnum.None;
-  
-    switch (action) {
-      case 'like':
-        if (currentStatus !== ReactionStatusEnum.Like) {
-          comment.likesInfo.likesCount += (currentStatus === ReactionStatusEnum.None ? 1 : 2);
-          comment.likesInfo.myStatus = ReactionStatusEnum.Like;
-        }
-        break;
-      case 'dislike':
-        if (currentStatus !== ReactionStatusEnum.Dislike) {
-          comment.likesInfo.dislikesCount += (currentStatus === ReactionStatusEnum.None ? 1 : 2);
-          comment.likesInfo.myStatus = ReactionStatusEnum.Dislike;
-        }
-        break;
-      case 'cancel-like':
-        if (currentStatus === ReactionStatusEnum.Like) {
-          comment.likesInfo.likesCount--;
-          comment.likesInfo.myStatus = ReactionStatusEnum.None;
-        }
-        break;
-      case 'cancel-dislike':
-        if (currentStatus === ReactionStatusEnum.Dislike) {
-          comment.likesInfo.dislikesCount--;
-          comment.likesInfo.myStatus = ReactionStatusEnum.None;
-        }
-        break;
-    }
-  
-    await comment.save();
-    return comment;
-  }
-  
         
   async deleteComment(commentId: string) {
     const result = await CommentModel.deleteOne({
@@ -78,5 +68,3 @@ export class CommentsRepository {
     return result.acknowledged === true;
   }
 }
-
-

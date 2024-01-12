@@ -9,8 +9,8 @@ import { randomUUID } from "crypto";
 import { PostsViewModel } from "../models/posts/postsViewModel";
 
 export class UsersRepository {
-  constructor() { }
-  
+  constructor() {}
+
   _userMapper(user: UsersMongoDbType) {
     return {
       id: user._id.toString(),
@@ -79,9 +79,9 @@ export class UsersRepository {
     });
     return user;
   }
-   //todo не понимать!!!!
+  //todo не понимать!!!!
   async createUser(newUser: UsersMongoDbType): Promise<UserCreateViewModel> {
-    await UserModel.insertMany(newUser);   
+    await UserModel.insertMany(newUser);
     return {
       id: newUser._id.toString(),
       login: newUser.login,
@@ -90,7 +90,7 @@ export class UsersRepository {
     };
   }
 
-  async deleteUserById(id: string): Promise<PostsViewModel | boolean> { 
+  async deleteUserById(id: string): Promise<PostsViewModel | boolean> {
     const deletedUser = await UserModel.deleteOne({ _id: new ObjectId(id) });
     return deletedUser.deletedCount === 1;
   }
@@ -102,7 +102,6 @@ export class UsersRepository {
       return false;
     }
   }
-  
 
   async findUserByRecoryCode(
     recoveryCode: string,
@@ -121,4 +120,3 @@ export class UsersRepository {
     return updatedUser!;
   }
 }
-

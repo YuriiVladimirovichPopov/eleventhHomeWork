@@ -44,12 +44,12 @@ describe("Mongoose integration", () => {
 
   beforeAll(async () => {
     console.log("Connect to db", mongoURI);
-    
+
     await mongoose.connect(mongoURI);
 
     await getRequest().delete("/testing/all-data");
 
-    jest.clearAllMocks() //TODO: надо посмотреть и если что добавить метод в другие тесты 
+    jest.clearAllMocks(); //TODO: надо посмотреть и если что добавить метод в другие тесты
   });
 
   afterAll(async () => {
@@ -233,8 +233,6 @@ describe("Mongoose integration", () => {
       .expect(httpStatuses.UNAUTHORIZED_401);
   });
 
-
-
   it("should return 429 status code", async () => {
     for (const endpoint of endpoints) {
       for (let i = 0; i <= 5; i++) {
@@ -247,7 +245,7 @@ describe("Mongoose integration", () => {
         }
       }
     }
-  })
+  });
 
   it(`"auth/registration": should create new user and send confirmation email with code`, async () => {
     const newUser = {
@@ -255,14 +253,17 @@ describe("Mongoose integration", () => {
       email: "newUserEmail@example.com",
       password: "newUserPassword",
     };
-  
+
     await getRequest()
       .post(`/auth/registration`)
       .send(newUser)
       .expect(httpStatuses.NO_CONTENT_204);
-  
+
     // Проверка, что функция отправки email была вызвана
-    expect(emailAdapter.sendEmail).toHaveBeenCalledWith(expect.anything(), expect.anything());
+    expect(emailAdapter.sendEmail).toHaveBeenCalledWith(
+      expect.anything(),
+      expect.anything(),
+    );
   });
 
   it(`"auth/registration": should return error if email or login already exist`, async () => {
@@ -271,7 +272,7 @@ describe("Mongoose integration", () => {
       email: "existing@example.com",
       password: "existingPassword",
     };
-  
+
     // Предположим, что пользователь с таким логином и email уже существует
     await getRequest()
       .post(`/auth/registration`)
@@ -279,17 +280,18 @@ describe("Mongoose integration", () => {
       .expect(httpStatuses.BAD_REQUEST_400);
   });
 
-
   it(`"auth/registration-email-resending": should send email with new code if user exists but not confirmed yet; status 204`, async () => {
     const existingUserEmail = "existing@example.com";
-  
+
     await getRequest()
       .post(`/auth/registration-email-resending`)
       .send({ email: existingUserEmail })
       .expect(httpStatuses.NO_CONTENT_204);
-  
-    // Проверка, что функция отправки email была вызвана
-    expect(emailAdapter.sendEmail).toHaveBeenCalledWith(existingUserEmail, expect.anything());
-  });
-})
 
+    // Проверка, что функция отправки email была вызвана
+    expect(emailAdapter.sendEmail).toHaveBeenCalledWith(
+      existingUserEmail,
+      expect.anything(),
+    );
+  });
+});

@@ -2,7 +2,6 @@ import mongoose from "mongoose";
 import { EmailConfirmationType, UsersMongoDbType } from "../../types";
 import { EmailConfirmationSchema } from "./emailConfirmation.schema";
 
-
 export const loginValid = {
   minLength: 3,
   maxLength: 10,
@@ -18,13 +17,18 @@ export const loginOrEmailValid = {
   maxLength: 30,
 };
 
-export const AccountData = new mongoose.Schema<EmailConfirmationType>({  // TODO создать новый класс
-
-})
+export const AccountData = new mongoose.Schema<EmailConfirmationType>({
+  // TODO создать новый класс
+});
 
 export const UserSchema = new mongoose.Schema<UsersMongoDbType>({
   _id: { type: mongoose.Schema.Types.ObjectId, required: true },
-  login: { type: String, required: true, minLength: loginValid.minLength, maxLength: loginValid.maxLength  },
+  login: {
+    type: String,
+    required: true,
+    minLength: loginValid.minLength,
+    maxLength: loginValid.maxLength,
+  },
   email: { type: String, required: true },
   createdAt: { type: String, required: true },
   passwordHash: { type: String, required: true },

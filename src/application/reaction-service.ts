@@ -1,66 +1,77 @@
-import { ReactionStatusEnum } from '../domain/schemas/reactionInfo.schema';
-import { ReactionModel } from '../domain/schemas/reactionInfo.schema';
-import { ReactionsRepository } from '../repositories/reaction-repository';
-import { ReactionMongoDb } from '../types';
+import { ReactionStatusEnum } from "../domain/schemas/reactionInfo.schema";
+import { ReactionModel } from "../domain/schemas/reactionInfo.schema";
+import { ReactionsRepository } from "../repositories/reaction-repository";
+import { ReactionMongoDb } from "../types";
 
 export class ReactionsService {
-    constructor(
-        private reactionRepository: ReactionsRepository
-    ) {}
+  constructor(private reactionRepository: ReactionsRepository) {}
 
-    async addReaction(userId: string, parentId: string, userLogin: string, reactionStatus: ReactionStatusEnum) {
-        const existingReaction = await this.reactionRepository.findByParentIdAndUserId(
-          parentId, 
-          userId, 
-          userLogin, 
-          reactionStatus);
-        if (existingReaction) {
-            throw new Error("Reaction already exists. Use update method to change the reaction.");
-        }
-
-        const reactionData = {
-            parentId,
-            userId,
-            userLogin,
-            myStatus: reactionStatus,
-            createdAt: new Date(), 
-            updatedAt: false
-        };
-
-        return await this.reactionRepository.createReaction(reactionData);
+  async addReaction(
+    userId: string,
+    parentId: string,
+    userLogin: string,
+    reactionStatus: ReactionStatusEnum,
+  ) {
+    const existingReaction =
+      await this.reactionRepository.findByParentIdAndUserId(
+        parentId,
+        userId,
+        userLogin,
+        reactionStatus,
+      );
+    if (existingReaction) {
+      throw new Error(
+        "Reaction already exists. Use update method to change the reaction.",
+      );
     }
 
-    async updateReactionByParentId(
-        parentId: string, 
-        userId: string, 
-        userLogin: string, 
-        reactionStatus: ReactionStatusEnum
-    ) {
-        const reaction = await this.reactionRepository.findByParentIdAndUserId(
-          parentId, 
-          userId, 
-          userLogin, 
-          reactionStatus);
+    const reactionData = {
+      parentId,
+      userId,
+      userLogin,
+      myStatus: reactionStatus,
+      createdAt: new Date(),
+      updatedAt: false,
+    };
 
-        if (!reaction) {
-            throw new Error("Reaction not found. Use add method to create a new reaction.");
-        }
+    return await this.reactionRepository.createReaction(reactionData);
+  }
 
-        const updatedReactionData = {
-            ...reaction.toObject(), 
-            myStatus: reactionStatus,
-            createdAt: new Date(reaction.createdAt),
-            updatedAt: true
-        };
-    
-        await this.reactionRepository.updateReactionByParentId(updatedReactionData);
+  async updateReactionByParentId(
+    parentId: string,
+    userId: string,
+    userLogin: string,
+    reactionStatus: ReactionStatusEnum,
+  ) {
+    const reaction = await this.reactionRepository.findByParentIdAndUserId(
+      parentId,
+      userId,
+      userLogin,
+      reactionStatus,
+    );
 
-        return updatedReactionData;
+    if (!reaction) {
+      throw new Error(
+        "Reaction not found. Use add method to create a new reaction.",
+      );
     }
 
-    async getReactionsForParentId(parentId: string): Promise<ReactionMongoDb[]> {
-        //return await ReactionModel.find({ parentId }).exec();
-        const reactions = await ReactionModel.find({ parentId }).exec();
-    return reactions.map(reaction => reaction.toObject() as ReactionMongoDb);
-    }
+    const updatedReactionData = {
+      ...reaction.toObject(),
+      myStatus: reactionStatus,
+      createdAt: new Date(),
+      updatedAt: true,
+      userId: reaction.userId.toString()
+    };
+
+    await this.reactionRepository.updateReactionByParentId(updatedReactionData);
+
+    return updatedReactionData;
+  }
+
+  async getReactionsForParentId(parentId: string): Promise<ReactionMongoDb[]> {
+    //return await ReactionModel.find({ parentId }).exec();
+    const reactions = await ReactionModel.find({ parentId }).exec();
+    return reactions.map((reaction) => reaction.toObject() as ReactionMongoDb);
+  }
 }

@@ -12,7 +12,6 @@ import { blogsController } from "../composition-root";
 
 export const blogsRouter = Router({});
 
-
 blogsRouter.get("/", blogsController.getAllBlogs.bind(blogsController));
 blogsRouter.post(
   "/",

@@ -1,5 +1,5 @@
 import { CommentsMongoDbType, PostsMongoDbType } from "../types";
-import { PaginatedType, Paginated } from '../routers/helpers/pagination';
+import { PaginatedType, Paginated } from "../routers/helpers/pagination";
 import { ObjectId, WithId } from "mongodb";
 import { PostsViewModel } from "../models/posts/postsViewModel";
 import mongoose from "mongoose";
@@ -59,7 +59,7 @@ export class QueryPostRepository {
   }
 
   async findPostById(id: string): Promise<PostsViewModel | null> {
-    console.log("Searching for post with ID:", id)  
+    console.log("Searching for post with ID:", id);
     if (!ObjectId.isValid(id)) {
       return null;
     }
@@ -96,5 +96,3 @@ export class QueryPostRepository {
     };
   }
 }
-
-

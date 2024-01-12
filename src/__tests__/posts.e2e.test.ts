@@ -21,7 +21,7 @@ describe("tests for /blogs", () => {
 
   beforeAll(async () => {
     console.log("Connect to db", mongoURI);
-    
+
     await mongoose.connect(mongoURI);
 
     await getRequest().delete("/testing/all-data");
@@ -30,7 +30,6 @@ describe("tests for /blogs", () => {
   afterAll(async () => {
     await mongoose.connection.close();
   });
-
 
   it("should return 200 and post", async () => {
     await getRequest().get("/blogs").expect(httpStatuses.OK_200);

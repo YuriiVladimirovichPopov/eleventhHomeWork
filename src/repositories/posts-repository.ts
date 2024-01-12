@@ -46,39 +46,9 @@ export class PostsRepository {
         disLikesCount: 0,
         myStatus: ReactionStatusEnum.None
       } */
-
     };
     await PostModel.insertMany(createPostForBlog);
     return this.postMapper(createPostForBlog);
-  }
-
-  async createCommentforPostId(
-    postId: string,
-    content: string,
-    commentatorInfo: { userId: string; userLogin: string },
-    
-  ): Promise<CommentViewModel> {
-    const createCommentForPost: CommentsMongoDbType = {
-      _id: new ObjectId(),
-      postId,
-      content,
-      commentatorInfo,
-      createdAt: new Date().toISOString(),
-      likesInfo: {
-        likesCount: 0,
-        dislikesCount: 0,
-        myStatus: ReactionStatusEnum.None
-      },
-    };
-
-    await CommentModel.create({ ...createCommentForPost })   
-    return {
-      id: createCommentForPost._id.toString(),
-      content: createCommentForPost.content,
-      commentatorInfo: createCommentForPost.commentatorInfo,
-      createdAt: createCommentForPost.createdAt,
-      likesInfo: {...createCommentForPost.likesInfo, myStatus: ReactionStatusEnum.None},
-    };
   }
 
   async updatePost(
@@ -107,5 +77,3 @@ export class PostsRepository {
     }
   }
 }
-
-//export const postsRepository = new PostsRepository();

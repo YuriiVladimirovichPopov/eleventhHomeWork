@@ -18,14 +18,14 @@ export const authMiddleware = async (
   const token = req.headers.authorization.split(" ")[1];
 
   const userId = await jwtService.getUserIdByToken(token);
-  
+
   if (!userId) {
     return res.sendStatus(httpStatuses.UNAUTHORIZED_401);
   }
   if (!ObjectId.isValid(userId)) {
     return res.sendStatus(httpStatuses.UNAUTHORIZED_401);
   }
-  console.log({user: userId});
+  console.log({ user: userId });
   req.body.userId = userId;
 
   next();

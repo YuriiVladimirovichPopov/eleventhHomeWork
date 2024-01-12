@@ -7,18 +7,19 @@ import { UsersRepository } from "../repositories/users-repository";
 import { httpStatuses } from "../routers/helpers/send-status";
 
 export class TestController {
-    constructor(
-      private blogsRepository: BlogsRepository,
-      private postsRepository: PostsRepository,
-      private commentsRepository: CommentsRepository,
-      private deviceRepository: DeviceRepository,
-      private usersRepository: UsersRepository) {   }
-    async allData(req: Request, res: Response) {
-      this.blogsRepository.deleteAllBlogs();
-      this.postsRepository.deleteAllPosts();
-      this.usersRepository.deleteAllUsers();
-      this.commentsRepository.deleteAllComment();
-      this.deviceRepository.deleteAllDevices();
-      return res.status(httpStatuses.NO_CONTENT_204).send("All data is deleted");
-    }
+  constructor(
+    private blogsRepository: BlogsRepository,
+    private postsRepository: PostsRepository,
+    private commentsRepository: CommentsRepository,
+    private deviceRepository: DeviceRepository,
+    private usersRepository: UsersRepository,
+  ) {}
+  async allData(req: Request, res: Response) {
+    this.blogsRepository.deleteAllBlogs();
+    this.postsRepository.deleteAllPosts();
+    this.usersRepository.deleteAllUsers();
+    this.commentsRepository.deleteAllComment();
+    this.deviceRepository.deleteAllDevices();
+    return res.status(httpStatuses.NO_CONTENT_204).send("All data is deleted");
   }
+}

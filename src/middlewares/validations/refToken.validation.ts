@@ -1,7 +1,11 @@
 import { NextFunction, Request, Response } from "express";
 import { httpStatuses } from "../../routers/helpers/send-status";
 import { jwtService } from "../../application/jwt-service";
-import { authService, deviceRepository, queryUserRepository } from "../../composition-root";
+import {
+  authService,
+  deviceRepository,
+  queryUserRepository,
+} from "../../composition-root";
 
 export async function refTokenMiddleware(
   req: Request,
@@ -27,7 +31,7 @@ export async function refTokenMiddleware(
         .status(httpStatuses.UNAUTHORIZED_401)
         .send({ message: "User not found", isValid: isValid });
 
-    const device = await deviceRepository.findDeviceByUser(isValid.deviceId);  
+    const device = await deviceRepository.findDeviceByUser(isValid.deviceId);
     if (!device)
       return res
         .status(httpStatuses.UNAUTHORIZED_401)

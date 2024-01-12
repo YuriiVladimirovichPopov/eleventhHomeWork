@@ -1,17 +1,19 @@
-import { ParsedQs } from 'qs';
+import { ParsedQs } from "qs";
 
 export const parsePaginatedType = (query: ParsedQs): PaginatedType => {
   return {
     pageNumber: parseInt(query.pageNumber as string, 10) || 1,
     pageSize: parseInt(query.pageSize as string, 10) || 10,
-    sortBy: (query.sortBy as string) || 'createdAt',
-    sortDirection: (query.sortDirection as string) === 'asc' ? 'asc' : 'desc',
-    skip: (parseInt(query.pageNumber as string, 10) - 1) * (parseInt(query.pageSize as string, 10) || 10),
-    searchNameTerm: query.searchNameTerm as string || undefined,
-    searchLoginTerm: query.searchLoginTerm as string || undefined,
-    searchEmailTerm: query.searchEmailTerm as string || undefined,
+    sortBy: (query.sortBy as string) || "createdAt",
+    sortDirection: (query.sortDirection as string) === "asc" ? "asc" : "desc",
+    skip:
+      (parseInt(query.pageNumber as string, 10) - 1) *
+      (parseInt(query.pageSize as string, 10) || 10),
+    searchNameTerm: (query.searchNameTerm as string) || undefined,
+    searchLoginTerm: (query.searchLoginTerm as string) || undefined,
+    searchEmailTerm: (query.searchEmailTerm as string) || undefined,
   };
-}
+};
 
 export type Paginated<T> = {
   pagesCount: number;

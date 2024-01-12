@@ -1,35 +1,40 @@
 import { Router } from "express";
 import { authMiddleware } from "../middlewares/validations/auth.validation";
 import { createPostValidationForComment } from "../middlewares/validations/comments.validation";
-import { commentController } from "../composition-root";
-import { userValidationMiddleware } from "../middlewares/validations/user.id.validation";
+import { commentController, reactionController } from "../composition-root";
+import { LikeStatusValidation } from "../middlewares/validations/reaction.validation";
+import { inputValidationErrors } from "../middlewares/input-validation-middleware";
+import { guestAccessMiddleware } from "../middlewares/validations/guests.validation";
 
 export const commentsRouter = Router({});
 
-
 commentsRouter.get(
-  "/:commentId",
+  "/:commentId", 
+  //guestAccessMiddleware, //Todo засунуть мидлварю для неавториз юзеров
   commentController.getCommentById.bind(commentController),
 );
 
 commentsRouter.put(
   "/:commentId",
   authMiddleware,
-  userValidationMiddleware,   // добавил хз зачем
+  //userValidationMiddleware,
   createPostValidationForComment,
   commentController.updateCommentById.bind(commentController),
 );
 commentsRouter.put(
   "/:commentId/like-status",
   authMiddleware,
-  //userValidationMiddleware,  // добавил хз зачем
-  createPostValidationForComment,
+  LikeStatusValidation,
+  //userValidationMiddleware,
+  //createPostValidationForComment,
+  inputValidationErrors,
   commentController.updateLikesDislikes.bind(commentController),
+  //reactionController.updateReaction.bind(reactionController),
 );
 
 commentsRouter.delete(
   "/:commentId",
   authMiddleware,
-  userValidationMiddleware,   // добавил хз зачем
+  //userValidationMiddleware,
   commentController.deleteCommentById.bind(commentController),
 );

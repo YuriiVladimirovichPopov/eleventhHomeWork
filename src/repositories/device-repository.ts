@@ -2,7 +2,6 @@ import { DeviceMongoDbType } from "../types";
 import { DeviceModel } from "../domain/schemas/device.schema";
 
 export class DeviceRepository {
-  
   async findDeviceByUser(deviceId: string): Promise<DeviceMongoDbType | null> {
     try {
       const device = await DeviceModel.findOne({ deviceId });

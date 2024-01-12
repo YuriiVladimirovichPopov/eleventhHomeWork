@@ -8,7 +8,6 @@ import { userController } from "../composition-root";
 
 export const usersRouter = Router({});
 
-
 usersRouter.get("/", userController.getAllUsers.bind(userController));
 
 usersRouter.post(

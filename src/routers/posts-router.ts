@@ -14,7 +14,6 @@ import { userValidationMiddleware } from "../middlewares/validations/user.id.val
 
 export const postsRouter = Router({});
 
-
 postsRouter.get(
   "/:postId/comments",
   postController.getCommentsByPostId.bind(postController),
@@ -23,7 +22,7 @@ postsRouter.get(
 postsRouter.post(
   "/:postId/comments",
   authMiddleware,
-  //userValidationMiddleware,  
+  //userValidationMiddleware,
   createPostValidationForComment,
   postController.createCommentsByPostId.bind(postController),
 );
@@ -37,8 +36,7 @@ postsRouter.post(
   postController.createPostByBlogId.bind(postController),
 );
 
-postsRouter.get("/:id", 
-  postController.getPostById.bind(postController));
+postsRouter.get("/:id", postController.getPostById.bind(postController));
 
 postsRouter.put(
   "/:id",

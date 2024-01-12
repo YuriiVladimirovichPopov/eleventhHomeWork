@@ -11,14 +11,14 @@ import { UserCreateViewModel } from "../models/users/createUser";
 import { DeviceModel } from "../domain/schemas/device.schema";
 import { UsersRepository } from "../repositories/users-repository";
 import { QueryUserRepository } from "../query repozitory/queryUserRepository";
-import {Request} from "express"
+import { Request } from "express";
 
 export class AuthService {
   constructor(
     protected usersRepository: UsersRepository,
-    protected queryUserRepository: QueryUserRepository
-    ) {  }
-//todo надо разобраться
+    protected queryUserRepository: QueryUserRepository,
+  ) {}
+  //todo надо разобраться
   async createUser(
     login: string,
     email: string,
@@ -65,13 +65,11 @@ export class AuthService {
     }
     return user;
   }
- 
+
   async checkAndFindUserByToken(req: Request, token: string) {
     try {
       const result: any = Jwt.verify(token, settings.JWT_SECRET); // todo: any don't like. Need change
       const user = await this.queryUserRepository.findUserById(result.userId);
-      // console.log({user: user});
-      // req.body.user = user; //todo: добавили
       return user;
     } catch (error) {
       return null;
@@ -91,7 +89,8 @@ export class AuthService {
     return foundUserByEmail.matchedCount === 1;
   }
 
-  async validateRefreshToken(refreshToken: string): Promise<any> {   // TODO any don't like. Need change
+  async validateRefreshToken(refreshToken: string): Promise<any> {
+    // TODO any don't like. Need change
     try {
       const payload = Jwt.verify(refreshToken, settings.refreshTokenSecret2);
       return payload;
@@ -176,8 +175,10 @@ export class AuthService {
     );
     return refTokenByDeviceId.matchedCount === 1;
   }
-  
-  async addNewDevice(device: DeviceMongoDbType): Promise<DeviceMongoDbType | null> {
+
+  async addNewDevice(
+    device: DeviceMongoDbType,
+  ): Promise<DeviceMongoDbType | null> {
     const newDevice = new DeviceModel(device);
 
     try {
@@ -189,13 +190,13 @@ export class AuthService {
     }
   }
 
-   async resetPasswordWithRecoveryCode(
+  async resetPasswordWithRecoveryCode(
     _id: ObjectId,
     newPassword: string,
   ): Promise<any> {
     // TODO: any don't like. need to change this Promise
     const newPasswordSalt = await bcrypt.genSalt(10);
-    const newHashedPassword = await this._generateHash(   
+    const newHashedPassword = await this._generateHash(
       newPassword,
       newPasswordSalt,
     );
@@ -209,7 +210,7 @@ export class AuthService {
           recoveryCode: null,
         },
       },
-    )
+    );
     return { success: true };
   }
 }

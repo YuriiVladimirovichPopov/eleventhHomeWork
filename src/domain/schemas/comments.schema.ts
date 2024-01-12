@@ -1,4 +1,4 @@
-import mongoose from "mongoose";
+import mongoose, { HydratedDocument } from "mongoose";
 import { CommentsMongoDbType } from "../../types";
 import { commentatorInfoSchema } from "./commentatorInfo.schema";
 import { LikesInfoSchema } from "./reactionInfo.schema";
@@ -8,7 +8,8 @@ export const contentValid = {
   maxLength: 300,
 };
 
-export const CommentSchema = new mongoose.Schema<CommentsMongoDbType>({
+
+export const CommentSchema = new mongoose.Schema<CommentsMongoDbType>({  
   _id: { type: mongoose.Schema.Types.ObjectId, required: true },
   //parentId: { type: String, required: true },
   postId: { type: String, required: true },

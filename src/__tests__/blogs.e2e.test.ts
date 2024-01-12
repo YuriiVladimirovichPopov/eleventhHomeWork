@@ -21,7 +21,7 @@ describe("tests for /blogs", () => {
 
   beforeAll(async () => {
     console.log("Connect to db", mongoURI);
-    
+
     await mongoose.connect(mongoURI);
 
     await getRequest().delete("/testing/all-data");

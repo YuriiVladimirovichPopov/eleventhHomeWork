@@ -1,11 +1,15 @@
 import { ObjectId } from "mongodb";
-import { CommentModel } from "../domain/schemas/comments.schema";
 import { PaginatedType } from "../routers/helpers/pagination";
 import { Paginated } from "../routers/helpers/pagination";
 import { CommentsMongoDbType } from "../types";
 import { CommentViewModel } from "../models/comments/commentViewModel";
+import { Model } from "mongoose";
+import { CommentModel } from "../domain/schemas/comments.schema";
 
 export class CommentsQueryRepository {
+  constructor() //private readonly CommentModel: Model<CommentsMongoDbType>
+  {}
+
   async getAllCommentsForPost(
     postId: string,
     pagination: PaginatedType,
@@ -49,17 +53,18 @@ export class CommentsQueryRepository {
       commentatorInfo: comment.commentatorInfo,
       content: comment.content,
       createdAt: comment.createdAt,
-      likesInfo: comment.likesInfo
-    }
+      likesInfo: comment.likesInfo,
+    };
   }
-
 
   async findCommentsByParentId(
     parentId: string,
-    pagination: PaginatedType
+    pagination: PaginatedType,
   ): Promise<Paginated<CommentViewModel>> {
     const result = await CommentModel.find({ parentId: new ObjectId(parentId) })
-      .sort({ [pagination.sortBy]: pagination.sortDirection === "asc" ? 1 : -1 })
+      .sort({
+        [pagination.sortBy]: pagination.sortDirection === "asc" ? 1 : -1,
+      })
       .skip(pagination.skip)
       .limit(pagination.pageSize)
       .lean();
@@ -74,7 +79,9 @@ export class CommentsQueryRepository {
       }),
     );
 
-    const totalCount: number = await CommentModel.countDocuments({ parentId: new ObjectId(parentId) });
+    const totalCount: number = await CommentModel.countDocuments({
+      parentId: new ObjectId(parentId),
+    });
     const pageCount: number = Math.ceil(totalCount / pagination.pageSize);
 
     const response: Paginated<CommentViewModel> = {
@@ -88,5 +95,3 @@ export class CommentsQueryRepository {
     return response;
   }
 }
-
-

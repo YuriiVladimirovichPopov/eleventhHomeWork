@@ -7,14 +7,12 @@ import { PaginatedType } from "../routers/helpers/pagination";
 import { QueryBlogsRepository } from "../query repozitory/queryBlogsRepository";
 
 export class PostsService {
-  queryBlogsRepository: QueryBlogsRepository
-  queryPostRepository: QueryPostRepository
-  postsRepository: PostsRepository
-  constructor() {
-    this.queryBlogsRepository = new QueryBlogsRepository
-    this.queryPostRepository = new QueryPostRepository
-    this.postsRepository = new PostsRepository
-  }
+  
+  constructor(
+    protected queryBlogsRepository: QueryBlogsRepository,
+    protected queryPostRepository: QueryPostRepository,
+    protected postsRepository: PostsRepository,
+  ) {}
 
   async findAllPosts(
     pagination: PaginatedType,
@@ -25,7 +23,8 @@ export class PostsService {
   async findPostById(id: string): Promise<PostsViewModel | null> {
     return await this.queryPostRepository.findPostById(id);
   }
-  async createPost(data: PostsInputModel): Promise<PostsViewModel | null> {   //TODO: change PostsInputModel
+  async createPost(data: PostsInputModel): Promise<PostsViewModel | null> {
+    //TODO: change PostsInputModel
     const blog = await this.queryBlogsRepository.findBlogById(data.blogId);
     if (!blog) return null;
 
@@ -34,7 +33,8 @@ export class PostsService {
       blogName: blog.name,
       createdAt: new Date().toISOString(), // TODO: здесь добавляем нехватающие элементы
     };
-    const createdPost = await this.postsRepository.createdPostForSpecificBlog(data);
+    const createdPost =
+      await this.postsRepository.createdPostForSpecificBlog(data);
 
     return createdPost;
   }
@@ -54,4 +54,3 @@ export class PostsService {
     return await this.postsRepository.deleteAllPosts();
   }
 }
-

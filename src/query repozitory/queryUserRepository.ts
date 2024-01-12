@@ -7,7 +7,6 @@ import mongoose from "mongoose";
 const filter: mongoose.FilterQuery<UsersMongoDbType> = {};
 
 export class QueryUserRepository {
-
   _userMapper(user: UsersMongoDbType) {
     return {
       id: user._id.toString(),
@@ -19,7 +18,7 @@ export class QueryUserRepository {
     };
   }
 
-  async findUserById(id: string): Promise<UsersMongoDbType | null> { 
+  async findUserById(id: string): Promise<UsersMongoDbType | null> {
     const userById = await UserModel.findOne(
       { _id: new mongoose.Types.ObjectId(id) },
       {
@@ -38,11 +37,11 @@ export class QueryUserRepository {
   }
 
   async findLoginById(userId: string): Promise<string | null> {
-    const user = await this.findUserById(userId)
-    if (!user) { 
-      return null 
+    const user = await this.findUserById(userId);
+    if (!user) {
+      return null;
     }
 
-    return user.login
+    return user.login;
   }
 }

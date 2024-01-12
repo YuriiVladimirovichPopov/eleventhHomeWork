@@ -9,9 +9,6 @@ export type Payload = {
   exp: number;
 };
 
-// interface Payload extends JwtPayload {
-//   userId?: string
-// }
 
 class JWTService {
   async createJWT(user: UsersMongoDbType) {
