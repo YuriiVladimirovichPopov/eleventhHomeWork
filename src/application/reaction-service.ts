@@ -1,8 +1,12 @@
+import "reflect-metadata";
+import { injectable } from "inversify";
 import { ReactionStatusEnum } from "../domain/schemas/reactionInfo.schema";
 import { ReactionModel } from "../domain/schemas/reactionInfo.schema";
 import { ReactionsRepository } from "../repositories/reaction-repository";
 import { ReactionMongoDb } from "../types";
 
+
+@injectable()
 export class ReactionsService {
   constructor(private reactionRepository: ReactionsRepository) {}
 

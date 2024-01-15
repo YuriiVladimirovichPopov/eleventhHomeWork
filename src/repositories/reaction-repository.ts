@@ -1,9 +1,9 @@
-import { Model } from "mongoose";
+import "reflect-metadata";
+import { injectable } from "inversify";
 import {
   ReactionModel,
   ReactionStatusEnum,
 } from "../domain/schemas/reactionInfo.schema";
-import { ReactionMongoDb } from "../types";
 import { ObjectId } from "mongodb";
 
 interface ReactionData {
@@ -15,6 +15,8 @@ interface ReactionData {
   updatedAt: boolean;
 }
 
+
+@injectable()
 export class ReactionsRepository {
   constructor() {}
 
@@ -39,7 +41,7 @@ export class ReactionsRepository {
   }
 
   async updateReactionByParentId(newReaction: ReactionData) {
-    return await ReactionModel.findByIdAndUpdate(
+    return await ReactionModel.updateOne(
       { parentId: newReaction.parentId, userId: new ObjectId(newReaction.userId) },
       { $set: newReaction },
       { new: true },

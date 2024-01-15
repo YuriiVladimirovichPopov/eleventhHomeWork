@@ -1,3 +1,4 @@
+import "reflect-metadata";
 import { PostsInputModel } from "../models/posts/postsInputModel";
 import { PostsViewModel } from "../models/posts/postsViewModel";
 import { PostsRepository } from "../repositories/posts-repository";
@@ -5,7 +6,10 @@ import { QueryPostRepository } from "../query repozitory/queryPostsRepository";
 import { Paginated } from "../routers/helpers/pagination";
 import { PaginatedType } from "../routers/helpers/pagination";
 import { QueryBlogsRepository } from "../query repozitory/queryBlogsRepository";
+import { injectable } from "inversify";
 
+
+@injectable()
 export class PostsService {
   
   constructor(

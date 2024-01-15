@@ -1,6 +1,8 @@
+import "reflect-metadata";
 import jwt from "jsonwebtoken";
 import { settings } from "../settings";
 import { UsersMongoDbType } from "../types";
+import { injectable } from "inversify";
 
 export type Payload = {
   userId: string;
@@ -9,8 +11,8 @@ export type Payload = {
   exp: number;
 };
 
-
-class JWTService {
+@injectable()
+export class JWTService {
   async createJWT(user: UsersMongoDbType) {
     const token = jwt.sign({ userId: user._id }, settings.accessTokenSecret1, {
       expiresIn: "1000minutes",

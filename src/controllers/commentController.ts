@@ -1,10 +1,15 @@
+import "reflect-metadata";
 import { Response, Request } from "express";
 import { CommentsQueryRepository } from "../query repozitory/queryCommentsRepository";
 import { CommentsRepository } from "../repositories/comments-repository";
 import { httpStatuses } from "../routers/helpers/send-status";
 import { parsePaginatedType } from "../routers/helpers/pagination";
 import { CommentsService } from "../application/comment-service";
+import { ReactionStatusEnum } from "../domain/schemas/reactionInfo.schema";
+import { injectable } from "inversify";
 
+
+@injectable()
 export class CommentController {
   constructor(
     private commentsRepository: CommentsRepository,
@@ -50,11 +55,13 @@ export class CommentController {
     try {
       const parentId = req.params.parentId;
       const pagination = parsePaginatedType(req.query);
+      const userId = req.params.userId;
 
       const paginatedComments =
         await this.commentsQueryRepository.findCommentsByParentId(
           parentId,
           pagination,
+          userId 
         );
       return res.status(httpStatuses.OK_200).send(paginatedComments);
     } catch (error) {
@@ -66,17 +73,20 @@ export class CommentController {
 
   async updateLikesDislikes(req: Request, res: Response) {
     try {
-      console.log(req.body);
+      console.log(req.body, 'updateLikesDislikes');   
       const commentId = req.params.commentId;
       const userId = req.body.userId!;
       const { action } = req.body;
+      //const userLogin = req.user?.login;
 
       const updatedComment = await this.commentsService.updateLikesDislikes(
         commentId,
         userId,
+        //userLogin,  // добавил
         action,
       );
       if (!updatedComment) {
+        console.log(updatedComment, 'not updatedLikesDislikes');
         return res
           .status(httpStatuses.NOT_FOUND_404)
           .send({ message: "Comment not found" });
@@ -84,12 +94,37 @@ export class CommentController {
         return res.sendStatus(httpStatuses.NO_CONTENT_204);
       }
     } catch (error) {
-      console.log(error, "ttt");
+      console.error("Ошибка при обновлении реакций:", error)
       return res
         .status(httpStatuses.INTERNAL_SERVER_ERROR_500)
         .send({ message: "Сервер на кофе-брейке!" });
     }
   }
+
+  async changeCommentReaction(req: Request, res: Response) {
+    try {
+      const commentId = req.params.commentId;
+      const userId = req.user!.id; 
+      const userLogin = req.user!.login; 
+      const likeStatus = req.body.likeStatus as ReactionStatusEnum;
+  
+      // Вызываем метод из CommentsService
+      const updatedReaction = await this.commentsService.changeReactionForComment(
+        commentId,
+        userId,
+        userLogin,
+        likeStatus
+      );
+  
+      return res.sendStatus(httpStatuses.NO_CONTENT_204);
+    } catch (error) {
+      console.error(error);
+      return res
+        .status(httpStatuses.INTERNAL_SERVER_ERROR_500)
+        .send({ message: "Сервер на кофе-брейке!" });
+    }
+  }
+  
 
   async deleteCommentById(
     req: Request<{ commentId: string }, {}, {}, {}, { user: string }>,
@@ -105,7 +140,6 @@ export class CommentController {
     }
     const commentUserId = comment.commentatorInfo.userId;
     if (commentUserId !== user.id.toString()) {
-      //user._id.toString()
       return res.sendStatus(httpStatuses.FORBIDDEN_403);
     }
     const commentDelete = await this.commentsRepository.deleteComment(

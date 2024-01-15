@@ -1,3 +1,4 @@
+import { Container, injectable, inject } from "inversify";
 import { AuthService } from "./application/auth-service";
 import { BlogService } from "./application/blog-service";
 import { CommentsService } from "./application/comment-service";
@@ -10,7 +11,6 @@ import { PostController } from "./controllers/postController";
 import { SecurityController } from "./controllers/securityController";
 import { TestController } from "./controllers/testController";
 import { UserController } from "./controllers/userController";
-import { ReactionModel } from "./domain/schemas/reactionInfo.schema";
 import { QueryBlogsRepository } from "./query repozitory/queryBlogsRepository";
 import { CommentsQueryRepository } from "./query repozitory/queryCommentsRepository";
 import { QueryPostRepository } from "./query repozitory/queryPostsRepository";
@@ -57,8 +57,6 @@ export const commentsService = new CommentsService(
   commentsQueryRepository,
   reactionsService
 )
-
-
 
 export const authController = new AuthController(
   usersRepository,

@@ -1,7 +1,7 @@
 import { Request } from "express";
 import { ObjectId } from "mongodb";
 import { UserViewModel } from "./models/users/userViewModel";
-import { reactionInfoViewModel } from "./models/reaction/reactionInfoViewModel";
+import { ReactionInfoDBModel, ReactionInfoViewModel } from "./models/reaction/reactionInfoViewModel";
 import { ReactionStatusEnum } from "./domain/schemas/reactionInfo.schema";
 
 export class BlogsMongoDbType {
@@ -68,7 +68,7 @@ export class CommentsMongoDbType {
       userLogin: string;
     },
     public createdAt: string,
-    public likesInfo: reactionInfoViewModel,
+    public likesInfo: ReactionInfoDBModel,
   ) {}
 }
 

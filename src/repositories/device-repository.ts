@@ -1,6 +1,10 @@
+import "reflect-metadata";
 import { DeviceMongoDbType } from "../types";
 import { DeviceModel } from "../domain/schemas/device.schema";
+import { injectable } from "inversify";
 
+
+@injectable()
 export class DeviceRepository {
   async findDeviceByUser(deviceId: string): Promise<DeviceMongoDbType | null> {
     try {
@@ -39,7 +43,7 @@ export class DeviceRepository {
         return false;
       }
     } catch (error) {
-      console.log("Error deleting device by ID:", error);
+      //console.log("Error deleting device by ID:", error);
       return false;
     }
   }

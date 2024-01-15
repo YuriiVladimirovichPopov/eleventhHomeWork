@@ -1,3 +1,4 @@
+import "reflect-metadata";
 import bcrypt from "bcrypt";
 import add from "date-fns/add";
 import Jwt from "jsonwebtoken";
@@ -12,7 +13,11 @@ import { DeviceModel } from "../domain/schemas/device.schema";
 import { UsersRepository } from "../repositories/users-repository";
 import { QueryUserRepository } from "../query repozitory/queryUserRepository";
 import { Request } from "express";
+import { injectable } from "inversify";
 
+
+
+@injectable()
 export class AuthService {
   constructor(
     protected usersRepository: UsersRepository,

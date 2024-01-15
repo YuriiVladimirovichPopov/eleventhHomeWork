@@ -1,9 +1,13 @@
+import "reflect-metadata";
 import { Response, Request } from "express";
 import { AuthService } from "../application/auth-service";
 import { QueryUserRepository } from "../query repozitory/queryUserRepository";
 import { DeviceRepository } from "../repositories/device-repository";
 import { httpStatuses } from "../routers/helpers/send-status";
+import { injectable } from "inversify";
 
+
+@injectable()
 export class SecurityController {
   constructor(
     protected queryUserRepository: QueryUserRepository,

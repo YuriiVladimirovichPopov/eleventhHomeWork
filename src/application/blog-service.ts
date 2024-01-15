@@ -1,3 +1,4 @@
+import "reflect-metadata";
 import { ObjectId } from "mongodb";
 import { BlogInputModel } from "../models/blogs/blogsInputModel";
 import { BlogsMongoDbType } from "../types";
@@ -6,10 +7,12 @@ import { BlogsRepository } from "../repositories/blogs-repository";
 import { Paginated } from "../routers/helpers/pagination";
 import { PaginatedType } from "../routers/helpers/pagination";
 import { QueryBlogsRepository } from "../query repozitory/queryBlogsRepository";
+import { injectable } from "inversify";
 
+
+@injectable()
 export class BlogService {
   //todo change. add to constructor
-  
   constructor(
     protected blogsRepository: BlogsRepository,
     protected queryBlogsRepository: QueryBlogsRepository

@@ -1,6 +1,6 @@
-import { reactionInfoViewModel } from "../reaction/reactionInfoViewModel";
-import { LikesInfoDocument, LikesInfoModel } from "../../domain/schemas/reactionInfo.schema";
-import mongoose, { Model, Document } from "mongoose";
+import "reflect-metadata";
+import { injectable } from "inversify";
+import { ReactionInfoViewModel } from "../reaction/reactionInfoViewModel";
 
 
 export type CommentViewModel = {
@@ -11,13 +11,13 @@ export type CommentViewModel = {
     userLogin: string;
   };
   createdAt: string;
-  likesInfo: reactionInfoViewModel;
+  likesInfo: ReactionInfoViewModel;
 };
 
 
 
-
-/* export class CommentViewModel {
+@injectable()
+export class CommentViewModel1 {
   id: string;
   content: string;
   commentatorInfo: {
@@ -25,22 +25,23 @@ export type CommentViewModel = {
     userLogin: string;
   };
   createdAt: string;
-  likesInfo: LikesInfoModel; 
+  likesInfo: ReactionInfoViewModel; 
 
   constructor(
     id: string,
     content: string,
-    commentatorInfo: {
-      userId: string;
-      userLogin: string;
-    },
-    createdAt: string,
-    likesInfo: LikesInfoDocument, 
+      userId: string,
+      userLogin: string,
+    likesInfo: ReactionInfoViewModel, 
   ) {
     this.id = id;
     this.content = content;
-    this.commentatorInfo = commentatorInfo;
-    this.createdAt = createdAt;
-    this.likesInfo = new LikesInfoModel(likesInfo); 
+    this.commentatorInfo = {
+      userId,
+      userLogin
+    };
+    this.createdAt = new Date().toISOString();
+    this.likesInfo = likesInfo
   }
-} */
+}
+

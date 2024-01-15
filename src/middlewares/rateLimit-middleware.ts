@@ -36,7 +36,7 @@ export async function customRateLimit(
     connections.push({ IP, URL, date });
     next();
   } catch (err) {
-    console.log(err);
+    //console.log(err);
     res.sendStatus(httpStatuses.INTERNAL_SERVER_ERROR_500);
   }
 }

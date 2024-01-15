@@ -1,3 +1,4 @@
+import "reflect-metadata";
 import { ObjectId } from "mongodb";
 import { UsersMongoDbType } from "../types";
 import { UserPagination } from "../routers/helpers/pagination";
@@ -7,9 +8,12 @@ import { UserCreateViewModel } from "../models/users/createUser";
 import { UserModel } from "../domain/schemas/users.schema";
 import { randomUUID } from "crypto";
 import { PostsViewModel } from "../models/posts/postsViewModel";
+import { injectable } from "inversify";
 
+
+
+@injectable()
 export class UsersRepository {
-  constructor() {}
 
   _userMapper(user: UsersMongoDbType) {
     return {

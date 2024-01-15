@@ -1,9 +1,13 @@
+import "reflect-metadata";
 import { ObjectId } from "mongodb";
 import { BlogInputModel } from "../models/blogs/blogsInputModel";
 import { BlogsMongoDbType } from "../types";
 import { BlogViewModel } from "../models/blogs/blogsViewModel";
 import { BlogModel } from "../domain/schemas/blogs.schema";
+import { injectable } from "inversify";
 
+
+@injectable()
 export class BlogsRepository {
   _blogMapper(blog: BlogsMongoDbType): BlogViewModel {
     return {

@@ -1,11 +1,15 @@
+import "reflect-metadata";
 import { randomUUID } from "crypto";
 import { UsersMongoDbType } from "../types";
 import { UserModel } from "../domain/schemas/users.schema";
-import { ObjectId } from "mongodb";
 import mongoose from "mongoose";
+import { injectable } from "inversify";
+
 
 const filter: mongoose.FilterQuery<UsersMongoDbType> = {};
 
+
+@injectable()
 export class QueryUserRepository {
   _userMapper(user: UsersMongoDbType) {
     return {

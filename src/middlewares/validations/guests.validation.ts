@@ -10,7 +10,7 @@ export const guestAccessMiddleware = (
   const isAuthorized = req.user && req.user.id;
 
   // Разрешенные методы для неавторизованных пользователей
-  const allowedMethods = ['GET'];
+  const allowedMethods = ["/:commentId"];
 
   // Если пользователь не авторизован и метод не в списке разрешенных, блокируем доступ
   if (!isAuthorized && !allowedMethods.includes(req.method)) {

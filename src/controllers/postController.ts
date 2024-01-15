@@ -1,3 +1,4 @@
+import "reflect-metadata";
 import { Response, Request } from "express";
 import { PostsService } from "../application/post-service";
 import { CommentViewModel } from "../models/comments/commentViewModel";
@@ -16,10 +17,13 @@ import { httpStatuses } from "../routers/helpers/send-status";
 import { RequestWithBody, RequestWithParams } from "../types";
 import {
   commentsRepository,
-  postsRepository,
   queryUserRepository,
 } from "../composition-root";
+import { injectable } from "inversify";
 
+
+
+@injectable()
 export class PostController {
   constructor(
     private postsService: PostsService,
@@ -46,24 +50,21 @@ export class PostController {
       await this.commentsQueryRepository.getAllCommentsForPost(
         req.params.postId,
         pagination,
+        req.body.userId,
       );
     return res.status(httpStatuses.OK_200).send(allCommentsForPostId);
   }
 
   async createCommentsByPostId(req: Request, res: Response) {
-    console.log(666);
     const postWithId: PostsViewModel | null =
       await this.queryPostRepository.findPostById(req.params.postId);
-    console.log(postWithId, "post with id: " + req.params.postId);
     if (!postWithId) {
       return res
         .status(httpStatuses.NOT_FOUND_404)
         .send({ message: "post not found" });
     }
-    console.log("req.body:", req.body);
 
     const userLogin = await queryUserRepository.findLoginById(req.body.userId);
-    console.log("login", userLogin);
     if (!userLogin) {
       return res.status(httpStatuses.NOT_FOUND_404).send("User not found");
     }
@@ -73,7 +74,6 @@ export class PostController {
         req.body.parentId,
         postWithId.id,
         req.body.content,
-
         {
           userId: req.body.userId,
           userLogin,

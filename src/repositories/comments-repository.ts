@@ -1,9 +1,13 @@
+import "reflect-metadata";
 import { ObjectId } from "mongodb";
 import { CommentModel } from "../domain/schemas/comments.schema";
 import { CommentsMongoDbType } from "../types";
 import { ReactionStatusEnum } from "../domain/schemas/reactionInfo.schema";
 import { CommentViewModel } from "../models/comments/commentViewModel";
+import { injectable } from "inversify";
 
+
+@injectable()
 export class CommentsRepository {
   //constructor(private readonly LikesInfoModel: Model<reactionInfoViewModel>) {}
 
@@ -23,11 +27,14 @@ export class CommentsRepository {
       likesInfo: {
         likesCount: 0,
         dislikesCount: 0,
-        myStatus: ReactionStatusEnum.None,
+       
       },
     };
 
     await CommentModel.create({ ...createCommentForPost });
+
+    
+    //console.log("commentObject", createCommentForPost)
     return {
       id: createCommentForPost._id.toString(),
       content: createCommentForPost.content,
@@ -54,8 +61,6 @@ export class CommentsRepository {
     }
   }
 
-  
-        
   async deleteComment(commentId: string) {
     const result = await CommentModel.deleteOne({
       _id: new ObjectId(commentId),

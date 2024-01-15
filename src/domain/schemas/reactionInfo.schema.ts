@@ -21,21 +21,21 @@ export const ReactionSchema = new mongoose.Schema({
     minLength: userLoginValid.minLength,
     maxLength: userLoginValid.maxLength,
   },
-  likesCount: { type: Number, required: true },
-  dislikesCount: { type: Number, required: true },
+  likesCount: { type: Number, required: true },// не должно быть тут
+  dislikesCount: { type: Number, required: true },// не должно быть тут
   myStatus: {
     type: String,
     required: true,
-    enum: Object.values(ReactionStatusEnum),
+    enum: Object.values(ReactionStatusEnum), default: ReactionStatusEnum.None,   //TODO: добавил default
   },
-}, { _id: false },);
+}, { _id: false, versionKey: false },);   //TODO добавил Кей(я так понимаю это '__v: 0')
 
 export const ReactionModel = mongoose.model("reaction", ReactionSchema);
 
 export interface LikesInfoDocument extends Document {
   likesCount: number;
   dislikesCount: number;
-  myStatus: string;
+  //myStatus: string;
 }
 
 export const LikesInfoSchema = new mongoose.Schema<LikesInfoDocument>(

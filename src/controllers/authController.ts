@@ -1,3 +1,4 @@
+import "reflect-metadata";
 import { Response, Request } from "express";
 import { ObjectId } from "bson";
 import { error } from "console";
@@ -12,7 +13,10 @@ import { DeviceRepository } from "../repositories/device-repository";
 import { UsersRepository } from "../repositories/users-repository";
 import { httpStatuses } from "../routers/helpers/send-status";
 import { DeviceMongoDbType, UsersMongoDbType, RequestWithBody } from "../types";
+import { injectable } from "inversify";
 
+
+@injectable()
 export class AuthController {
   constructor(
     private usersRepository: UsersRepository,
@@ -22,12 +26,10 @@ export class AuthController {
   ) {}
 
   async login(req: Request, res: Response) {
-    console.log(1);
     const user = await this.authService.checkCredentials(
       req.body.loginOrEmail,
       req.body.password,
     );
-    console.log(2);
     if (user) {
       const deviceId = new ObjectId().toString();
       const userId = user._id.toString();
@@ -45,9 +47,7 @@ export class AuthController {
         deviceId,
         userId,
       };
-      console.log(3);
       await this.authService.addNewDevice(newDevice);
-      console.log(4);
       res
         .cookie("refreshToken", refreshToken, { httpOnly: true, secure: true })
         .status(httpStatuses.OK_200)

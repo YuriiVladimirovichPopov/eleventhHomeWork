@@ -1,3 +1,4 @@
+import "reflect-metadata";
 import { Response, Request } from "express";
 import { BlogsRepository } from "../repositories/blogs-repository";
 import { CommentsRepository } from "../repositories/comments-repository";
@@ -5,7 +6,10 @@ import { DeviceRepository } from "../repositories/device-repository";
 import { PostsRepository } from "../repositories/posts-repository";
 import { UsersRepository } from "../repositories/users-repository";
 import { httpStatuses } from "../routers/helpers/send-status";
+import { injectable } from "inversify";
 
+
+@injectable()
 export class TestController {
   constructor(
     private blogsRepository: BlogsRepository,

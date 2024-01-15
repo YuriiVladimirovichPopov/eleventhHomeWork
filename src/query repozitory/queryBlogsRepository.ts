@@ -1,3 +1,4 @@
+import "reflect-metadata";
 import { ObjectId, WithId } from "mongodb";
 import { BlogsMongoDbType } from "../types";
 import { BlogViewModel } from "../models/blogs/blogsViewModel";
@@ -5,7 +6,10 @@ import { PaginatedType } from "../routers/helpers/pagination";
 import { Paginated } from "../routers/helpers/pagination";
 import { BlogModel } from "../domain/schemas/blogs.schema";
 import { isValidObjectId } from "mongoose";
+import { injectable } from "inversify";
 
+
+@injectable()
 export class QueryBlogsRepository {
   _blogMapper(blog: BlogsMongoDbType): BlogViewModel {
     return {

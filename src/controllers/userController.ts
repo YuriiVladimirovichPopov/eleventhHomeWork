@@ -1,8 +1,7 @@
+import "reflect-metadata";
 import { Response, Request } from "express";
-import { ObjectId } from "bson";
 import { getByIdParam } from "../models/getById";
 import { UserViewModel } from "../models/users/userViewModel";
-import { QueryUserRepository } from "../query repozitory/queryUserRepository";
 import { UsersRepository } from "../repositories/users-repository";
 import {
   getUsersPagination,
@@ -12,7 +11,10 @@ import {
 import { httpStatuses } from "../routers/helpers/send-status";
 import { RequestWithParams } from "../types";
 import { authService } from "../composition-root";
+import { injectable } from "inversify";
 
+
+@injectable()
 export class UserController {
   constructor(
     private usersRepository: UsersRepository,

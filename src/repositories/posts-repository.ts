@@ -1,13 +1,14 @@
-import { CommentsMongoDbType, PostsMongoDbType } from "../types";
+import "reflect-metadata";
+import { PostsMongoDbType } from "../types";
 import { ObjectId } from "mongodb";
 import { PostsInputModel } from "../models/posts/postsInputModel";
 import { PostsViewModel } from "../models/posts/postsViewModel";
-import { CommentViewModel } from "../models/comments/commentViewModel";
-import { CommentModel } from "../domain/schemas/comments.schema";
 import { PostModel } from "../domain/schemas/posts.schema";
 import { QueryBlogsRepository } from "../query repozitory/queryBlogsRepository";
-import { ReactionStatusEnum } from "../domain/schemas/reactionInfo.schema";
+import { injectable } from "inversify";
 
+
+@injectable()
 export class PostsRepository {
   private queryBlogsRepository: QueryBlogsRepository;
   constructor() {

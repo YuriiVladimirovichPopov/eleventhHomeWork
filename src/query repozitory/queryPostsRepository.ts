@@ -1,3 +1,4 @@
+import "reflect-metadata";
 import { CommentsMongoDbType, PostsMongoDbType } from "../types";
 import { PaginatedType, Paginated } from "../routers/helpers/pagination";
 import { ObjectId, WithId } from "mongodb";
@@ -5,9 +6,12 @@ import { PostsViewModel } from "../models/posts/postsViewModel";
 import mongoose from "mongoose";
 import { CommentModel } from "../domain/schemas/comments.schema";
 import { PostModel } from "../domain/schemas/posts.schema";
+import { injectable } from "inversify";
 
 const filter: mongoose.FilterQuery<PostsMongoDbType> = {};
 
+
+@injectable()
 export class QueryPostRepository {
   _postMapper(post: PostsMongoDbType): PostsViewModel {
     return {
@@ -59,7 +63,7 @@ export class QueryPostRepository {
   }
 
   async findPostById(id: string): Promise<PostsViewModel | null> {
-    console.log("Searching for post with ID:", id);
+    //console.log("Searching for post with ID:", id);
     if (!ObjectId.isValid(id)) {
       return null;
     }

@@ -1,8 +1,12 @@
+import "reflect-metadata";
 import { Response, Request } from "express";
 import { ReactionsService } from "../application/reaction-service";
 import { httpStatuses } from "../routers/helpers/send-status";
 import { ReactionsRepository } from "../repositories/reaction-repository";
+import { injectable } from "inversify";
 
+
+@injectable()
 export class ReactionController {
   constructor(
     private readonly reactionsService: ReactionsService,
