@@ -27,14 +27,14 @@ export class CommentsRepository {
       likesInfo: {
         likesCount: 0,
         dislikesCount: 0,
-       
+        // TODO may be add myStatus: 'None'???
       },
     };
 
     await CommentModel.create({ ...createCommentForPost });
 
     
-    //console.log("commentObject", createCommentForPost)
+    console.log("commentObject    ", createCommentForPost)
     return {
       id: createCommentForPost._id.toString(),
       content: createCommentForPost.content,

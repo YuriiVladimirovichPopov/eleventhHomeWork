@@ -55,7 +55,8 @@ export const reactionsService = new ReactionsService(
 
 export const commentsService = new CommentsService(
   commentsQueryRepository,
-  reactionsService
+  reactionsService,
+  reactionsRepository
 )
 
 export const authController = new AuthController(
@@ -106,3 +107,5 @@ export const testController = new TestController(
   deviceRepository,
   usersRepository,
 );
+
+

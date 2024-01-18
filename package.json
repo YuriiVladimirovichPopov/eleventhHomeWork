@@ -6,6 +6,7 @@
   "main": "index.js",
   "license": "MIT",
   "scripts": {
+    "start": "nodemon src/index.ts",
     "watch": "tsc -w",
     "dev": "nodemon --inspect dist/index.js",
     "jest": "jest -i",

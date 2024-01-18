@@ -14,7 +14,7 @@ import {
   PaginatedType,
 } from "../routers/helpers/pagination";
 import { httpStatuses } from "../routers/helpers/send-status";
-import { RequestWithBody, RequestWithParams } from "../types";
+import { RequestWithBody, RequestWithParams, UsersMongoDbType } from "../types";
 import {
   commentsRepository,
   queryUserRepository,
@@ -36,6 +36,8 @@ export class PostController {
     req: Request,
     res: Response<Paginated<CommentViewModel>>,
   ) {
+    const user = req.body.user as UsersMongoDbType | null
+    
     const foundedPostId = await this.queryPostRepository.findPostById(
       req.params.postId,
     );
@@ -50,7 +52,7 @@ export class PostController {
       await this.commentsQueryRepository.getAllCommentsForPost(
         req.params.postId,
         pagination,
-        req.body.userId,
+        user?._id.toString(),
       );
     return res.status(httpStatuses.OK_200).send(allCommentsForPostId);
   }

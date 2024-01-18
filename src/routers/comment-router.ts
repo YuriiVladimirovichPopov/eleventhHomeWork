@@ -4,12 +4,13 @@ import { createPostValidationForComment } from "../middlewares/validations/comme
 import { commentController } from "../composition-root";
 import { LikeStatusValidation } from "../middlewares/validations/reaction.validation";
 import { inputValidationErrors } from "../middlewares/input-validation-middleware";
+import { guestAccessMiddleware } from "../middlewares/validations/guests.validation";
 
 export const commentsRouter = Router({});
 
 commentsRouter.get(
   "/:commentId", 
-  //guestAccessMiddleware, //Todo эта мидлваря не подходит
+  guestAccessMiddleware, //Todo эта мидлваря не подходит
   commentController.getCommentById.bind(commentController),
 );
 

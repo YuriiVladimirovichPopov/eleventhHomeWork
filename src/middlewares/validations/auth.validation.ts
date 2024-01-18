@@ -25,7 +25,7 @@ export const authMiddleware = async (
   if (!ObjectId.isValid(userId)) {
     return res.sendStatus(httpStatuses.UNAUTHORIZED_401);
   }
-  req.body.userId = userId;   // TODO по идее не правильно
+  req.body.userId = userId;   
 
   next();
 };

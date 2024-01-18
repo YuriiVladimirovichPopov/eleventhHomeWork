@@ -1,4 +1,5 @@
-import mongoose, { Model } from "mongoose";
+import mongoose from "mongoose";
+import { LikeStatusType } from "../../models/reaction/reactionInfoViewModel";
 
 export const userLoginValid = {
   minLength: 3,
@@ -8,51 +9,43 @@ export const userLoginValid = {
 export enum ReactionStatusEnum {
   None = "None",
   Like = "Like",
-  Dislike = "DisLike",
+  Dislike = "Dislike",
 }
 
 export const ReactionSchema = new mongoose.Schema({
+  _id: { type: mongoose.Schema.Types.ObjectId, required: true },
   parentId: { type: String, required: true },
-  parentType: { type: String, required: true },
-  userId: { type: mongoose.Schema.Types.ObjectId, required: true }, //been type: String, required: true
+  userId: { type: String, required: true }, //been type: String, required: true
   userLogin: {
     type: String,
     required: true,
     minLength: userLoginValid.minLength,
     maxLength: userLoginValid.maxLength,
   },
-  likesCount: { type: Number, required: true },// не должно быть тут
-  dislikesCount: { type: Number, required: true },// не должно быть тут
   myStatus: {
     type: String,
     required: true,
-    enum: Object.values(ReactionStatusEnum), default: ReactionStatusEnum.None,   //TODO: добавил default
+    enum: Object.values(ReactionStatusEnum)   //TODO: добавил default
   },
-}, { _id: false, versionKey: false },);   //TODO добавил Кей(я так понимаю это '__v: 0')
+}, { _id: true, versionKey: false });   
 
 export const ReactionModel = mongoose.model("reaction", ReactionSchema);
 
-export interface LikesInfoDocument extends Document {
-  likesCount: number;
-  dislikesCount: number;
-  //myStatus: string;
-}
 
-export const LikesInfoSchema = new mongoose.Schema<LikesInfoDocument>(
+
+export const LikesInfoSchema = new mongoose.Schema(
   {
     likesCount: { type: Number, required: true },
     dislikesCount: { type: Number, required: true },
-    /* myStatus: {
-      type: String,
-      required: true,
-      enum: Object.values(ReactionStatusEnum),
-      default: ReactionStatusEnum.None, // 
-    }, */
   },
-  { _id: false },
-);
+  { _id: false });
+  export const LikesInfoModel = mongoose.model("LikesInfo",LikesInfoSchema)
 
-export const LikesInfoModel: Model<LikesInfoDocument> = mongoose.model(
-  "LikesInfo",
-  LikesInfoSchema,
-);
+
+const LikeStatusSchema = new mongoose.Schema<LikeStatusType>({
+  myStatus: {type: String, required: true}, 
+  userId: {type:String, required: true},
+  createdAt: {type: String, required: true}
+})
+export const LikeStatusModel = mongoose.model("LikeStatus", LikeStatusSchema)
+

@@ -1,22 +1,40 @@
 import { Request, Response, NextFunction } from "express";
-import { httpStatuses } from "../../routers/helpers/send-status";
+import { jwtService } from "../../application/jwt-service";
+import { UserModel } from "../../domain/schemas/users.schema";
+import { ObjectId } from "mongodb";
+import { UsersMongoDbType } from "../../types";
 
-export const guestAccessMiddleware = (
+export const guestAccessMiddleware = async (
   req: Request,
   res: Response,
   next: NextFunction,
 ) => {
-  // Проверка, авторизован ли пользователь
-  const isAuthorized = req.user && req.user.id;
-
-  // Разрешенные методы для неавторизованных пользователей
-  const allowedMethods = ["/:commentId"];
-
-  // Если пользователь не авторизован и метод не в списке разрешенных, блокируем доступ
-  if (!isAuthorized && !allowedMethods.includes(req.method)) {
-    return res.sendStatus(httpStatuses.FORBIDDEN_403);
+try {
+  const { authorization }  = req.headers     //isAuthorized
+  if(!authorization || !authorization.startsWith("Bearer ")) {
+    return next()
   }
 
-  // Если пользователь авторизован или метод разрешен, продолжаем обработку запроса
-  next();
+  const token = authorization.split(" ")[1]
+  console.log("token: " + token)
+  const userId = await jwtService.getUserIdByToken(token)
+
+  console.log("UserId: " + userId)
+  
+  if (!userId) {
+    return next()
+  } 
+
+  const user: UsersMongoDbType | null = await UserModel.findOne({_id: new ObjectId(userId)})
+
+  console.log("user: " + user)
+
+  if (user) {
+    req.body.user = user
+  }
+  
+  return next()
+  } catch ( error ) {
+    console.log("Error in guestAccessMiddleware", error);
+  }
 };

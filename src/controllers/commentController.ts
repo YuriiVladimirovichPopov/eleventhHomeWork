@@ -7,6 +7,7 @@ import { parsePaginatedType } from "../routers/helpers/pagination";
 import { CommentsService } from "../application/comment-service";
 import { ReactionStatusEnum } from "../domain/schemas/reactionInfo.schema";
 import { injectable } from "inversify";
+import { UsersMongoDbType } from "../types";
 
 
 @injectable()
@@ -18,8 +19,12 @@ export class CommentController {
   ) {}
 
   async getCommentById(req: Request, res: Response) {
+    const user = req.body.user as UsersMongoDbType | null
+
+    console.log("USER:", user)
     const foundComment = await this.commentsQueryRepository.findCommentById(
       req.params.commentId,
+      user?._id?.toString()
     );
     if (foundComment) {
       return res.status(httpStatuses.OK_200).send(foundComment);
@@ -73,20 +78,20 @@ export class CommentController {
 
   async updateLikesDislikes(req: Request, res: Response) {
     try {
-      console.log(req.body, 'updateLikesDislikes');   
+      console.log('updateLikesDislikes   ', req.body, );  
+      console.log('userId   ', req.body.userId);
+       
       const commentId = req.params.commentId;
       const userId = req.body.userId!;
-      const { action } = req.body;
-      //const userLogin = req.user?.login;
+      const { likeStatus } = req.body;
 
       const updatedComment = await this.commentsService.updateLikesDislikes(
         commentId,
         userId,
-        //userLogin,  // добавил
-        action,
+        likeStatus,
       );
+
       if (!updatedComment) {
-        console.log(updatedComment, 'not updatedLikesDislikes');
         return res
           .status(httpStatuses.NOT_FOUND_404)
           .send({ message: "Comment not found" });
@@ -115,7 +120,8 @@ export class CommentController {
         userLogin,
         likeStatus
       );
-  
+        console.log('updatedReaction    ', updatedReaction);
+        
       return res.sendStatus(httpStatuses.NO_CONTENT_204);
     } catch (error) {
       console.error(error);

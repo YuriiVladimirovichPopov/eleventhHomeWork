@@ -18,7 +18,6 @@ export const loginOrEmailValid = {
 };
 
 export const AccountData = new mongoose.Schema<EmailConfirmationType>({
-  // TODO создать новый класс
 });
 
 export const UserSchema = new mongoose.Schema<UsersMongoDbType>({

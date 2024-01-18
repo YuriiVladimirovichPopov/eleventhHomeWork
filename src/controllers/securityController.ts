@@ -75,7 +75,6 @@ export class SecurityController {
     const isValid = await this.authService.validateRefreshToken(refreshToken);
 
     if (!isValid || !isValid.userId || !isValid.deviceId) {
-      // todo унести в мидлварю всЁ
       return res
         .status(httpStatuses.UNAUTHORIZED_401)
         .send({ message: "Unauthorized" });

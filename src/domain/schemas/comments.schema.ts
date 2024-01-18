@@ -11,7 +11,6 @@ export const contentValid = {
 
 export const CommentSchema = new mongoose.Schema<CommentsMongoDbType>({  
   _id: { type: mongoose.Schema.Types.ObjectId, required: true },
-  //parentId: { type: String, required: true },
   postId: { type: String, required: true },
   content: {
     type: String,

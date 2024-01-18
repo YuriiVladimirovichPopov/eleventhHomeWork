@@ -34,6 +34,16 @@ export class ReactionsRepository {
     });
   }
 
+  async findByParentAndUserIds(
+    parentId: string,
+    userId: string,
+  ) {
+    return await ReactionModel.findOne({
+      parentId: parentId,
+      userId: userId,
+    });
+  }
+
   async createReaction(reactionData: ReactionData) {
     const reaction = new ReactionModel(reactionData);
     await reaction.save();

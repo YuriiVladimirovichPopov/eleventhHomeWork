@@ -17,7 +17,7 @@ export class CommentsQueryRepository {
   async getAllCommentsForPost(
     postId: string,
     pagination: PaginatedType,
-    userId: string
+    userId?: string
   ): Promise<Paginated<CommentViewModel>> {
     const result = await CommentModel.find({ postId: postId })
       .sort({ [pagination.sortBy]: pagination.sortDirection })
@@ -73,15 +73,15 @@ export class CommentsQueryRepository {
     const comment: CommentsMongoDbType | null = await CommentModel.findOne({
       _id: new ObjectId(id),
     }).exec();    
+
     if (!comment) return null;
     
-let myStatus:ReactionStatusEnum = ReactionStatusEnum.None;
+    let myStatus:ReactionStatusEnum = ReactionStatusEnum.None;
 
     if(userId){
-      const reaction= await ReactionModel.findOne({userId, parentId: id})  //Ксения помогла. 
+      const reaction = await ReactionModel.findOne({userId: userId.toString(), parentId: id})  //Ксения помогла. 
                                                                             //Таким образом надо сделать на все гет запросы, 
-      myStatus = reaction ? reaction.myStatus: ReactionStatusEnum.None      //где есть комменты
-
+      myStatus = reaction ? reaction.myStatus : ReactionStatusEnum.None      //где есть комменты
     }
     
     return {
