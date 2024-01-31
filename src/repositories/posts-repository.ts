@@ -41,12 +41,8 @@ export class PostsRepository {
       content: model.content,
       blogId: model.blogId,
       blogName: blog.name,
-      createdAt: new Date().toISOString(), //todo: should be 12 home work
-      /* likesInfoSchema: {
-        likesCount: 0,
-        disLikesCount: 0,
-        myStatus: ReactionStatusEnum.None
-      } */
+      createdAt: new Date().toISOString(), 
+    
     };
     await PostModel.insertMany(createPostForBlog);
     return this.postMapper(createPostForBlog);
